@@ -1,10 +1,6 @@
-
-
 config:
   timerConfig:
-    startPoint: 2021-09-16 12:00
-    daysGoal: 100
-    daysStep: 7
+    dataPath: data/data.json
 
 server:
   port: 8888

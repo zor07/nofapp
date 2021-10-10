@@ -1,75 +1,46 @@
-package com.zor07.nofapp.services;
+package com.zor07.nofapp.timer;
 
+import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.util.ArrayList;
 
 public class TimerService {
 
+  private final TimerRepository repository;
 
-  public static class Config {
-
-    @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime startPoint;
-
-    @Min(100)
-    private int daysGoal;
-
-    @Min(7)
-    @Max(30)
-    private int daysStep;
-
-    public LocalDateTime getStartPoint() {
-      return startPoint;
-    }
-
-    public void setStartPoint(LocalDateTime startPoint) {
-      this.startPoint = startPoint;
-    }
-
-    public int getDaysGoal() {
-      return daysGoal;
-    }
-
-    public void setDaysGoal(int daysGoal) {
-      this.daysGoal = daysGoal;
-    }
-
-    public int getDaysStep() {
-      return daysStep;
-    }
-
-    public void setDaysStep(int daysStep) {
-      this.daysStep = daysStep;
-    }
+  public TimerService(final TimerRepository repository) {
+    this.repository = repository;
   }
 
-  private final LocalDateTime startPoint;
-  private final int daysGoal;
-  private final int daysStep;
-  private final int stepsCount;
-
-  public TimerService(Config config) {
-    this.startPoint = config.getStartPoint();
-    this.daysGoal = config.getDaysGoal();
-    this.daysStep = config.getDaysStep();
-    this.stepsCount = daysGoal / daysStep + 1;
+  public TimerStatuses getStatuses() {
+    final var statuses = new ArrayList<String>();
+    repository.getTimers().forEach(timer -> {
+      statuses.add(getStatus(timer));
+    });
+    return new TimerStatuses(statuses);
   }
 
-  public String getStatus() {
-    final var currentStepNumber = calculateCurrentStepNumber();
-    final var start = calculateCurrentStepStartTime(currentStepNumber);
-    final var end = calculateCurrentStepEndTime(currentStepNumber);
-    final var s = calculateTimePassed();
+  public void createTimer(final Timer timer) {
+    repository.persist(timer);
+  }
+
+  private String getStatus(final Timer timer) {
+    final var startPoint = timer.startPoint;
+    final var daysGoal = timer.daysGoal;
+    final var daysStep = timer.daysStep;
+    final var stepsCount = daysGoal / daysStep + 1;
+
+
+    final var currentStepNumber = calculateCurrentStepNumber(startPoint, daysGoal, daysStep, stepsCount);
+    final var start = calculateCurrentStepStartTime(startPoint, daysStep, currentStepNumber);
+    final var end = calculateCurrentStepEndTime(startPoint, daysStep, currentStepNumber);
+    final var s = calculateTimePassed(startPoint, daysGoal, timer.description);
     final var s1 = calculateTimeRemaining(start, end);
     return s + s1;
   }
 
-  private String calculateTimePassed() {
+  private String calculateTimePassed(final LocalDateTime startPoint, final int daysGoal, final String description) {
     final var hoursPassed = Duration.between(startPoint, LocalDateTime.now()).toHours();
     final var daysPassed = Duration.between(startPoint, LocalDateTime.now()).toDays();
     final var weeksPassed = Duration.between(startPoint, LocalDateTime.now()).toDays() / 7;
@@ -77,26 +48,27 @@ public class TimerService {
         startPoint.plusDays(daysGoal)).toHours();
     final var weeksTotal = Duration.between(startPoint,
         startPoint.plusDays(daysGoal)).toDays() / 7 + 1;
-    return  String.format("С начала трансформации прошло: " +
+    return  String.format("%s. Прошло времени: " +
             "%d часов из %d " +
             "%d дней из %d " +
             "%d недель из %d. ",
+        description,
         hoursPassed, hoursTotal,
         daysPassed, daysGoal,
         weeksPassed, weeksTotal);
   }
 
-  private LocalDateTime calculateCurrentStepEndTime(final int currentStepNumber) {
+  private LocalDateTime calculateCurrentStepEndTime(final LocalDateTime startPoint, final int daysStep, final int currentStepNumber) {
     return startPoint
         .plusDays(currentStepNumber * daysStep);
   }
 
-  private LocalDateTime calculateCurrentStepStartTime(final int currentStepNumber) {
+  private LocalDateTime calculateCurrentStepStartTime(final LocalDateTime startPoint, final int daysStep, final int currentStepNumber) {
     return startPoint
         .plusDays((currentStepNumber - 1) * daysStep);
   }
 
-  private int calculateCurrentStepNumber() {
+  private int calculateCurrentStepNumber(final LocalDateTime startPoint, final int daysGoal, final int daysStep, final int stepsCount) {
     final var now = LocalDateTime.now();
     if (Duration.between(startPoint, now).toDays() > daysGoal) {
       throw new IllegalStateException("Анзор, ты продержался 100 дней," +

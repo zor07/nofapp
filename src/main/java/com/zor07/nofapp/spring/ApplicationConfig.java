@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-import com.zor07.nofapp.services.TimerService;
+import com.zor07.nofapp.timer.TimerRepository;
 
 @Configuration
 @ConfigurationProperties("config")
@@ -14,13 +14,14 @@ public class ApplicationConfig {
 
   @NotNull
   @Valid
-  private TimerService.Config timerConfig;
+  private TimerRepository.Config timerConfig;
 
-  public TimerService.Config getTimerConfig() {
+  public TimerRepository.Config getTimerConfig() {
     return timerConfig;
   }
 
-  public void setTimerConfig(TimerService.Config timerConfig) {
+  public void setTimerConfig(TimerRepository.Config timerConfig) {
     this.timerConfig = timerConfig;
   }
+
 }
