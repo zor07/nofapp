@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test
+    password: test
+    url: jdbc:tc:postgresql:9.6.8:///db
+  liquibase:
+    change-log: classpath:db/changelog/changelog.xml
+    contexts: test
+
+logging:
+  level:
+    liquidbase: INFO
+
+server:
+  port: 7777
