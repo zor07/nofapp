@@ -7,9 +7,5 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
 
-config:
-  timerConfig:
-    dataPath: data/data.json
-
 server:
   port: 8888
