@@ -5,12 +5,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Entity
 public class Timer {
 
   @Id
-  @GeneratedValue(strategy= GenerationType.AUTO)
+  @GeneratedValue(
+      strategy = GenerationType.SEQUENCE,
+      generator = "timer_id_seq"
+  )
+  @SequenceGenerator(name = "timer_id_seq", sequenceName = "timer_id_seq", initialValue = 1, allocationSize = 1)
   private Long id;
 
   private Instant start;
