@@ -6,8 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "timer", schema = "public")
 public class Timer {
 
   @Id
@@ -15,7 +17,11 @@ public class Timer {
       strategy = GenerationType.SEQUENCE,
       generator = "timer_id_seq"
   )
-  @SequenceGenerator(name = "timer_id_seq", sequenceName = "timer_id_seq", initialValue = 1, allocationSize = 1)
+  @SequenceGenerator(
+      name = "timer_id_seq",
+      sequenceName = "timer_id_seq",
+      allocationSize = 1
+  )
   private Long id;
 
   private Instant start;

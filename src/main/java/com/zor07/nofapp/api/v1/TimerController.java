@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +17,7 @@ import com.zor07.nofapp.api.v1.dto.TimerDto;
 import com.zor07.nofapp.timer.TimerRepository;
 
 @RestController
-@RequestMapping("/v1/timer")
+@RequestMapping("/api/v1/timer")
 public class TimerController {
 
   private final TimerRepository repository;
@@ -47,11 +46,6 @@ public class TimerController {
   public ResponseEntity<Void> save(@RequestBody final TimerDto timer) {
     repository.save(TimerDto.toEntity(timer));
     return new ResponseEntity<>(HttpStatus.CREATED);
-  }
-
-  @DeleteMapping("/{timerId}")
-  public ResponseEntity<Void> stopTimer(@PathVariable final Long timerId) {
-      return null;
   }
 
   @DeleteMapping("/{timerId}")

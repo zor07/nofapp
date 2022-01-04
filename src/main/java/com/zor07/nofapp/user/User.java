@@ -8,11 +8,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "user", schema = "public")
 public class User {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(
+      strategy = GenerationType.SEQUENCE,
+      generator = "user_id_seq"
+  )
+  @SequenceGenerator(
+      name = "user_id_seq",
+      sequenceName = "user_id_seq",
+      allocationSize = 1
+  )
   private Long id;
   private String name;
   private String username;
