@@ -9,6 +9,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,20 +22,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zor07.nofapp.api.v1.dto.AuthenticationDto;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final AuthenticationManager authenticationManager;
+  private static final Logger LOGGER = LoggerFactory.getLogger(CustomAuthenticationFilter.class);
 
-  public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+  private final AuthenticationManager authenticationManager;
+  private final ObjectMapper objectMapper;
+
+  public CustomAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
     this.authenticationManager = authenticationManager;
+    this.objectMapper = objectMapper;
   }
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-    final var username = request.getParameter("username");
-    final var password = request.getParameter("password");
-    final var authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+    final var authData = getAuthDataFromRequest(request);
+    final var authenticationToken = new UsernamePasswordAuthenticationToken(authData.username(), authData.password());
     return authenticationManager.authenticate(authenticationToken);
   }
 
@@ -60,5 +66,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     tokens.put("refresh_token", refreshToken);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+  }
+
+  private AuthenticationDto getAuthDataFromRequest(HttpServletRequest request) {
+    try {
+      final var body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+      return objectMapper.readValue(body, AuthenticationDto.class);
+    } catch (IOException e) {
+      LOGGER.error("Cannot get body from request", e);
+      return new AuthenticationDto(null, null);
+    }
   }
 }

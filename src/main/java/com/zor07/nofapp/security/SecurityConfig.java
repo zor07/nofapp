@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableWebSecurity
@@ -19,12 +20,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserDetailsService userDetailsService;
   private final PasswordEncoder bCryptPasswordEncoder;
+  private final ObjectMapper objectMapper;
 
   @Autowired
   public SecurityConfig(UserDetailsService userDetailsService,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      ObjectMapper objectMapper) {
     this.userDetailsService = userDetailsService;
     this.bCryptPasswordEncoder = passwordEncoder;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -34,11 +38,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    final var filter = new CustomAuthenticationFilter(authenticationManagerBean());
-    filter.setFilterProcessesUrl("/api/v1/login");
+    final var filter = new CustomAuthenticationFilter(authenticationManagerBean(), objectMapper);
+    filter.setFilterProcessesUrl("/api/v1/auth/login");
     http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    http.authorizeRequests().antMatchers("/api/v1/login/**", "/api/v1/token/refresh/**").permitAll();
+    http.authorizeRequests().antMatchers("/api/v1/auth/login/**", "/api/v1/auth/token/refresh/**").permitAll();
     http.authorizeRequests().antMatchers("/api/**").hasAnyAuthority("ROLE_USER");
     http.authorizeRequests().anyRequest().authenticated();
     http.addFilter(filter);
