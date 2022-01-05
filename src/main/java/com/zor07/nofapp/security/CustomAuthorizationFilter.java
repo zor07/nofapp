@@ -28,9 +28,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request,
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    if (request.getServletPath().equals("/api/login")) {
+    if (request.getServletPath().equals("/api/v1/login") || request.getServletPath().equals("/api/v1/token/refresh")) {
       filterChain.doFilter(request, response);
     } else {
+      LOGGER.info(request.getServletPath());
       final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
       if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
         try {
@@ -53,7 +54,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
           LOGGER.error("", e);
           response.setHeader("error", e.getMessage());
           response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//          response.sendError(HttpServletResponse.SC_FORBIDDEN);
           final var error = new HashMap<String, String>();
           error.put("error_message", e.getMessage());
           response.setContentType(MediaType.APPLICATION_JSON_VALUE);
