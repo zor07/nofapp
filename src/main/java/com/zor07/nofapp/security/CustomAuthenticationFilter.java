@@ -31,20 +31,25 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
   private final AuthenticationManager authenticationManager;
   private final ObjectMapper objectMapper;
 
-  public CustomAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
+  public CustomAuthenticationFilter(final AuthenticationManager authenticationManager,
+      final ObjectMapper objectMapper) {
     this.authenticationManager = authenticationManager;
     this.objectMapper = objectMapper;
   }
 
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+  public Authentication attemptAuthentication(final HttpServletRequest request,
+      final HttpServletResponse response) throws AuthenticationException {
     final var authData = getAuthDataFromRequest(request);
     final var authenticationToken = new UsernamePasswordAuthenticationToken(authData.username(), authData.password());
     return authenticationManager.authenticate(authenticationToken);
   }
 
   @Override
-  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+  protected void successfulAuthentication(final HttpServletRequest request,
+      final HttpServletResponse response,
+      final FilterChain chain,
+      final Authentication authentication) throws IOException {
     final var user = (User) authentication.getPrincipal();
     final var algorithm = Algorithm.HMAC256("secret".getBytes());
     final var accessToken = JWT.create()
@@ -59,8 +64,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofDays(10).toMillis()))
         .withIssuer(request.getRequestURL().toString())
         .sign(algorithm);
-//    response.setHeader("access_token", accessToken);
-//    response.setHeader("refresh_token", refreshToken);
     final var tokens = new HashMap<String, String>();
     tokens.put("access_token", accessToken);
     tokens.put("refresh_token", refreshToken);
@@ -68,11 +71,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);
   }
 
-  private AuthenticationDto getAuthDataFromRequest(HttpServletRequest request) {
+  private AuthenticationDto getAuthDataFromRequest(final HttpServletRequest request) {
     try {
       final var body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
       return objectMapper.readValue(body, AuthenticationDto.class);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOGGER.error("Cannot get body from request", e);
       return new AuthenticationDto(null, null);
     }

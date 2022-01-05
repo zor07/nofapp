@@ -32,7 +32,7 @@ public class UserController {
   }
 
   @PostMapping("/user")
-  public ResponseEntity<User> saveUser(@RequestBody User user) {
+  public ResponseEntity<User> saveUser(final @RequestBody User user) {
     final var uri = URI.create(ServletUriComponentsBuilder
         .fromCurrentContextPath()
         .path("/api/v1/user")
@@ -41,7 +41,7 @@ public class UserController {
   }
 
   @PostMapping("/role")
-  public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+  public ResponseEntity<Role> saveRole(final @RequestBody Role role) {
     final var uri = URI.create(ServletUriComponentsBuilder
         .fromCurrentContextPath()
         .path("/api/v1/role")
@@ -50,7 +50,7 @@ public class UserController {
   }
 
   @PostMapping("/role/addToUser")
-  public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUserDto dto) {
+  public ResponseEntity<?> addRoleToUser(final @RequestBody RoleToUserDto dto) {
     userService.addRoleToUser(dto.username(), dto.role());
     return ResponseEntity.ok().build();
   }

@@ -29,13 +29,19 @@ public class AuthControllerTest extends AbstractApplicationTest {
   private static final String LOGIN = "/api/v1/auth/login";
   private static final String REFRESH_TOKEN = "/api/v1/auth/token/refresh";
   private static final String USERS = "/api/v1/user";
+  private static final String LOGIN_PAYLOAD = """
+        {
+          "username": "user",
+          "password": "pass"
+        }
+        """;
 
-  private static Role createRole(String name) {
-    return new Role(null, name);
+  private static Role createRole() {
+    return new Role(null, "ROLE_USER");
   }
 
-  private static User createUser(String name) {
-    return new User(null, name, name, "pass", new ArrayList<>());
+  private static User createUser() {
+    return new User(null, "user", "user", "pass", new ArrayList<>());
   }
 
   @Autowired
@@ -49,8 +55,8 @@ public class AuthControllerTest extends AbstractApplicationTest {
 
   @BeforeClass
   public void setup() {
-    userService.saveUser(createUser("user"));
-    userService.saveRole(createRole("ROLE_USER"));
+    userService.saveUser(createUser());
+    userService.saveRole(createRole());
     userService.addRoleToUser("user", "ROLE_USER");
     mvc = MockMvcBuilders
         .webAppContextSetup(context)
@@ -60,14 +66,7 @@ public class AuthControllerTest extends AbstractApplicationTest {
 
   @Test
   void login_isOk_test() throws Exception {
-    final var payload = """
-        {
-          "username": "user",
-          "password": "pass"
-        }
-        """;
-
-    mvc.perform(post(LOGIN).servletPath(LOGIN).content(payload).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN).servletPath(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
   }
 
@@ -92,14 +91,7 @@ public class AuthControllerTest extends AbstractApplicationTest {
 
   @Test
   void getUsers_isOK_test() throws Exception {
-    final var payload = """
-        {
-          "username": "user",
-          "password": "pass"
-        }
-        """;
-
-    mvc.perform(post(LOGIN).content(payload).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andDo(mvcResult -> {
           final var tokens = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), TokensDto.class);
           final var authHeader = String.format("Bearer %s", tokens.access_token);
@@ -110,14 +102,7 @@ public class AuthControllerTest extends AbstractApplicationTest {
 
   @Test
   void refreshToken_isOK_test() throws Exception {
-    final var payload = """
-        {
-          "username": "user",
-          "password": "pass"
-        }
-        """;
-
-    mvc.perform(post(LOGIN).servletPath(LOGIN).content(payload).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN).servletPath(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andDo(loginResult -> {
           final var tokens = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokensDto.class);
           final var authHeader = String.format("Bearer %s", tokens.refresh_token);

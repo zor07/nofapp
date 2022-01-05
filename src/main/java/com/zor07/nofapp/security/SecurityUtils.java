@@ -26,7 +26,8 @@ public class SecurityUtils {
     return verifier.verify(refreshToken);
   }
 
-  public static void addErrorToResponse(final HttpServletResponse response, final String errorMessage) throws IOException {
+  public static void addErrorToResponse(final HttpServletResponse response,
+      final String errorMessage) throws IOException {
     final var error = new HashMap<String, String>();
     error.put("error_message", errorMessage);
     response.setHeader("error", errorMessage);

@@ -20,9 +20,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CustomAuthorizationFilter.class);
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request,
-      HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(final HttpServletRequest request,
+      final HttpServletResponse response,
+      final FilterChain filterChain) throws ServletException, IOException {
     if (request.getServletPath().equals("/api/v1/auth/login") || request.getServletPath().equals("/api/v1/auth/token/refresh")) {
       filterChain.doFilter(request, response);
     } else {

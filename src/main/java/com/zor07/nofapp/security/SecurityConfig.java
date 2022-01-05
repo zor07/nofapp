@@ -23,21 +23,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final ObjectMapper objectMapper;
 
   @Autowired
-  public SecurityConfig(UserDetailsService userDetailsService,
-      PasswordEncoder passwordEncoder,
-      ObjectMapper objectMapper) {
+  public SecurityConfig(final UserDetailsService userDetailsService,
+      final PasswordEncoder passwordEncoder,
+      final ObjectMapper objectMapper) {
     this.userDetailsService = userDetailsService;
     this.bCryptPasswordEncoder = passwordEncoder;
     this.objectMapper = objectMapper;
   }
 
   @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+  protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
     auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
   }
 
   @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  protected void configure(final HttpSecurity http) throws Exception {
     final var filter = new CustomAuthenticationFilter(authenticationManagerBean(), objectMapper);
     filter.setFilterProcessesUrl("/api/v1/auth/login");
     http.csrf().disable();

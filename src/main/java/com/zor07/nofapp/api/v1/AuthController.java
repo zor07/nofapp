@@ -30,12 +30,12 @@ public class AuthController {
   private final UserService userService;
 
   @Autowired
-  public AuthController(UserService userService) {
+  public AuthController(final UserService userService) {
     this.userService = userService;
   }
 
   @GetMapping("/token/refresh")
-  public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public void refreshToken(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
     final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
       try {
@@ -53,7 +53,7 @@ public class AuthController {
         tokens.put("refresh_token", SecurityUtils.parseRefreshToken(authorizationHeader));
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
-      } catch (Exception e) {
+      } catch (final Exception e) {
         LOGGER.error("Got exception while authorizing request", e);
         SecurityUtils.addErrorToResponse(response, e.getMessage());
       }
