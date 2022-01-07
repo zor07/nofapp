@@ -1,5 +1,6 @@
 package com.zor07.nofapp.security;
 
+import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 
 @Configuration
 @EnableWebSecurity
@@ -48,6 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     final var filter = new CustomAuthenticationFilter(authenticationManagerBean(), objectMapper);
     filter.setFilterProcessesUrl("/api/v1/auth/login");
     http.cors();
+    http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.authorizeRequests().antMatchers("/api/v1/auth/login/**", "/api/v1/auth/token/refresh/**").permitAll();
     http.authorizeRequests().antMatchers("/api/**").hasAnyAuthority("ROLE_USER");
@@ -58,17 +59,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
-    final CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-    configuration.setAllowedMethods(ImmutableList.of("HEAD",
-        "GET", "POST", "PUT", "DELETE", "PATCH"));
-    // setAllowCredentials(true) is important, otherwise:
-    // The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'.
+    final var configuration = new CorsConfiguration();
     configuration.setAllowCredentials(true);
-    // setAllowedHeaders is important! Without it, OPTIONS preflight request
-    // will fail with 403 Invalid CORS request
-    configuration.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"));
-    final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    configuration.setAllowedHeaders(Collections.singletonList("*"));
+    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+    configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
+    final var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
   }
@@ -83,11 +79,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       @Override
-      public void addCorsMappings(CorsRegistry registry) {
+      public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
             .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
       }
     };
   }
-
 }
