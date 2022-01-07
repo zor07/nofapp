@@ -34,6 +34,29 @@ public class AuthController {
     this.userService = userService;
   }
 
+  @GetMapping("/me")
+  public void me(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+    final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      try {
+        final var decodedJWT = SecurityUtils.decodeJWT(authorizationHeader);
+        final var username = decodedJWT.getSubject();
+        final var user = userService.getUser(username);
+        final var responseData = new HashMap<String, String>();
+        responseData.put("id", user.getId().toString());
+        responseData.put("name", user.getName());
+        responseData.put("username", user.getUsername());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), responseData);
+      } catch (final Exception e) {
+        LOGGER.error("Got exception while authorizing request", e);
+        SecurityUtils.addErrorToResponse(response, e.getMessage());
+      }
+    } else {
+      throw new RuntimeException("Refresh token is missing");
+    }
+  }
+
   @GetMapping("/token/refresh")
   public void refreshToken(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
     final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
