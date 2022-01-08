@@ -1,8 +1,6 @@
 package com.zor07.nofapp.security;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
@@ -15,11 +13,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.AuthenticationDto;
 
@@ -50,19 +45,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
       final FilterChain chain,
       final Authentication authentication) throws IOException {
     final var user = (User) authentication.getPrincipal();
-    final var algorithm = Algorithm.HMAC256("secret".getBytes());
-    final var accessToken = JWT.create()
-        .withSubject(user.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofMinutes(10).toMillis()))
-        .withIssuer(request.getRequestURL().toString())
-        .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-        .sign(algorithm);
-
-    final var refreshToken = JWT.create()
-        .withSubject(user.getUsername())
-        .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofDays(10).toMillis()))
-        .withIssuer(request.getRequestURL().toString())
-        .sign(algorithm);
+    final var accessToken = SecurityUtils.createAccessToken(user, request.getRequestURL().toString());
+    final var refreshToken = SecurityUtils.createRefreshToken(user, request.getRequestURL().toString());
     final var tokens = new HashMap<String, String>();
     tokens.put("access_token", accessToken);
     tokens.put("refresh_token", refreshToken);

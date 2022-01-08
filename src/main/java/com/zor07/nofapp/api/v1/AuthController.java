@@ -1,10 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -15,10 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.security.SecurityUtils;
-import com.zor07.nofapp.user.Role;
 import com.zor07.nofapp.user.UserService;
 
 @RestController
@@ -65,12 +60,7 @@ public class AuthController {
         final var decodedJWT = SecurityUtils.decodeJWT(authorizationHeader);
         final var username = decodedJWT.getSubject();
         final var user = userService.getUser(username);
-        final var accessToken = JWT.create()
-            .withSubject(user.getUsername())
-            .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofMinutes(10).toMillis()))
-            .withIssuer(request.getRequestURL().toString())
-            .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-            .sign(SecurityUtils.getAlgorithm());
+        final var accessToken = SecurityUtils.createAccessToken(user, request.getRequestURL().toString());
         final var tokens = new HashMap<String, String>();
         tokens.put("access_token", accessToken);
         tokens.put("refresh_token", SecurityUtils.parseRefreshToken(authorizationHeader));
