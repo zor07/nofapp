@@ -25,8 +25,7 @@ public class SecurityUtils {
   private static String createAccessToken(final String username, final String issuer, final List<String> claims) {
     return JWT.create()
         .withSubject(username)
-        //        .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofMinutes(10).toMillis()))
-        .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofSeconds(10).toMillis()))
+        .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofMinutes(10).toMillis()))
         .withIssuer(issuer)
         .withClaim("roles", claims)
         .sign(getAlgorithm());
