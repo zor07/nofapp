@@ -3,6 +3,7 @@ package com.zor07.nofapp.api.v1;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class TimerController {
   }
 
   @PostMapping(consumes = "application/json")
+  @Transactional
   public ResponseEntity<Void> save(@RequestBody final TimerDto timer, final Principal principal) {
     final var user = getUser(principal);
     repository.save(TimerDto.toEntity(timer, user));
@@ -54,6 +56,7 @@ public class TimerController {
   }
 
   @DeleteMapping("/{timerId}")
+  @Transactional
   public ResponseEntity<Void> delete(@PathVariable final Long timerId, final Principal principal) {
     final var user = getUser(principal);
     try {

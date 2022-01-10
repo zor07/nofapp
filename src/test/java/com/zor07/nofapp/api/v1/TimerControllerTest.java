@@ -3,6 +3,7 @@ package com.zor07.nofapp.api.v1;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,6 +22,7 @@ import com.zor07.nofapp.user.UserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -125,5 +127,18 @@ public class TimerControllerTest extends AbstractAuthRelatedApplicationTest {
     final var timer = timerRepository.findAll().get(0);
     assertThat(timer.getDescription()).isEqualTo(description);
     assertThat(timer.getUser().getId()).isEqualTo(userId);
+  }
+
+  @Test
+
+  void deleteTimerTest() throws Exception {
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    createTimer(USER_1);
+    final var timer = timerRepository.findAll().get(0);
+    mvc.perform(delete(TIMER_ENDPOINT+"/"+timer.getId())
+              .contentType(MediaType.APPLICATION_JSON)
+              .header(HttpHeaders.AUTHORIZATION, authHeader))
+        .andExpect(status().isNoContent());
+    assertThat(timerRepository.findAll()).isEmpty();
   }
 }
