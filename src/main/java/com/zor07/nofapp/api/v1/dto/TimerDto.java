@@ -2,7 +2,8 @@ package com.zor07.nofapp.api.v1.dto;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.zor07.nofapp.timer.Timer;
 
 public class TimerDto {
@@ -27,10 +28,10 @@ public class TimerDto {
 
   public Long id;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
   public LocalDateTime start;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
   public LocalDateTime stop;
 
   public String description;
