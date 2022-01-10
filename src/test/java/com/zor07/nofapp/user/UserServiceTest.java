@@ -3,6 +3,7 @@ package com.zor07.nofapp.user;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
@@ -11,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserServiceTest extends AbstractApplicationTest {
 
-
   private static final String DEFAULT_PASSWORD = "pass";
+
   private static final String DEFAULT_ROLE = "role";
 
   protected static Role createRole() {
@@ -23,18 +24,28 @@ public class UserServiceTest extends AbstractApplicationTest {
     return new User(null, name, name, DEFAULT_PASSWORD, new ArrayList<>());
   }
 
-
   @Autowired
   private UserRepository userRepository;
+
   @Autowired
   private RoleRepository roleRepository;
+
   @Autowired
   protected UserService userService;
 
-  @BeforeMethod
-  void clearDb () {
+  private void clearDb() {
     userRepository.deleteAll();
     roleRepository.deleteAll();
+  }
+
+  @BeforeMethod
+  void setup() {
+    clearDb();
+  }
+
+  @AfterClass
+  void teardown() {
+    clearDb();
   }
 
   @Test

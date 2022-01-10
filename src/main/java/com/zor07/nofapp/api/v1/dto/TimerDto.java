@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.zor07.nofapp.timer.Timer;
+import com.zor07.nofapp.user.User;
 
 public class TimerDto {
 
@@ -17,9 +18,10 @@ public class TimerDto {
     return timer;
   }
 
-  public static Timer toEntity(final TimerDto dto) {
+  public static Timer toEntity(final TimerDto dto, User user) {
     final var timer = new Timer();
     timer.setId(dto.id);
+    timer.setUser(user);
     timer.setStart(dto.start.atZone(ZoneId.systemDefault()).toInstant());
     timer.setStop(dto.stop == null ? null : dto.stop.atZone(ZoneId.systemDefault()).toInstant());
     timer.setDescription(dto.description);

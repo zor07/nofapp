@@ -7,7 +7,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.user.Role;
+import com.zor07.nofapp.user.RoleRepository;
 import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.user.UserRepository;
 import com.zor07.nofapp.user.UserService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,12 +17,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TimerRepositoryTest extends AbstractApplicationTest {
 
   @Autowired
-  private TimerRepository repository;
+  private TimerRepository timerRepository;
   @Autowired
   private UserService userService;
+  @Autowired
+  private RoleRepository roleRepository;
+  @Autowired
+  private UserRepository userRepository;
+
+  private void clearDb() {
+    timerRepository.deleteAll();
+    userRepository.deleteAll();
+    roleRepository.deleteAll();
+  }
 
   @BeforeClass
   void setup() {
+    clearDb();
     userService.saveUser(new User(null, "user", "user", "pass", new ArrayList<>()));
     userService.saveRole(new Role(null, "role"));
     userService.addRoleToUser("user", "role");
@@ -29,8 +42,8 @@ public class TimerRepositoryTest extends AbstractApplicationTest {
   @Test
   void testCrud() {
 
-    repository.deleteAll();
-    final var all = repository.findAll();
+    timerRepository.deleteAll();
+    final var all = timerRepository.findAll();
     assertThat(all).isEmpty();
 
     final var timer = new Timer();
@@ -38,25 +51,25 @@ public class TimerRepositoryTest extends AbstractApplicationTest {
     timer.setStart(Instant.now());
     timer.setDescription("Test description");
 
-    final var id = repository.save(timer).getId();
-    final var inserted = repository.findById(id).get();
+    final var id = timerRepository.save(timer).getId();
+    final var inserted = timerRepository.findById(id).get();
     assertThat(inserted).isNotNull();
     assertThat(inserted.getStop()).isNull();
 
     inserted.setStop(Instant.now());
-    repository.save(inserted);
+    timerRepository.save(inserted);
 
-    final var updated = repository.findById(id).get();
+    final var updated = timerRepository.findById(id).get();
     assertThat(updated.getStop()).isNotNull();
 
-    repository.delete(updated);
+    timerRepository.delete(updated);
 
-    assertThat(repository.findById(id)).isEmpty();
+    assertThat(timerRepository.findById(id)).isEmpty();
   }
 
   @Test
   void findAllByUserIdTest() {
-    repository.deleteAll();
+    timerRepository.deleteAll();
     final var user = userService.getUser("user");
     final var timer1 = new Timer(
         null,
@@ -72,9 +85,9 @@ public class TimerRepositoryTest extends AbstractApplicationTest {
         null,
         "Test description"
     );
-    repository.save(timer1);
-    repository.save(timer2);
-    final var allByUserId = repository.findAllByUserId(user.getId());
+    timerRepository.save(timer1);
+    timerRepository.save(timer2);
+    final var allByUserId = timerRepository.findAllByUserId(user.getId());
     assertThat(allByUserId).hasSize(2);
   }
 }

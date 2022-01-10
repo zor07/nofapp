@@ -6,10 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.test.AbstractUserRelatedApplicationTest;
+import com.zor07.nofapp.test.AbstractAuthRelatedApplicationTest;
+import com.zor07.nofapp.user.RoleRepository;
+import com.zor07.nofapp.user.UserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -18,12 +20,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class AuthControllerTest extends AbstractUserRelatedApplicationTest {
+public class AuthControllerTest extends AbstractAuthRelatedApplicationTest {
 
-  private static record TokensDto(String access_token, String refresh_token) {}
-
-  private static final String LOGIN = "/api/v1/auth/login";
-  private static final String REFRESH_TOKEN = "/api/v1/auth/token/refresh";
   private static final String USERS = "/api/v1/user";
   private static final String LOGIN_PAYLOAD = """
         {
@@ -32,19 +30,35 @@ public class AuthControllerTest extends AbstractUserRelatedApplicationTest {
         }
         """;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
   @Autowired
   private WebApplicationContext context;
+  @Autowired
+  private UserRepository userRepository;
+  @Autowired
+  private RoleRepository roleRepository;
 
   private MockMvc mvc;
 
+  private void clearDb () {
+    userRepository.deleteAll();
+    roleRepository.deleteAll();
+  }
+
   @BeforeClass
   public void setup() {
-    createDefaultUser();
+    clearDb();
+    userService.saveUser(createUser(DEFAULT_USERNAME));
+    userService.saveRole(createRole());
+    userService.addRoleToUser(DEFAULT_USERNAME, DEFAULT_ROLE);
     mvc = MockMvcBuilders
         .webAppContextSetup(context)
         .apply(springSecurity())
         .build();
+  }
+
+  @AfterClass
+  void teardown() {
+    clearDb();
   }
 
   @Test
@@ -77,7 +91,7 @@ public class AuthControllerTest extends AbstractUserRelatedApplicationTest {
     mvc.perform(post(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andDo(mvcResult -> {
           final var tokens = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), TokensDto.class);
-          final var authHeader = String.format("Bearer %s", tokens.access_token);
+          final var authHeader = String.format("Bearer %s", tokens.access_token());
           mvc.perform(get(USERS).servletPath(USERS).header(HttpHeaders.AUTHORIZATION, authHeader).contentType(MediaType.APPLICATION_JSON))
               .andExpect(status().isOk());
         });
@@ -88,7 +102,7 @@ public class AuthControllerTest extends AbstractUserRelatedApplicationTest {
     mvc.perform(post(LOGIN).servletPath(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andDo(loginResult -> {
           final var tokens = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokensDto.class);
-          final var authHeader = String.format("Bearer %s", tokens.refresh_token);
+          final var authHeader = String.format("Bearer %s", tokens.refresh_token());
           final var refreshTokenResult =
               mvc.perform(get(REFRESH_TOKEN)
                   .servletPath(REFRESH_TOKEN)
@@ -98,10 +112,9 @@ public class AuthControllerTest extends AbstractUserRelatedApplicationTest {
                 .andReturn();
 
           final var newTokens = objectMapper.readValue(refreshTokenResult.getResponse().getContentAsString(), TokensDto.class);
-          assertThat(newTokens.refresh_token).isEqualTo(tokens.refresh_token);
-          assertThat(newTokens.access_token).isNotEqualTo(tokens.access_token);
+          assertThat(newTokens.refresh_token()).isEqualTo(tokens.refresh_token());
+          assertThat(newTokens.access_token()).isNotEqualTo(tokens.access_token());
         });
   }
-
 
 }

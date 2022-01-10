@@ -1,7 +1,10 @@
 package com.zor07.nofapp.api.v1;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -15,47 +18,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.zor07.nofapp.api.v1.dto.TimerDto;
 import com.zor07.nofapp.timer.TimerRepository;
+import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.user.UserService;
 
 @RestController
 @RequestMapping("/api/v1/timer")
 public class TimerController {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(TimerController.class);
+
+  private final UserService userService;
+
   private final TimerRepository repository;
 
   @Autowired
-  public TimerController(final TimerRepository repository) {
+  public TimerController(UserService userService, final TimerRepository repository) {
+    this.userService = userService;
     this.repository = repository;
   }
 
   @GetMapping(produces = "application/json")
-  public List<TimerDto> findAll() {
-    return repository.findAll()
+  public List<TimerDto> findAll(final Principal principal) {
+    final var user = getUser(principal);
+    return repository.findAllByUserId(user.getId())
         .stream()
         .map(TimerDto::toDto)
         .collect(Collectors.toList());
   }
 
-  @GetMapping(value = "/{timerId}", produces = "application/json")
-  public ResponseEntity<TimerDto> findOne(@PathVariable final Long timerId) {
-    return repository.findById(timerId)
-        .map(timer -> new ResponseEntity<>(TimerDto.toDto(timer), HttpStatus.OK))
-        .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
-
   @PostMapping(consumes = "application/json")
-  public ResponseEntity<Void> save(@RequestBody final TimerDto timer) {
-    repository.save(TimerDto.toEntity(timer));
+  public ResponseEntity<Void> save(@RequestBody final TimerDto timer, final Principal principal) {
+    final var user = getUser(principal);
+    repository.save(TimerDto.toEntity(timer, user));
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   @DeleteMapping("/{timerId}")
-  public ResponseEntity<Void> delete(@PathVariable final Long timerId) {
+  public ResponseEntity<Void> delete(@PathVariable final Long timerId, final Principal principal) {
+    final var user = getUser(principal);
     try {
-      repository.deleteById(timerId);
+      repository.deleteByIdAndUserId(timerId, user.getId());
     } catch (EmptyResultDataAccessException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  private User getUser(final Principal principal) {
+    final var username = principal.getName();
+    return userService.getUser(username);
   }
 
 }

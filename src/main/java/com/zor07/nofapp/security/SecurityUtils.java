@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -31,6 +33,16 @@ public class SecurityUtils {
         .sign(getAlgorithm());
   }
 
+  public static String getUserNameFromAuthHeader(final HttpServletRequest request) {
+    final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      final var decodedJWT = SecurityUtils.decodeJWT(authorizationHeader);
+      return decodedJWT.getSubject();
+    } else {
+      throw new RuntimeException("Refresh token is missing");
+    }
+  }
+
   public static String createRefreshToken(final User user, final String issuer) {
     return JWT.create()
         .withSubject(user.getUsername())
@@ -46,7 +58,7 @@ public class SecurityUtils {
 
   public static String createAccessToken(final User user, final String issuer) {
     return createAccessToken(user.getUsername(), issuer,
-      user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
   }
 
   public static String parseRefreshToken(final String authorizationHeader) {
@@ -54,10 +66,10 @@ public class SecurityUtils {
   }
 
   public static DecodedJWT decodeJWT(final String authorizationHeader) {
-    final var refreshToken = parseRefreshToken(authorizationHeader);
+    final var token = parseRefreshToken(authorizationHeader);
     final var algorithm = getAlgorithm();
     final var verifier = JWT.require(algorithm).build();
-    return verifier.verify(refreshToken);
+    return verifier.verify(token);
   }
 
   public static void addErrorToResponse(final HttpServletResponse response,
@@ -69,7 +81,5 @@ public class SecurityUtils {
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getOutputStream(), error);
   }
-
-
 
 }
