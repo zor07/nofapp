@@ -5,8 +5,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -27,8 +25,6 @@ import com.zor07.nofapp.user.UserService;
 @RestController
 @RequestMapping("/api/v1/timer")
 public class TimerController {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(TimerController.class);
 
   private final UserService userService;
 
