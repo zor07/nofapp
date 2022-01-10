@@ -2,15 +2,21 @@ package com.zor07.nofapp.timer;
 
 import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
+import com.zor07.nofapp.test.AbstractUserRelatedApplicationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TimerRepositoryTest extends AbstractApplicationTest {
+public class TimerRepositoryTest extends AbstractUserRelatedApplicationTest {
 
   @Autowired
   private TimerRepository repository;
+
+  @BeforeClass
+  void setup() {
+    createDefaultUser();
+  }
 
   @Test
   void testCrud() {
@@ -20,6 +26,7 @@ public class TimerRepositoryTest extends AbstractApplicationTest {
     assertThat(all).isEmpty();
 
     final var timer = new Timer();
+    timer.setUser(userService.getUser("user"));
     timer.setStart(Instant.now());
     timer.setDescription("Test description");
 
@@ -37,7 +44,25 @@ public class TimerRepositoryTest extends AbstractApplicationTest {
     repository.delete(updated);
 
     assertThat(repository.findById(id)).isEmpty();
-
   }
+
+  @Test
+  void findAllByUserIdTest() {
+    repository.deleteAll();
+    final var user = userService.getUser("user");
+    final var timer = new Timer(
+        null,
+        user,
+        Instant.now(),
+        null,
+        "Test description"
+    );
+    repository.save(timer);
+    repository.save(timer);
+    final var allByUserId = repository.findAllByUserId(user.getId());
+    assertThat(allByUserId).hasSize(2);
+  }
+
+
 
 }

@@ -1,6 +1,5 @@
 package com.zor07.nofapp.api.v1;
 
-import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,10 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.user.Role;
-import com.zor07.nofapp.user.User;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.test.AbstractUserRelatedApplicationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -22,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class AuthControllerTest extends AbstractApplicationTest {
+public class AuthControllerTest extends AbstractUserRelatedApplicationTest {
 
   private static record TokensDto(String access_token, String refresh_token) {}
 
@@ -36,18 +32,7 @@ public class AuthControllerTest extends AbstractApplicationTest {
         }
         """;
 
-  private static Role createRole() {
-    return new Role(null, "ROLE_USER");
-  }
-
-  private static User createUser() {
-    return new User(null, "user", "user", "pass", new ArrayList<>());
-  }
-
-  @Autowired
-  private ObjectMapper objectMapper;
-  @Autowired
-  private UserService userService;
+  private final ObjectMapper objectMapper = new ObjectMapper();
   @Autowired
   private WebApplicationContext context;
 
@@ -55,9 +40,7 @@ public class AuthControllerTest extends AbstractApplicationTest {
 
   @BeforeClass
   public void setup() {
-    userService.saveUser(createUser());
-    userService.saveRole(createRole());
-    userService.addRoleToUser("user", "ROLE_USER");
+    createDefaultUser();
     mvc = MockMvcBuilders
         .webAppContextSetup(context)
         .apply(springSecurity())

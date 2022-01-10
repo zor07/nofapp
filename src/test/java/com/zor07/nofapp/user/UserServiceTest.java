@@ -5,26 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
+import com.zor07.nofapp.test.AbstractUserRelatedApplicationTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserServiceTest extends AbstractApplicationTest {
+public class UserServiceTest extends AbstractUserRelatedApplicationTest {
 
-  private static Role createRole(String name) {
-    return new Role(null, name);
-  }
-
-  private static User createUser(String name) {
-    return new User(null, name, name, "1234", new ArrayList<>());
-  }
-
-  @Autowired
-  private UserService userService;
   @Autowired
   private UserRepository userRepository;
   @Autowired
   private RoleRepository roleRepository;
+
+  @BeforeMethod
+  void clearDb () {
+    userRepository.deleteAll();
+    roleRepository.deleteAll();
+  }
 
   @Test
   void saveUserTest() {
@@ -74,12 +70,6 @@ public class UserServiceTest extends AbstractApplicationTest {
     userService.saveUser(createUser("user2"));
     userService.saveUser(createUser("user3"));
     assertThat(userService.getUsers()).hasSize(3);
-  }
-
-  @BeforeMethod
-  void clearDb () {
-    userRepository.deleteAll();
-    roleRepository.deleteAll();
   }
 
 }
