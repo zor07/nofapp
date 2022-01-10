@@ -1,21 +1,29 @@
 package com.zor07.nofapp.timer;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.zor07.nofapp.test.AbstractUserRelatedApplicationTest;
+import com.zor07.nofapp.spring.AbstractApplicationTest;
+import com.zor07.nofapp.user.Role;
+import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.user.UserService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TimerRepositoryTest extends AbstractUserRelatedApplicationTest {
+public class TimerRepositoryTest extends AbstractApplicationTest {
 
   @Autowired
   private TimerRepository repository;
+  @Autowired
+  private UserService userService;
 
   @BeforeClass
   void setup() {
-    createDefaultUser();
+    userService.saveUser(new User(null, "user", "user", "pass", new ArrayList<>()));
+    userService.saveRole(new Role(null, "role"));
+    userService.addRoleToUser("user", "role");
   }
 
   @Test
@@ -50,19 +58,23 @@ public class TimerRepositoryTest extends AbstractUserRelatedApplicationTest {
   void findAllByUserIdTest() {
     repository.deleteAll();
     final var user = userService.getUser("user");
-    final var timer = new Timer(
+    final var timer1 = new Timer(
         null,
         user,
         Instant.now(),
         null,
         "Test description"
     );
-    repository.save(timer);
-    repository.save(timer);
+    final var timer2 = new Timer(
+        null,
+        user,
+        Instant.now(),
+        null,
+        "Test description"
+    );
+    repository.save(timer1);
+    repository.save(timer2);
     final var allByUserId = repository.findAllByUserId(user.getId());
     assertThat(allByUserId).hasSize(2);
   }
-
-
-
 }
