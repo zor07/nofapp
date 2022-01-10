@@ -25,6 +25,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -130,7 +131,6 @@ public class TimerControllerTest extends AbstractAuthRelatedApplicationTest {
   }
 
   @Test
-
   void deleteTimerTest() throws Exception {
     final var authHeader = getAuthHeader(mvc, USER_1);
     createTimer(USER_1);
@@ -140,5 +140,18 @@ public class TimerControllerTest extends AbstractAuthRelatedApplicationTest {
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isNoContent());
     assertThat(timerRepository.findAll()).isEmpty();
+  }
+
+  @Test
+  void stopTimerTest() throws Exception{
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    createTimer(USER_1);
+    final var timer = timerRepository.findAll().get(0);
+    mvc.perform(put(TIMER_ENDPOINT+"/"+timer.getId()+"/stop")
+              .contentType(MediaType.APPLICATION_JSON)
+              .header(HttpHeaders.AUTHORIZATION, authHeader))
+        .andExpect(status().isAccepted());
+    final var stoppedTimer = timerRepository.findAll().get(0);
+    assertThat(stoppedTimer.getStop()).isNotNull();
   }
 }
