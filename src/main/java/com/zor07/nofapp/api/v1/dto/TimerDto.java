@@ -12,6 +12,7 @@ public class TimerDto {
   public static TimerDto toDto(final Timer entity) {
     final var timer = new TimerDto();
     timer.id = entity.getId();
+    timer.isRunning = entity.getStop() == null;
     timer.start = LocalDateTime.ofInstant(entity.getStart(), ZoneId.systemDefault());
     timer.stop = entity.getStop() == null ? null : LocalDateTime.ofInstant(entity.getStop(), ZoneId.systemDefault());;
     timer.description = entity.getDescription();
@@ -29,6 +30,8 @@ public class TimerDto {
   }
 
   public Long id;
+
+  public boolean isRunning;
 
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   public LocalDateTime start;
