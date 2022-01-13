@@ -55,6 +55,7 @@ public class TimerController {
 
   @PutMapping(path = "/{timerId}/stop")
   @Transactional
+  // TODO accept stop time from client
   public ResponseEntity<Void> stop(@PathVariable final Long timerId, final Principal principal) {
     final var user = getUser(principal);
     try {
