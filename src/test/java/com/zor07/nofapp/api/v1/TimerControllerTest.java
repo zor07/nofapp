@@ -44,13 +44,6 @@ public class TimerControllerTest extends AbstractAuthRelatedApplicationTest {
     public String description;
   }
 
-  private static final String TIMER_PAYLOAD = """
-      {
-        "start": "2021-12-31T00:00:00"
-        "description": "test"
-      }
-      """;
-
   private void createTimer(final String username) {
     final var user = userService.getUser(username);
     final var start = LocalDate.parse(DATE).atStartOfDay(ZoneId.systemDefault()).toInstant();
