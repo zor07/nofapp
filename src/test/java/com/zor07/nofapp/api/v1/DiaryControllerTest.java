@@ -92,11 +92,14 @@ public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
-    final var timers = objectMapper.readValue(content, new TypeReference<List<DiaryTestDto>>(){});
-    assertThat(timers).hasSize(2);
-
-    assertThat(timers.get(0).title).isEqualTo(TITLE);
-    assertThat(timers.get(0).data).isEqualTo(DATA);
+    final var diaries = objectMapper.readValue(content, new TypeReference<List<DiaryTestDto>>(){});
+    assertThat(diaries).hasSize(2);
+    assertThat(diaries.get(0).id).isNotNull();
+    assertThat(diaries.get(0).data).isNull();
+    assertThat(diaries.get(0).title).isEqualTo(TITLE);
+    assertThat(diaries.get(1).id).isNotNull();
+    assertThat(diaries.get(1).data).isNull();
+    assertThat(diaries.get(1).title).isEqualTo(TITLE);
   }
 
   @Test

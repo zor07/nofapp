@@ -86,6 +86,10 @@ public class DiaryRepositoryTest extends AbstractApplicationTest {
     diaryRepository.save(diary2);
     final var allByUserId = diaryRepository.findAllByUserId(user.getId());
     assertThat(allByUserId).hasSize(2);
+    assertThat(allByUserId.get(0).getId()).isNotNull();
+    assertThat(allByUserId.get(0).getTitle()).isEqualTo("title");
+    assertThat(allByUserId.get(1).getId()).isNotNull();
+    assertThat(allByUserId.get(1).getTitle()).isEqualTo("title");
   }
 
   @Test

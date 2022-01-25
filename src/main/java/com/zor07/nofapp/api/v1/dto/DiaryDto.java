@@ -1,9 +1,17 @@
 package com.zor07.nofapp.api.v1.dto;
 
 import com.zor07.nofapp.diary.Diary;
+import com.zor07.nofapp.diary.IdAndTitleOnly;
 import com.zor07.nofapp.user.User;
 
 public class DiaryDto {
+
+  public static DiaryDto toDto(final IdAndTitleOnly entity) {
+    final var diary = new DiaryDto();
+    diary.id = entity.getId();
+    diary.title = entity.getTitle();
+    return diary;
+  }
 
   public static DiaryDto toDto(final Diary entity) {
     final var diary = new DiaryDto();
