@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.DiaryDto;
 import com.zor07.nofapp.diary.DiaryRepository;
 import com.zor07.nofapp.user.User;
@@ -35,7 +36,7 @@ public class DiaryController {
   }
 
   @GetMapping(path = "/{diaryId}", produces = "application/json")
-  public DiaryDto findById(@PathVariable final Long diaryId, final Principal principal) {
+  public DiaryDto findById(@PathVariable final Long diaryId, final Principal principal) throws JsonProcessingException {
     final var user = getUser(principal);
     return DiaryDto.toDto(repository.findByIdAndUserId(diaryId, user.getId()));
   }
