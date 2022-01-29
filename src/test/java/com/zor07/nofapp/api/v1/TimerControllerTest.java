@@ -41,6 +41,7 @@ public class TimerControllerTest extends AbstractAuthRelatedApplicationTest {
     public Long id;
     public String start;
     public String stop;
+    public boolean isRunning;
     public String description;
   }
 

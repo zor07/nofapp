@@ -11,6 +11,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.diary.Diary;
 import com.zor07.nofapp.diary.DiaryRepository;
 import com.zor07.nofapp.test.AbstractAuthRelatedApplicationTest;
@@ -29,13 +31,13 @@ public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
   private static final String USER_1 = "user1";
   private static final String USER_2 = "user2";
   private static final String TITLE = "test title";
-  private static final String DATA = "test data";
+  private static final String DATA = "{\"data\":\"data\"}";
 
   private static final String ENDPOINT = "/api/v1/diary";
   private static class DiaryTestDto {
     public Long id;
     public String title;
-    public String data;
+    public JsonNode data;
   }
 
   private void createDiary(final String username) {
@@ -52,6 +54,7 @@ public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
   private UserRepository userRepository;
   @Autowired
   private RoleRepository roleRepository;
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   private MockMvc mvc;
 
@@ -95,10 +98,10 @@ public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
     final var diaries = objectMapper.readValue(content, new TypeReference<List<DiaryTestDto>>(){});
     assertThat(diaries).hasSize(2);
     assertThat(diaries.get(0).id).isNotNull();
-    assertThat(diaries.get(0).data).isNull();
+    assertThat(diaries.get(0).data.isNull()).isTrue();
     assertThat(diaries.get(0).title).isEqualTo(TITLE);
     assertThat(diaries.get(1).id).isNotNull();
-    assertThat(diaries.get(1).data).isNull();
+    assertThat(diaries.get(1).data.isNull()).isTrue();
     assertThat(diaries.get(1).title).isEqualTo(TITLE);
   }
 
@@ -117,16 +120,15 @@ public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
     final var diary = objectMapper.readValue(content, DiaryTestDto.class);
     assertThat(diary.id).isEqualTo(diaryId);
     assertThat(diary.title).isEqualTo(TITLE);
-    assertThat(diary.data).isEqualTo(DATA);
+    assertThat(diary.data.toString()).isEqualTo(DATA);
   }
 
   @Test
   void saveTest() throws Exception {
     final var authHeader = getAuthHeader(mvc, USER_1);
-    final var userId = userService.getUser(USER_1).getId();
     final var diaryTestDto = new DiaryTestDto();
     diaryTestDto.title = TITLE;
-    diaryTestDto.data = DATA;
+    diaryTestDto.data = objectMapper.readTree(DATA);
     mvc.perform(post(ENDPOINT)
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(diaryTestDto))
@@ -143,11 +145,11 @@ public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
     final var id = diaryRepository.findAll().get(0).getId();
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var newTitle = "new Title";
-    final var newData = "new Data";
+    final var newData = "{\"data\":\"new Data\"}";
     final var diaryTestDto = new DiaryTestDto();
     diaryTestDto.id = id;
     diaryTestDto.title = newTitle;
-    diaryTestDto.data = newData;
+    diaryTestDto.data = objectMapper.readTree(newData);
     mvc.perform(post(ENDPOINT)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(diaryTestDto))
