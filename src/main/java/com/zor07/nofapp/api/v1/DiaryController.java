@@ -52,10 +52,12 @@ public class DiaryController {
 
   @PostMapping(consumes = "application/json")
   @Transactional
-  public ResponseEntity<Void> save(@RequestBody final DiaryDto diary, final Principal principal) {
+  public ResponseEntity<DiaryDto> save(@RequestBody final DiaryDto diary, final Principal principal) throws JsonProcessingException {
     final var user = getUser(principal);
-    repository.save(DiaryDto.toEntity(diary, user));
-    return new ResponseEntity<>(HttpStatus.CREATED);
+    return new ResponseEntity<>(
+        DiaryDto.toDto(repository.save(DiaryDto.toEntity(diary, user))),
+        HttpStatus.CREATED
+    );
   }
 
   @DeleteMapping("/{diaryId}")
