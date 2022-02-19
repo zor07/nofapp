@@ -14,5 +14,6 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
     <include file="changes/create_user_roles_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_timer_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_diary_table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create_practice_tag_table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
