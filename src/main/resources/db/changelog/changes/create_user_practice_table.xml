@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
+http://www.liquibase.org/xml/ns/pro
+http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+
+    <changeSet  id="202202200945"  author="zor">
+        <createTable  tableName="user_practice">
+            <column name="user_id"
+                    type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_user_id"
+                             references="user(id)"/>
+            </column>
+
+            <column name="practice_id"
+                    type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_practice_id"
+                             references="practice(id)"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint
+                columnNames="user_id, practice_id"
+                constraintName="user_practice_unique_constraint"
+                tableName="user_practice"/>
+    </changeSet>
+
+
+</databaseChangeLog>
