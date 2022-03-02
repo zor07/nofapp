@@ -2,11 +2,14 @@ package com.zor07.nofapp.practice;
 
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PracticeRepositoryTest extends AbstractApplicationTest {
+
+    private static int tagCounter = 1;
 
     @Autowired
     private PracticeRepository practiceRepository;
@@ -14,32 +17,38 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
     @Autowired
     private PracticeTagRepository tagRepository;
 
-    @Test
-    void testCrud() {
-
-        final var practiceTag = new PracticeTag();
-        practiceTag.setName("tag");
-        final var tagId = tagRepository.save(practiceTag).getId();
-        final var tag = tagRepository.getById(tagId);
-
+    @BeforeMethod
+    void cleanUp() {
         practiceRepository.deleteAll();
         final var all = practiceRepository.findAll();
         assertThat(all).isEmpty();
+    }
 
-        final var practice = new Practice();
-        practice.setPracticeTag(tag);
-        practice.setName("practice");
-        practice.setDescription("description");
-        practice.setData("data");
+    @Test
+    void findAllByPublicTest() {
+        practiceRepository.save(createPractice(true));
+        practiceRepository.save(createPractice(true));
+        practiceRepository.save(createPractice(true));
+        practiceRepository.save(createPractice(false));
+        practiceRepository.save(createPractice(false));
+        practiceRepository.save(createPractice(false));
+
+        assertThat(practiceRepository.findByIsPublic(true)).hasSize(3);
+        assertThat(practiceRepository.findByIsPublic(false)).hasSize(3);
+    }
+
+    @Test
+    void testCrud() {
+        final var practice = createPractice(true);
 
         final var id = practiceRepository.save(practice).getId();
         final var inserted = practiceRepository.findById(id).get();
         assertThat(inserted).isNotNull();
-        assertThat(inserted.getPracticeTag().getName()).isEqualTo("tag");
+        assertThat(inserted.getPracticeTag().getName()).startsWith("tag");
         assertThat(inserted.getName()).isEqualTo("practice");
         assertThat(inserted.getDescription()).isEqualTo("description");
         assertThat(inserted.getData()).isEqualTo("data");
-        assertThat(inserted.isPublic()).isFalse();
+        assertThat(inserted.isPublic()).isTrue();
 
         inserted.setName("new name");
         inserted.setPublic(true);
@@ -54,4 +63,20 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
         assertThat(practiceRepository.findById(id)).isEmpty();
     }
 
+    private PracticeTag createPracticeTag() {
+        final var practiceTag = new PracticeTag();
+        practiceTag.setName("tag" + (tagCounter++));
+        final var tagId = tagRepository.save(practiceTag).getId();
+        return tagRepository.getById(tagId);
+    }
+
+    private Practice createPractice(final boolean isPublic) {
+        final var practice = new Practice();
+        practice.setPracticeTag(createPracticeTag());
+        practice.setName("practice");
+        practice.setDescription("description");
+        practice.setData("data");
+        practice.setPublic(isPublic);
+        return practice;
+    }
 }
