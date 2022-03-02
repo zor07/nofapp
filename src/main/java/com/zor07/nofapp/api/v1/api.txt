@@ -1,0 +1,12 @@
+practice
+
+GET /api/v1/practice/{practiceId} - returns practice
+GET /api/v1/practice?isPublic={true|false, default:false} - returns all public practices
+GET /api/v1/practice?isPublic={true|false, default:false} - returns all user practices
+
+POST /api/v1/practice - save practice. If is_public then allowed only for admins. Else it is users practice
+BODY {...}
+
+PUT /api/v1/practice/{practiceId} - update practice (public practice update allowed only for admin)
+
+DELETE /api/v1/practice/{practiceId} - delete practice (public practice delete allowed only for admin)
