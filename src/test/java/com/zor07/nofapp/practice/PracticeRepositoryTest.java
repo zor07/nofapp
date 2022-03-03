@@ -9,8 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PracticeRepositoryTest extends AbstractApplicationTest {
 
-    private static int tagCounter = 1;
-
     @Autowired
     private PracticeRepository practiceRepository;
 
@@ -20,6 +18,8 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
     @BeforeMethod
     void cleanUp() {
         practiceRepository.deleteAll();
+        tagRepository.deleteAll();
+        createPracticeTag();
         final var all = practiceRepository.findAll();
         assertThat(all).isEmpty();
     }
@@ -44,7 +44,7 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
         final var id = practiceRepository.save(practice).getId();
         final var inserted = practiceRepository.findById(id).get();
         assertThat(inserted).isNotNull();
-        assertThat(inserted.getPracticeTag().getName()).startsWith("tag");
+        assertThat(inserted.getPracticeTag().getName()).isEqualTo("tag");
         assertThat(inserted.getName()).isEqualTo("practice");
         assertThat(inserted.getDescription()).isEqualTo("description");
         assertThat(inserted.getData()).isEqualTo("data");
@@ -63,16 +63,15 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
         assertThat(practiceRepository.findById(id)).isEmpty();
     }
 
-    private PracticeTag createPracticeTag() {
+    private void createPracticeTag() {
         final var practiceTag = new PracticeTag();
-        practiceTag.setName("tag" + (tagCounter++));
-        final var tagId = tagRepository.save(practiceTag).getId();
-        return tagRepository.getById(tagId);
+        practiceTag.setName("tag");
+        tagRepository.save(practiceTag);
     }
 
     private Practice createPractice(final boolean isPublic) {
         final var practice = new Practice();
-        practice.setPracticeTag(createPracticeTag());
+        practice.setPracticeTag(tagRepository.findAll().get(0));
         practice.setName("practice");
         practice.setDescription("description");
         practice.setData("data");
