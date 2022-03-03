@@ -35,6 +35,11 @@ public class UserPractice {
         this.practice = practice;
     }
 
+    public UserPractice(User user, Practice practice) {
+        this.user = user;
+        this.practice = practice;
+    }
+
     public UserPractice() {
     }
 
