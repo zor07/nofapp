@@ -7,6 +7,7 @@ import com.zor07.nofapp.practice.PracticeRepository;
 import com.zor07.nofapp.practice.PracticeTag;
 import com.zor07.nofapp.practice.PracticeTagRepository;
 import com.zor07.nofapp.practice.UserPractice;
+import com.zor07.nofapp.practice.UserPracticeKey;
 import com.zor07.nofapp.practice.UserPracticeRepository;
 import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.user.RoleRepository;
@@ -49,13 +50,15 @@ public class PracticeControllerTest extends AbstractApiTest {
     private MockMvc mvc;
 
     private void clearDb() {
+        userPracticeRepository.deleteAll();
         practiceRepository.deleteAll();
+        tagRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
     }
 
     @BeforeMethod
-    public void setup() {
+    void setup() {
         clearDb();
         createPracticeTag();
         userService.saveUser(createUser(USER_1));
@@ -76,9 +79,9 @@ public class PracticeControllerTest extends AbstractApiTest {
 
     @Test
     void getPublicPracticesTest() throws Exception {
-        practiceRepository.save(createPractice());
-        practiceRepository.save(createPractice());
-        practiceRepository.save(createPractice());
+        practiceRepository.save(createPractice(true));
+        practiceRepository.save(createPractice(true));
+        practiceRepository.save(createPractice(true));
 
         final var authHeader = getAuthHeader(mvc, USER_1);
         final var content1 = mvc.perform(get(PRACTICE_ENDPOINT)
@@ -108,6 +111,34 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices2).isEmpty();
     }
 
+    @Test
+    void getUserPracticesTest() throws Exception {
+
+        final var p1 = practiceRepository.save(createPractice(true));
+        final var p2 = practiceRepository.save(createPractice(true));
+        final var p3 = practiceRepository.save(createPractice(true));
+        final var p4 = practiceRepository.save(createPractice(false));
+        final var p5 = practiceRepository.save(createPractice(false));
+
+        addPracticeToUser(p2, USER_1);
+        addPracticeToUser(p3, USER_1);
+        addPracticeToUser(p4, USER_1);
+        addPracticeToUser(p1, USER_2);
+        addPracticeToUser(p3, USER_2);
+        addPracticeToUser(p5, USER_2);
+
+        final var authHeader = getAuthHeader(mvc, USER_1);
+        final var content = mvc.perform(get(PRACTICE_ENDPOINT)
+                .param(IS_PUBLIC_PARAM, String.valueOf(true))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        final var practices = objectMapper.readValue(content, new TypeReference<List<PracticeDto>>(){});
+        assertThat(practices).hasSize(3);
+    }
+
 
     private void createPracticeTag() {
         final var practiceTag = new PracticeTag();
@@ -115,11 +146,18 @@ public class PracticeControllerTest extends AbstractApiTest {
         tagRepository.save(practiceTag);
     }
 
-    private Practice createPractice() {
-        return createPractice(true, null);
+    private void addPracticeToUser(final Practice practice, final String username) {
+        final var user = userService.getUser(username);
+        final var userPractice = new UserPractice(
+                new UserPracticeKey(user.getId(), practice.getId()),
+                user,
+                practice
+        );
+        userPracticeRepository.save(userPractice);
     }
 
-    private Practice createPractice(final boolean isPublic, final String username) {
+
+    private Practice createPractice(final boolean isPublic) {
         final var practice = new Practice();
         practice.setPracticeTag(tagRepository.findAll().get(0));
         practice.setName(PRACTICE_NAME);
@@ -127,14 +165,6 @@ public class PracticeControllerTest extends AbstractApiTest {
         practice.setData(PRACTICE_DATA);
         practice.setPublic(isPublic);
 
-        if (username != null) {
-            final var userPractice = new UserPractice();
-            userPractice.setUser(userService.getUser(username));
-            userPractice.setPractice(practice);
-            userPracticeRepository.save(userPractice);
-        }
-
         return practice;
     }
-
 }
