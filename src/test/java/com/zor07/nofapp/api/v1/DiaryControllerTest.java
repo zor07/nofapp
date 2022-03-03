@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.diary.Diary;
 import com.zor07.nofapp.diary.DiaryRepository;
-import com.zor07.nofapp.test.AbstractAuthRelatedApplicationTest;
+import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.user.RoleRepository;
 import com.zor07.nofapp.user.UserRepository;
 
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class DiaryControllerTest extends AbstractAuthRelatedApplicationTest {
+public class DiaryControllerTest extends AbstractApiTest {
 
   private static final String USER_1 = "user1";
   private static final String USER_2 = "user2";

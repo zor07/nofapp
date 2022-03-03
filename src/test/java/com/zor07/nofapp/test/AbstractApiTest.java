@@ -12,7 +12,7 @@ import com.zor07.nofapp.user.UserService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public class AbstractAuthRelatedApplicationTest extends AbstractApplicationTest {
+public class AbstractApiTest extends AbstractApplicationTest {
 
   protected static final String DEFAULT_ROLE = "ROLE_USER";
   protected static final String DEFAULT_USERNAME = "user";
