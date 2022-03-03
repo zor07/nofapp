@@ -19,4 +19,15 @@ public class PracticeTagDto {
         this.id = id;
         this.name = name;
     }
+
+    public PracticeTagDto() {
+    }
+
+    @Override
+    public String toString() {
+        return "PracticeTagDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
