@@ -1,6 +1,8 @@
 package com.zor07.nofapp.test;
 
 import java.util.ArrayList;
+
+import com.zor07.nofapp.security.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +33,10 @@ public class AbstractApiTest extends AbstractApplicationTest {
     return new Role(null, DEFAULT_ROLE);
   }
 
+  protected static Role createAdminRole() {
+    return new Role(null, UserRole.ROLE_ADMIN.getRoleName());
+  }
+
   protected static User createUser(final String name) {
     return new User(null, name, name, DEFAULT_PASSWORD, new ArrayList<>());
   }
@@ -41,7 +47,7 @@ public class AbstractApiTest extends AbstractApplicationTest {
   protected final ObjectMapper objectMapper = new ObjectMapper();
 
   protected String getAuthHeader(MockMvc mvc, String username) throws Exception {
-    final var loginPayload = objectMapper.writeValueAsString(new LoginPayload(username, "pass"));
+    final var loginPayload = objectMapper.writeValueAsString(new LoginPayload(username, DEFAULT_PASSWORD));
     final var mvcResult = mvc.perform(post(LOGIN)
           .content(loginPayload)
           .contentType(MediaType.APPLICATION_JSON))

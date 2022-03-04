@@ -1,7 +1,9 @@
 package com.zor07.nofapp.api.v1;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
+import com.zor07.nofapp.api.v1.dto.PracticeTagDto;
 import com.zor07.nofapp.practice.Practice;
 import com.zor07.nofapp.practice.PracticeRepository;
 import com.zor07.nofapp.practice.PracticeTag;
@@ -9,6 +11,7 @@ import com.zor07.nofapp.practice.PracticeTagRepository;
 import com.zor07.nofapp.practice.UserPractice;
 import com.zor07.nofapp.practice.UserPracticeKey;
 import com.zor07.nofapp.practice.UserPracticeRepository;
+import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.user.RoleRepository;
 import com.zor07.nofapp.user.UserRepository;
@@ -27,6 +30,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerTest extends AbstractApiTest {
@@ -37,6 +41,8 @@ public class PracticeControllerTest extends AbstractApiTest {
     private static final String PRACTICE_DATA = "data";
     private static final String USER_1 = "user1";
     private static final String USER_2 = "user2";
+    private static final String USER_ADMIN = "admin";
+
     private static final String PRACTICE_ENDPOINT = "/api/v1/practice";
     private static final String IS_PUBLIC_PARAM = "isPublic";
 
@@ -63,7 +69,10 @@ public class PracticeControllerTest extends AbstractApiTest {
         createPracticeTag();
         userService.saveUser(createUser(USER_1));
         userService.saveUser(createUser(USER_2));
+        userService.saveUser(createUser(USER_ADMIN));
+        userService.saveRole(createAdminRole());
         userService.saveRole(createRole());
+        userService.addRoleToUser(USER_ADMIN, UserRole.ROLE_ADMIN.getRoleName());
         userService.addRoleToUser(USER_1, DEFAULT_ROLE);
         userService.addRoleToUser(USER_2, DEFAULT_ROLE);
         mvc = MockMvcBuilders
@@ -139,6 +148,48 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices).hasSize(3);
     }
 
+
+    @Test
+    void savePublicPracticeTest() throws Exception {
+        final var dtoString = createPracticeDtoString(true);
+        final var userAuthHeader = getAuthHeader(mvc, USER_1);
+        mvc.perform(post(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, userAuthHeader))
+                .andExpect(status().isForbidden());
+
+        final var adminAuthHeader = getAuthHeader(mvc, USER_ADMIN);
+        mvc.perform(post(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, adminAuthHeader))
+                .andExpect(status().isCreated());
+
+        final var all = practiceRepository.findAll();
+        assertThat(all).hasSize(1);
+        assertThat(all.get(0)).matches(p ->
+            p.isPublic() &&
+            p.getPracticeTag().getName().equals(TAG_NAME) &&
+            p.getData().equals(PRACTICE_DATA) &&
+            p.getDescription().equals(PRACTICE_DESC) &&
+            p.getName().equals(PRACTICE_NAME)
+        );
+    }
+
+    private String createPracticeDtoString(final boolean isPublic) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(createPracticeDto(isPublic));
+    }
+
+    private PracticeDto createPracticeDto(final boolean isPublic) {
+        final var dto = new PracticeDto();
+        dto.isPublic = isPublic;
+        dto.name = PRACTICE_NAME;
+        dto.data = PRACTICE_DATA;
+        dto.description = PRACTICE_DESC;
+        dto.practiceTag = PracticeTagDto.toDto(tagRepository.findAll().get(0));
+        return dto;
+    }
 
     private void createPracticeTag() {
         final var practiceTag = new PracticeTag();
