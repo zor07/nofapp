@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerTest extends AbstractApiTest {
@@ -148,7 +149,6 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices).hasSize(3);
     }
 
-
     @Test
     void savePublicPracticeTest() throws Exception {
         final var dtoString = createPracticeDtoString(true);
@@ -177,12 +177,49 @@ public class PracticeControllerTest extends AbstractApiTest {
         );
     }
 
-    private String createPracticeDtoString(final boolean isPublic) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(createPracticeDto(isPublic));
+    @Test
+    void savePrivatePracticeTest() throws Exception {
+        final var dtoString = createPracticeDtoString(false);
+        final var userAuthHeader = getAuthHeader(mvc, USER_1);
+        mvc.perform(post(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, userAuthHeader))
+                .andExpect(status().isCreated());
+
+        final var practices = practiceRepository.findAll();
+        assertThat(practices).hasSize(1);
+        assertThat(practices.get(0)).matches(p ->
+                !p.isPublic() &&
+                p.getPracticeTag().getName().equals(TAG_NAME) &&
+                p.getData().equals(PRACTICE_DATA) &&
+                p.getDescription().equals(PRACTICE_DESC) &&
+                p.getName().equals(PRACTICE_NAME)
+        );
+
+        final var practiceId = practices.get(0).getId();
+        final var userId = userService.getUser(USER_1).getId();
+        final var userPractices = userPracticeRepository.findAllByUserId(userId);
+        assertThat(userPractices).hasSize(1);
+        assertThat(userPractices.get(0).getPractice().getId()).isEqualTo(practiceId);
+        assertThat(userPractices.get(0).getUser().getId()).isEqualTo(userId);
     }
 
-    private PracticeDto createPracticeDto(final boolean isPublic) {
+    void updatePracticeTest() throws Exception {
+        final var dtoString = createPracticeDtoString(true);
+    }
+
+    private String createPracticeDtoString(final Long id, final boolean isPublic) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(createPracticeDto(id, isPublic));
+    }
+
+    private String createPracticeDtoString(final boolean isPublic) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(createPracticeDto(null, isPublic));
+    }
+
+    private PracticeDto createPracticeDto(final Long id, final boolean isPublic) {
         final var dto = new PracticeDto();
+        dto.id = id;
         dto.isPublic = isPublic;
         dto.name = PRACTICE_NAME;
         dto.data = PRACTICE_DATA;
