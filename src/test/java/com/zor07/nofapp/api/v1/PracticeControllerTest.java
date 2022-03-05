@@ -246,21 +246,103 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(userPractices.get(0).getUser().getId()).isEqualTo(userId);
     }
 
-    void updatePracticeTest() throws Exception {
-        final var dtoString = createPracticeDtoString(true);
+    @Test
+    void updatePracticeWithoutId_isBadRequest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        final var practiceDto = PracticeDto.toDto(practice);
+        practiceDto.id = null;
+        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+        //when
+        mvc.perform(put(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isBadRequest());
     }
 
-    private String createPracticeDtoString(final Long id, final boolean isPublic) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(createPracticeDto(id, isPublic));
+    @Test
+    void updatePublicPractice_isForbiddenForUserRole() throws Exception {
+        // given
+        final var practice = practiceRepository.save(createPractice(true));
+        final var practiceDto = PracticeDto.toDto(practice);
+        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+        //when
+        mvc.perform(put(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isForbidden());
     }
+
+    @Test
+    void updateUserPractice_isBadRequestForUserRole_ifUserDontOwnThisPractice() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        final var practiceDto = PracticeDto.toDto(practice);
+        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+        //when
+        mvc.perform(put(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updatePublicPractice_isAcceptedForAdminRole() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        final var practiceDto = PracticeDto.toDto(practice);
+        final var newData = "new data";
+        practiceDto.data = newData;
+        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+        //when
+        mvc.perform(put(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_ADMIN)))
+                .andExpect(status().isAccepted());
+
+        //then
+        final var practices = practiceRepository.findAll();
+        assertThat(practices).hasSize(1);
+        assertThat(practices.get(0).getData()).isEqualTo(newData);
+    }
+
+    @Test
+    void updateUserPractice_isAcceptedForUserRole() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_1);
+        final var practiceDto = PracticeDto.toDto(practice);
+        final var newData = "new data";
+        practiceDto.data = newData;
+        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+
+        //when
+        mvc.perform(put(PRACTICE_ENDPOINT)
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isAccepted());
+
+        //then
+        final var practices = practiceRepository.findAll();
+        assertThat(practices).hasSize(1);
+        assertThat(practices.get(0).getData()).isEqualTo(newData);
+    }
+
 
     private String createPracticeDtoString(final boolean isPublic) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(createPracticeDto(null, isPublic));
+        return objectMapper.writeValueAsString(createPracticeDto(isPublic));
     }
 
-    private PracticeDto createPracticeDto(final Long id, final boolean isPublic) {
+    private PracticeDto createPracticeDto(final boolean isPublic) {
         final var dto = new PracticeDto();
-        dto.id = id;
         dto.isPublic = isPublic;
         dto.name = PRACTICE_NAME;
         dto.data = PRACTICE_DATA;
