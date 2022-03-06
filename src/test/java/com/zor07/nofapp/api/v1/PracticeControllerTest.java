@@ -126,6 +126,89 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
+    void getPublicPractice_shouldReturnPracticeTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        final var content = mvc.perform(get(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var dto = objectMapper.readValue(content, PracticeDto.class);
+        assertThat(dto.id).isNotNull();
+        assertThat(dto.practiceTag.id).isNotNull();
+        assertThat(dto.practiceTag.name).isEqualTo(TAG_NAME);
+        assertThat(dto.name).isEqualTo(PRACTICE_NAME);
+        assertThat(dto.description).isEqualTo(PRACTICE_DESC);
+        assertThat(dto.data).isEqualTo(PRACTICE_DATA);
+        assertThat(dto.isPublic).isTrue();
+    }
+
+    @Test
+    void getUserPractice_shouldReturnPracticeTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_1);
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        final var content = mvc.perform(get(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var dto = objectMapper.readValue(content, PracticeDto.class);
+        assertThat(dto.id).isNotNull();
+        assertThat(dto.practiceTag.id).isNotNull();
+        assertThat(dto.practiceTag.name).isEqualTo(TAG_NAME);
+        assertThat(dto.name).isEqualTo(PRACTICE_NAME);
+        assertThat(dto.description).isEqualTo(PRACTICE_DESC);
+        assertThat(dto.data).isEqualTo(PRACTICE_DATA);
+        assertThat(dto.isPublic).isFalse();
+    }
+
+    @Test
+    void getUserPractice_shouldReturnNoFoundWhenUserDoesntOwnPractice() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_2);
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        mvc.perform(get(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getUserPractice_shouldReturnNoFoundWhenPracticeNotExists() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_2);
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        mvc.perform(get(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void getPrivatePractices_returnsEmptyList() throws Exception {
         //given
         practiceRepository.save(createPractice(true));
