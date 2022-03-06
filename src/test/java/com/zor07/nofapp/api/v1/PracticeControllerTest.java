@@ -14,6 +14,7 @@ import com.zor07.nofapp.practice.UserPracticeRepository;
 import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.user.RoleRepository;
+import com.zor07.nofapp.user.User;
 import com.zor07.nofapp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,10 +30,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerTest extends AbstractApiTest {
@@ -148,6 +149,73 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(dto.description).isEqualTo(PRACTICE_DESC);
         assertThat(dto.data).isEqualTo(PRACTICE_DATA);
         assertThat(dto.isPublic).isTrue();
+    }
+
+    @Test
+    void addPracticeToUser_shouldAddPracticeToUser() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        mvc.perform(put(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isAccepted());
+
+        //then
+        final var userPractice = userPracticeRepository.findByUserAndPractice(getUser(USER_1), practice);
+        assertThat(userPractice.getUser().getName()).isEqualTo(USER_1);
+        assertThat(userPractice.getPractice().getId()).isEqualTo(practice.getId());
+        assertThat(userPractice.getPractice().getPracticeTag().getName()).isEqualTo(TAG_NAME);
+        assertThat(userPractice.getPractice().getName()).isEqualTo(PRACTICE_NAME);
+    }
+
+    @Test
+    void addPracticeToUser_shouldReturnAlreadyReportedWhenAlreadyAdded() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        addPracticeToUser(practice, USER_1);
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        mvc.perform(put(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isAlreadyReported());
+    }
+
+    @Test
+    void addPracticeToUser_shouldReturnNotFoundWhenPracticeNotExists() throws Exception {
+        //given
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, "12");
+
+        //when
+        mvc.perform(put(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+                //then
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void addPracticeToUser_shouldReturnBadRequestIfPracticeIsNotPublic() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_2);
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        mvc.perform(put(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+        //then
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -559,4 +627,9 @@ public class PracticeControllerTest extends AbstractApiTest {
 
         return practice;
     }
+
+    private User getUser(final String username) {
+        return userService.getUser(username);
+    }
+
 }
