@@ -3,7 +3,7 @@ package com.zor07.nofapp.api.v1;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,7 +14,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.test.AbstractAuthRelatedApplicationTest;
+import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.timer.Timer;
 import com.zor07.nofapp.timer.TimerRepository;
 import com.zor07.nofapp.user.RoleRepository;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class TimerControllerTest extends AbstractAuthRelatedApplicationTest {
+public class TimerControllerTest extends AbstractApiTest {
 
   private static final String DATETIME = "2021-12-31T00:00:00";
   private static final String DATE = "2021-12-31";

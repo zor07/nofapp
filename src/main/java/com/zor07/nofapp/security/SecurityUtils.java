@@ -1,22 +1,21 @@
 package com.zor07.nofapp.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zor07.nofapp.user.Role;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.user.Role;
 
 public class SecurityUtils {
 
@@ -33,14 +32,8 @@ public class SecurityUtils {
         .sign(getAlgorithm());
   }
 
-  public static String getUserNameFromAuthHeader(final HttpServletRequest request) {
-    final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      final var decodedJWT = SecurityUtils.decodeJWT(authorizationHeader);
-      return decodedJWT.getSubject();
-    } else {
-      throw new RuntimeException("Refresh token is missing");
-    }
+  public static boolean isUserAdmin(final com.zor07.nofapp.user.User user) {
+    return user.getRoles().stream().anyMatch(role -> role.getName().equals(UserRole.ROLE_ADMIN.getRoleName()));
   }
 
   public static String createRefreshToken(final User user, final String issuer) {

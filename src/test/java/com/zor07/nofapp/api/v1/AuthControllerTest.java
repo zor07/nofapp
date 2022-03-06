@@ -9,7 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.zor07.nofapp.test.AbstractAuthRelatedApplicationTest;
+import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.user.RoleRepository;
 import com.zor07.nofapp.user.UserRepository;
 
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class AuthControllerTest extends AbstractAuthRelatedApplicationTest {
+public class AuthControllerTest extends AbstractApiTest {
 
   private static final String USERS = "/api/v1/user";
   private static final String LOGIN_PAYLOAD = """

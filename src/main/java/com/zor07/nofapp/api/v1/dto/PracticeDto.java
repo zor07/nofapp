@@ -43,4 +43,19 @@ public class PracticeDto {
         this.data = data;
         this.isPublic = isPublic;
     }
+
+    public PracticeDto() {
+    }
+
+    @Override
+    public String toString() {
+        return "PracticeDto{" +
+                "id=" + id +
+                ", practiceTag=" + practiceTag +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", data='" + data + '\'' +
+                ", isPublic=" + isPublic +
+                '}';
+    }
 }
