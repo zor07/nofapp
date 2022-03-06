@@ -32,6 +32,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerTest extends AbstractApiTest {
@@ -336,6 +337,103 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices.get(0).getData()).isEqualTo(newData);
     }
 
+    @Test
+    void deletePublicPractice_adminRole_isOkTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        addPracticeToUser(practice, USER_1);
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_ADMIN)))
+                .andExpect(status().isNoContent());
+        //then
+        assertThat(practiceRepository.findAll()).isEmpty();
+        assertThat(userPracticeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void deleteUserPractice_adminRole_isForbiddenTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_1);
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_ADMIN)))
+        //then
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deletePublicPractice_userRole_shouldDeleteUserPracticeTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        addPracticeToUser(practice, USER_1);
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isNoContent());
+        //then
+        assertThat(practiceRepository.findAll()).hasSize(1);
+        assertThat(userPracticeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void deletePublicPractice_userRole_shouldNotDeleteUserPracticeIfNotHisPracticeTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isNoContent());
+        //then
+        assertThat(practiceRepository.findAll()).hasSize(1);
+        assertThat(userPracticeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void deleteUserPractice_userRole_shouldDeletePracticeAndUserPracticeTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_1);
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isNoContent());
+        //then
+        assertThat(practiceRepository.findAll()).isEmpty();
+        assertThat(userPracticeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void deleteUserPractice_userRole_shouldNotDeleteUserPracticeIfNotHisPracticeTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
+                .andExpect(status().isNoContent());
+        //then
+        assertThat(practiceRepository.findAll()).hasSize(1);
+        assertThat(userPracticeRepository.findAll()).isEmpty();
+    }
 
     private String createPracticeDtoString(final boolean isPublic) throws JsonProcessingException {
         return objectMapper.writeValueAsString(createPracticeDto(isPublic));
