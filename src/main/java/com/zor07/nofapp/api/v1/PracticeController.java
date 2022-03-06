@@ -61,6 +61,24 @@ public class PracticeController {
                 .toList();
     }
 
+    @GetMapping("/{practiceId}")
+    public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId, final Principal principal) {
+        try {
+            final var practice = practiceRepository.getById(practiceId);
+            if (practice.isPublic()) {
+                return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
+            } else {
+                final var user = getUser(principal);
+                if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
+                    return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
+                }
+            }
+        } catch (final EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @PostMapping(consumes = "application/json")
     @Transactional
     public ResponseEntity<Void> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
