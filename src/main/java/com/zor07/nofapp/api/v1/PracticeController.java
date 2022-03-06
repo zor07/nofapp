@@ -11,7 +11,9 @@ import com.zor07.nofapp.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.List;
@@ -58,6 +61,46 @@ public class PracticeController {
                 .toList();
     }
 
+    @GetMapping("/{practiceId}")
+    public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId, final Principal principal) {
+        try {
+            final var practice = practiceRepository.getById(practiceId);
+            if (practice.isPublic()) {
+                return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
+            } else {
+                final var user = getUser(principal);
+                if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
+                    return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
+                }
+            }
+        } catch (final EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PutMapping("/{practiceId}")
+    public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId, final Principal principal) {
+        try {
+            final var practice = practiceRepository.getById(practiceId);
+            if (practice.isPublic()) {
+                final var user = getUser(principal);
+                if (userPracticeRepository.findByUserAndPractice(user, practice) == null) {
+                    userPracticeRepository.save(
+                            new UserPractice(new UserPracticeKey(user.getId(), practiceId), user, practice));
+                    return new ResponseEntity<>(HttpStatus.ACCEPTED);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (final EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @PostMapping(consumes = "application/json")
     @Transactional
     public ResponseEntity<Void> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
@@ -92,6 +135,36 @@ public class PracticeController {
         practiceRepository.save(PracticeDto.toEntity(practiceDto));
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
+
+    @DeleteMapping("/{practiceId}")
+    @Transactional
+    public ResponseEntity<Void> deletePractice(@PathVariable final Long practiceId, final Principal principal) {
+        final var user = getUser(principal);
+        try {
+            final var practice = practiceRepository.getById(practiceId);
+            if (SecurityUtils.isUserAdmin(user)) {
+                if (practice.isPublic()) {
+                    userPracticeRepository.deleteAllByPractice(practice);
+                    practiceRepository.delete(practice);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                }
+            } else {
+                if (practice.isPublic()) {
+                    userPracticeRepository.deleteByUserAndPractice(user, practice);
+                } else {
+                    if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
+                        userPracticeRepository.deleteByUserAndPractice(user, practice);
+                        practiceRepository.delete(practice);
+                    }
+                }
+            }
+        } catch (final EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
     private User getUser(final Principal principal) {
         final var username = principal.getName();
