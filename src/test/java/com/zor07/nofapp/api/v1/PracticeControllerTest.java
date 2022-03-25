@@ -43,6 +43,8 @@ public class PracticeControllerTest extends AbstractApiTest {
     private static final String PRACTICE_NAME = "practice";
     private static final String PRACTICE_DESC = "description";
     private static final String PRACTICE_DATA = "data";
+    private static final String PRACTICE_DATA_JSON = "{\"data\":\"data\"}";
+
     private static final String USER_1 = "user1";
     private static final String USER_2 = "user2";
     private static final String USER_ADMIN = "admin";
@@ -450,8 +452,8 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(true));
         final var practiceDto = PracticeDto.toDto(practice);
-        final var newData = "{\"data\":\"data\"}";
-        practiceDto.data = new ObjectMapper().readTree(newData);
+        final var newData = PRACTICE_DATA_JSON;
+        practiceDto.data = objectMapper.readTree(newData);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
         //when
         mvc.perform(put(PRACTICE_ENDPOINT)
@@ -472,8 +474,8 @@ public class PracticeControllerTest extends AbstractApiTest {
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_1);
         final var practiceDto = PracticeDto.toDto(practice);
-        final var newData = "{\"data\":\"data\"}";
-        practiceDto.data = new ObjectMapper().readTree(newData);
+        final var newData = PRACTICE_DATA_JSON;
+        practiceDto.data = objectMapper.readTree(newData);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
 
         //when
@@ -595,7 +597,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         final var dto = new PracticeDto();
         dto.isPublic = isPublic;
         dto.name = PRACTICE_NAME;
-        dto.data = new ObjectMapper().readTree("{\"data\":\"data\"}");
+        dto.data = objectMapper.readTree(PRACTICE_DATA_JSON);
         dto.description = PRACTICE_DESC;
         dto.practiceTag = PracticeTagDto.toDto(tagRepository.findAll().get(0));
         return dto;
