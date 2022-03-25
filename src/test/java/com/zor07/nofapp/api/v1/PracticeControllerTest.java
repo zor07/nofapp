@@ -2,6 +2,7 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
 import com.zor07.nofapp.api.v1.dto.PracticeTagDto;
 import com.zor07.nofapp.practice.Practice;
@@ -449,8 +450,8 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(true));
         final var practiceDto = PracticeDto.toDto(practice);
-        final var newData = "new data";
-        practiceDto.data = newData;
+        final var newData = "{\"data\":\"data\"}";
+        practiceDto.data = new ObjectMapper().readTree(newData);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
         //when
         mvc.perform(put(PRACTICE_ENDPOINT)
@@ -471,8 +472,8 @@ public class PracticeControllerTest extends AbstractApiTest {
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_1);
         final var practiceDto = PracticeDto.toDto(practice);
-        final var newData = "new data";
-        practiceDto.data = newData;
+        final var newData = "{\"data\":\"data\"}";
+        practiceDto.data = new ObjectMapper().readTree(newData);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
 
         //when
@@ -590,11 +591,11 @@ public class PracticeControllerTest extends AbstractApiTest {
         return objectMapper.writeValueAsString(createPracticeDto(isPublic));
     }
 
-    private PracticeDto createPracticeDto(final boolean isPublic) {
+    private PracticeDto createPracticeDto(final boolean isPublic) throws JsonProcessingException {
         final var dto = new PracticeDto();
         dto.isPublic = isPublic;
         dto.name = PRACTICE_NAME;
-        dto.data = PRACTICE_DATA;
+        dto.data = new ObjectMapper().readTree("{\"data\":\"data\"}");
         dto.description = PRACTICE_DESC;
         dto.practiceTag = PracticeTagDto.toDto(tagRepository.findAll().get(0));
         return dto;
