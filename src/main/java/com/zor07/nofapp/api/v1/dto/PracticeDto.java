@@ -1,16 +1,23 @@
 package com.zor07.nofapp.api.v1.dto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.practice.Practice;
 
 public class PracticeDto {
 
     public static PracticeDto toDto(final Practice practice) {
-        return new PracticeDto(practice.getId(),
-                PracticeTagDto.toDto(practice.getPracticeTag()),
-                practice.getName(),
-                practice.getDescription(),
-                practice.getData(),
-                practice.isPublic());
+        try {
+            return new PracticeDto(practice.getId(),
+                    PracticeTagDto.toDto(practice.getPracticeTag()),
+                    practice.getName(),
+                    practice.getDescription(),
+                    new ObjectMapper().readTree(practice.getData()),
+                    practice.isPublic());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Practice toEntity(final PracticeDto practiceDto) {
@@ -18,7 +25,7 @@ public class PracticeDto {
                 PracticeTagDto.toEntity(practiceDto.practiceTag),
                 practiceDto.name,
                 practiceDto.description,
-                practiceDto.data,
+                practiceDto.data.toString(),
                 practiceDto.isPublic);
     }
 
@@ -27,14 +34,14 @@ public class PracticeDto {
     public PracticeTagDto practiceTag;
     public String name;
     public String description;
-    public String data;
+    public JsonNode data;
     public boolean isPublic;
 
     public PracticeDto(Long id,
                        PracticeTagDto practiceTag,
                        String name,
                        String description,
-                       String data,
+                       JsonNode data,
                        boolean isPublic) {
         this.id = id;
         this.practiceTag = practiceTag;

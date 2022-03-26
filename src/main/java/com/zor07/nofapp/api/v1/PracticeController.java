@@ -1,6 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
+import com.zor07.nofapp.practice.Practice;
 import com.zor07.nofapp.practice.PracticeRepository;
 import com.zor07.nofapp.practice.UserPractice;
 import com.zor07.nofapp.practice.UserPracticeKey;
@@ -47,7 +48,7 @@ public class PracticeController {
 
     @GetMapping
     public List<PracticeDto> getPractices(@RequestParam(defaultValue = "false") final boolean isPublic,
-                                          final Principal principal) {
+                                          final Principal principal) throws Exception{
         final var user = getUser(principal);
 
         final var practices = isPublic
@@ -57,7 +58,7 @@ public class PracticeController {
                                         .collect(Collectors.toList());
 
         return practices.stream()
-                .map(PracticeDto::toDto)
+                .map(practice -> PracticeDto.toDto(practice))
                 .toList();
     }
 
@@ -103,18 +104,19 @@ public class PracticeController {
 
     @PostMapping(consumes = "application/json")
     @Transactional
-    public ResponseEntity<Void> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
+    public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = getUser(principal);
+        Practice practice;
         if (practiceDto.isPublic) {
             if (!SecurityUtils.isUserAdmin(user)) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-            practiceRepository.save(PracticeDto.toEntity(practiceDto));
+            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
         } else {
-            final var practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
+            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
             userPracticeRepository.save(new UserPractice(new UserPracticeKey(user.getId(), practice.getId()), user, practice));
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.CREATED);
     }
 
     @PutMapping(consumes = "application/json")
