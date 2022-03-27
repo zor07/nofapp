@@ -2,7 +2,6 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
 import com.zor07.nofapp.api.v1.dto.PracticeTagDto;
 import com.zor07.nofapp.practice.Practice;
@@ -42,7 +41,6 @@ public class PracticeControllerTest extends AbstractApiTest {
     private static final String TAG_NAME = "tag";
     private static final String PRACTICE_NAME = "practice";
     private static final String PRACTICE_DESC = "description";
-    private static final String PRACTICE_DATA = "data";
     private static final String PRACTICE_DATA_JSON = "{\"data\":\"data\"}";
 
     private static final String USER_1 = "user1";
@@ -114,7 +112,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices).allMatch(p ->
                 p.isPublic &&
                 p.practiceTag.name.equals(TAG_NAME) &&
-                p.data.equals(PRACTICE_DATA) &&
+                p.data.toString().equals(PRACTICE_DATA_JSON) &&
                 p.description.equals(PRACTICE_DESC) &&
                 p.name.equals(PRACTICE_NAME));
 
@@ -150,7 +148,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(dto.practiceTag.name).isEqualTo(TAG_NAME);
         assertThat(dto.name).isEqualTo(PRACTICE_NAME);
         assertThat(dto.description).isEqualTo(PRACTICE_DESC);
-        assertThat(dto.data).isEqualTo(PRACTICE_DATA);
+        assertThat(dto.data.toString()).isEqualTo(PRACTICE_DATA_JSON);
         assertThat(dto.isPublic).isTrue();
     }
 
@@ -243,7 +241,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(dto.practiceTag.name).isEqualTo(TAG_NAME);
         assertThat(dto.name).isEqualTo(PRACTICE_NAME);
         assertThat(dto.description).isEqualTo(PRACTICE_DESC);
-        assertThat(dto.data).isEqualTo(PRACTICE_DATA);
+        assertThat(dto.data.toString()).isEqualTo(PRACTICE_DATA_JSON);
         assertThat(dto.isPublic).isFalse();
     }
 
@@ -363,7 +361,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(all.get(0)).matches(p ->
                 p.isPublic() &&
                         p.getPracticeTag().getName().equals(TAG_NAME) &&
-                        p.getData().equals(PRACTICE_DATA) &&
+                        p.getData().equals(PRACTICE_DATA_JSON) &&
                         p.getDescription().equals(PRACTICE_DESC) &&
                         p.getName().equals(PRACTICE_NAME)
         );
@@ -388,7 +386,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices.get(0)).matches(p ->
                 !p.isPublic() &&
                 p.getPracticeTag().getName().equals(TAG_NAME) &&
-                p.getData().equals(PRACTICE_DATA) &&
+                p.getData().equals(PRACTICE_DATA_JSON) &&
                 p.getDescription().equals(PRACTICE_DESC) &&
                 p.getName().equals(PRACTICE_NAME)
         );
@@ -524,6 +522,26 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
+    void deletePublicUserPractice_adminRole_isForbiddenTest() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(true));
+        addPracticeToUser(practice, USER_ADMIN);
+        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        //when
+        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                .content(dtoString)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_ADMIN)))
+        //then
+                .andExpect(status().isNoContent());
+
+        assertThat(practiceRepository.getById(practice.getId()))
+                .isNotNull();
+        assertThat(userPracticeRepository.findByUserAndPractice(getUser(USER_ADMIN), practice))
+                .isNull();
+    }
+
+    @Test
     void deletePublicPractice_userRole_shouldDeleteUserPracticeTest() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(true));
@@ -583,7 +601,7 @@ public class PracticeControllerTest extends AbstractApiTest {
                 .content(dtoString)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isForbidden());
         //then
         assertThat(practiceRepository.findAll()).hasSize(1);
         assertThat(userPracticeRepository.findAll()).isEmpty();
@@ -625,7 +643,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         practice.setPracticeTag(tagRepository.findAll().get(0));
         practice.setName(PRACTICE_NAME);
         practice.setDescription(PRACTICE_DESC);
-        practice.setData(PRACTICE_DATA);
+        practice.setData(PRACTICE_DATA_JSON);
         practice.setPublic(isPublic);
 
         return practice;
