@@ -149,15 +149,21 @@ public class PracticeController {
                     userPracticeRepository.deleteAllByPractice(practice);
                     practiceRepository.delete(practice);
                 } else {
-                    return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                    if (isUsersPractice(user, practice)) {
+                        userPracticeRepository.deleteByUserAndPractice(user, practice);
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                    }
                 }
             } else {
                 if (practice.isPublic()) {
                     userPracticeRepository.deleteByUserAndPractice(user, practice);
                 } else {
-                    if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
+                    if (isUsersPractice(user, practice)) {
                         userPracticeRepository.deleteByUserAndPractice(user, practice);
                         practiceRepository.delete(practice);
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
                     }
                 }
             }
@@ -167,6 +173,9 @@ public class PracticeController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    private boolean isUsersPractice(final User user, final Practice practice) {
+        return userPracticeRepository.findByUserAndPractice(user, practice) != null;
+    }
 
     private User getUser(final Principal principal) {
         final var username = principal.getName();
