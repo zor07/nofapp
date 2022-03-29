@@ -146,8 +146,12 @@ public class PracticeController {
             final var practice = practiceRepository.getById(practiceId);
             if (SecurityUtils.isUserAdmin(user)) {
                 if (practice.isPublic()) {
-                    userPracticeRepository.deleteAllByPractice(practice);
-                    practiceRepository.delete(practice);
+                    if (isUsersPractice(user, practice)) {
+                        userPracticeRepository.deleteByUserAndPractice(user, practice);
+                    } else {
+                        userPracticeRepository.deleteAllByPractice(practice);
+                        practiceRepository.delete(practice);
+                    }
                 } else {
                     if (isUsersPractice(user, practice)) {
                         userPracticeRepository.deleteByUserAndPractice(user, practice);
