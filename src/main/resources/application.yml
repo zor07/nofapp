@@ -9,9 +9,9 @@ spring:
         format_sql: true
   datasource:
     driverClassName: org.postgresql.Driver
-    username: user
-    password: pass
-    url: jdbc:postgresql://localhost:5432/db
+    username: elkhqdxwnsigwd
+    password: 12d3f4cf9c6f0ce20ab6fb850027dc48f5a071443a678a43c37014794e64854f
+    url: jdbc:postgresql://ec2-63-32-248-14.eu-west-1.compute.amazonaws.com:5432/d6t1rg6vv521qh
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
 
@@ -20,4 +20,4 @@ logging:
     liquidbase: INFO
 
 server:
-  port: 8888
+  port: 8080
