@@ -1,6 +1,12 @@
 package com.zor07.nofapp.api.v1;
 
-import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.zor07.nofapp.diary.Diary;
+import com.zor07.nofapp.diary.DiaryRepository;
+import com.zor07.nofapp.test.AbstractApiTest;
+import com.zor07.nofapp.user.RoleRepository;
+import com.zor07.nofapp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,14 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.diary.Diary;
-import com.zor07.nofapp.diary.DiaryRepository;
-import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.user.RoleRepository;
-import com.zor07.nofapp.user.UserRepository;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -54,7 +54,6 @@ public class DiaryControllerTest extends AbstractApiTest {
   private UserRepository userRepository;
   @Autowired
   private RoleRepository roleRepository;
-  private final ObjectMapper objectMapper = new ObjectMapper();
 
   private MockMvc mvc;
 

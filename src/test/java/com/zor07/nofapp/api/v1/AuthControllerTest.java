@@ -63,7 +63,7 @@ public class AuthControllerTest extends AbstractApiTest {
 
   @Test
   void login_isOk_test() throws Exception {
-    mvc.perform(post(LOGIN).servletPath(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN_ENDPOINT).servletPath(LOGIN_ENDPOINT).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
   }
 
@@ -76,7 +76,7 @@ public class AuthControllerTest extends AbstractApiTest {
         }
         """;
 
-    mvc.perform(post(LOGIN).servletPath(LOGIN).content(payload).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN_ENDPOINT).servletPath(LOGIN_ENDPOINT).content(payload).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized());
   }
 
@@ -88,7 +88,7 @@ public class AuthControllerTest extends AbstractApiTest {
 
   @Test
   void getUsers_isOK_test() throws Exception {
-    mvc.perform(post(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN_ENDPOINT).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andDo(mvcResult -> {
           final var tokens = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), TokensDto.class);
           final var authHeader = String.format("Bearer %s", tokens.access_token());
@@ -99,13 +99,13 @@ public class AuthControllerTest extends AbstractApiTest {
 
   @Test
   void refreshToken_isOK_test() throws Exception {
-    mvc.perform(post(LOGIN).servletPath(LOGIN).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(post(LOGIN_ENDPOINT).servletPath(LOGIN_ENDPOINT).content(LOGIN_PAYLOAD).contentType(MediaType.APPLICATION_JSON))
         .andDo(loginResult -> {
           final var tokens = objectMapper.readValue(loginResult.getResponse().getContentAsString(), TokensDto.class);
           final var authHeader = String.format("Bearer %s", tokens.refresh_token());
           final var refreshTokenResult =
-              mvc.perform(get(REFRESH_TOKEN)
-                  .servletPath(REFRESH_TOKEN)
+              mvc.perform(get(REFRESH_TOKEN_ENDPOINT)
+                  .servletPath(REFRESH_TOKEN_ENDPOINT)
                   .header(HttpHeaders.AUTHORIZATION, authHeader)
                   .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

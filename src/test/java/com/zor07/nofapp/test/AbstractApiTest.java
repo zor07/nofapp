@@ -20,9 +20,9 @@ public class AbstractApiTest extends AbstractApplicationTest {
   protected static final String DEFAULT_USERNAME = "user";
   protected static final String DEFAULT_PASSWORD = "pass";
 
-  protected static final String LOGIN = "/api/v1/auth/login";
+`  protected static final String LOGIN_ENDPOINT = "/api/v1/auth/login";
 
-  protected static final String REFRESH_TOKEN = "/api/v1/auth/token/refresh";
+  protected static final String REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/token/refresh";
 
   protected static record LoginPayload(String username, String password) {}
 
@@ -48,7 +48,7 @@ public class AbstractApiTest extends AbstractApplicationTest {
 
   protected String getAuthHeader(MockMvc mvc, String username) throws Exception {
     final var loginPayload = objectMapper.writeValueAsString(new LoginPayload(username, DEFAULT_PASSWORD));
-    final var mvcResult = mvc.perform(post(LOGIN)
+    final var mvcResult = mvc.perform(post(LOGIN_ENDPOINT)
           .content(loginPayload)
           .contentType(MediaType.APPLICATION_JSON))
         .andReturn();
