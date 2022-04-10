@@ -18,7 +18,7 @@ import java.util.List;
 public class NotebookController {
 
     @GetMapping
-    public List<NotebookDto> getNotebooks() {
+    public ResponseEntity<List<NotebookDto>> getNotebooks() {
         return null;
     }
 
