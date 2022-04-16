@@ -20,7 +20,7 @@ public class AbstractApiTest extends AbstractApplicationTest {
   protected static final String DEFAULT_USERNAME = "user";
   protected static final String DEFAULT_PASSWORD = "pass";
 
-`  protected static final String LOGIN_ENDPOINT = "/api/v1/auth/login";
+  protected static final String LOGIN_ENDPOINT = "/api/v1/auth/login";
 
   protected static final String REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/token/refresh";
 
