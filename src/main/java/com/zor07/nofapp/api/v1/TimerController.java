@@ -38,7 +38,7 @@ public class TimerController {
 
   @GetMapping(produces = "application/json")
   public List<TimerDto> findAll(final Principal principal) {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     return repository.findAllByUserId(user.getId())
         .stream()
         .map(TimerDto::toDto)
@@ -48,7 +48,7 @@ public class TimerController {
   @PostMapping(consumes = "application/json")
   @Transactional
   public ResponseEntity<Void> save(@RequestBody final TimerDto timer, final Principal principal) {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     repository.save(TimerDto.toEntity(timer, user));
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
@@ -57,7 +57,7 @@ public class TimerController {
   @Transactional
   // TODO accept stop time from client
   public ResponseEntity<Void> stop(@PathVariable final Long timerId, final Principal principal) {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     try {
       final var timer = repository.findByIdAndUserId(timerId, user.getId());
       timer.setStop(Instant.now());
@@ -71,7 +71,7 @@ public class TimerController {
   @DeleteMapping("/{timerId}")
   @Transactional
   public ResponseEntity<Void> delete(@PathVariable final Long timerId, final Principal principal) {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     try {
       repository.deleteByIdAndUserId(timerId, user.getId());
     } catch (EmptyResultDataAccessException e) {
@@ -79,10 +79,4 @@ public class TimerController {
     }
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
-  private User getUser(final Principal principal) {
-    final var username = principal.getName();
-    return userService.getUser(username);
-  }
-
 }

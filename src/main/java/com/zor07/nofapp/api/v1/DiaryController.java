@@ -37,13 +37,13 @@ public class DiaryController {
 
   @GetMapping(path = "/{diaryId}", produces = "application/json")
   public DiaryDto findById(@PathVariable final Long diaryId, final Principal principal) throws JsonProcessingException {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     return DiaryDto.toDto(repository.findByIdAndUserId(diaryId, user.getId()));
   }
 
   @GetMapping(produces = "application/json")
   public List<DiaryDto> findAll(final Principal principal) {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     return repository.findAllByUserId(user.getId())
         .stream()
         .map(DiaryDto::toDto)
@@ -53,7 +53,7 @@ public class DiaryController {
   @PostMapping(consumes = "application/json")
   @Transactional
   public ResponseEntity<DiaryDto> save(@RequestBody final DiaryDto diary, final Principal principal) throws JsonProcessingException {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     return new ResponseEntity<>(
         DiaryDto.toDto(repository.save(DiaryDto.toEntity(diary, user))),
         HttpStatus.CREATED
@@ -63,7 +63,7 @@ public class DiaryController {
   @DeleteMapping("/{diaryId}")
   @Transactional
   public ResponseEntity<Void> delete(@PathVariable final Long diaryId, final Principal principal) {
-    final var user = getUser(principal);
+    final var user = userService.getUser(principal);
     try {
       repository.deleteByIdAndUserId(diaryId, user.getId());
     } catch (EmptyResultDataAccessException e) {
@@ -71,10 +71,4 @@ public class DiaryController {
     }
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
-  private User getUser(final Principal principal) {
-    final var username = principal.getName();
-    return userService.getUser(username);
-  }
-
 }
