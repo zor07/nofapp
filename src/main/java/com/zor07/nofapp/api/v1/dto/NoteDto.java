@@ -4,9 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.notebook.Note;
+import com.zor07.nofapp.notebook.NoteIdAndTitle;
 import com.zor07.nofapp.user.User;
 
 public class NoteDto {
+
+  public static NoteDto toDto(final NoteIdAndTitle entity) {
+    final var note = new NoteDto();
+    note.id = entity.getId();
+    note.title = entity.getTitle();
+    return note;
+  }
 
   public static NoteDto toDto(final Note note) throws JsonProcessingException {
     final var dto = new NoteDto();
