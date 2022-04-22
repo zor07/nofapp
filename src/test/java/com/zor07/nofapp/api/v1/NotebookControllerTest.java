@@ -32,7 +32,7 @@ public class NotebookControllerTest extends AbstractApiTest {
   private static final String NAME = "test name";
   private static final String DESCRIPTION = "test description";
 
-  private static final String ENDPOINT = "/api/v1/notebook";
+  private static final String ENDPOINT = "/api/v1/notebooks";
   private static class NotebookTestDto {
     public Long id;
     public String name;
