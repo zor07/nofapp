@@ -21,7 +21,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{notebookId}/note")
+@RequestMapping("/api/v1/notebooks/{notebookId}/notes")
 public class NoteController {
 
     private final NoteRepository noteRepository;
