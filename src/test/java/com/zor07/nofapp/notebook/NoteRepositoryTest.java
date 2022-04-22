@@ -93,10 +93,8 @@ public class NoteRepositoryTest extends AbstractApplicationTest {
     final var allByNotebookId = noteRepository.findAllByNotebookId(notebook.getId());
     assertThat(allByNotebookId).hasSize(2);
     assertThat(allByNotebookId.get(0).getId()).isNotNull();
-    assertThat(allByNotebookId.get(0).getData()).isEqualTo(DATA);
     assertThat(allByNotebookId.get(0).getTitle()).isEqualTo(TITLE);
     assertThat(allByNotebookId.get(1).getId()).isNotNull();
-    assertThat(allByNotebookId.get(1).getData()).isEqualTo(DATA);
     assertThat(allByNotebookId.get(1).getTitle()).isEqualTo(TITLE);
   }
 }
