@@ -20,7 +20,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/notebook")
+@RequestMapping("/api/v1/notebooks")
 public class NotebookController {
 
     private final NotebookRepository notebookRepository;
