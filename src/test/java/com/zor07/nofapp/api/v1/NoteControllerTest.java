@@ -2,6 +2,7 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
+import com.zor07.nofapp.api.v1.dto.NotebookDto;
 import com.zor07.nofapp.notebook.Note;
 import com.zor07.nofapp.notebook.NoteRepository;
 import com.zor07.nofapp.notebook.Notebook;
@@ -25,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class NoteControllerTest extends AbstractApiTest {
@@ -109,74 +112,88 @@ public class NoteControllerTest extends AbstractApiTest {
     assertThat(notes.get(1).title).isEqualTo(NOTE_TITLE);
   }
 
-//  @Test
-//  void findByIdTest() throws Exception {
-//    createNotebook(USER_1);
-//    final var userId = userRepository.findByUsername(USER_1).getId();
-//    final var diaryId = notebookRepository.findAllByUserId(userId).get(0).getId();
-//    final var authHeader = getAuthHeader(mvc, USER_1);
-//
-//    final var content = mvc.perform(get(ENDPOINT+"/"+diaryId)
-//        .contentType(MediaType.APPLICATION_JSON)
-//        .header(HttpHeaders.AUTHORIZATION, authHeader))
-//        .andExpect(status().isOk())
-//        .andReturn().getResponse().getContentAsString();
-//    final var diary = objectMapper.readValue(content, NoteTestDto.class);
-//    assertThat(diary.id).isEqualTo(diaryId);
-//    assertThat(diary.title).isEqualTo(NOTE_TITLE);
-//    assertThat(diary.data.toString()).isEqualTo(NOTE_DATA);
-//  }
-//
-//  @Test
-//  void saveTest() throws Exception {
-//    final var authHeader = getAuthHeader(mvc, USER_1);
-//    final var diaryTestDto = new NoteTestDto();
-//    diaryTestDto.title = NOTE_TITLE;
-//    diaryTestDto.data = objectMapper.readTree(NOTE_DATA);
-//    mvc.perform(post(ENDPOINT)
-//              .contentType(MediaType.APPLICATION_JSON)
-//              .content(objectMapper.writeValueAsString(diaryTestDto))
-//              .header(HttpHeaders.AUTHORIZATION, authHeader))
-//        .andExpect(status().isCreated());
-//    final var diary = notebookRepository.findAll().get(0);
-//    assertThat(diary.getTitle()).isEqualTo(NOTE_TITLE);
-//    assertThat(diary.getData()).isEqualTo(NOTE_DATA);
-//  }
-//
-//  @Test
-//  void updateTest() throws Exception {
-//    createNotebook(USER_1);
-//    final var id = notebookRepository.findAll().get(0).getId();
-//    final var authHeader = getAuthHeader(mvc, USER_1);
-//    final var newTitle = "new Title";
-//    final var newData = "{\"data\":\"new Data\"}";
-//    final var diaryTestDto = new NoteTestDto();
-//    diaryTestDto.id = id;
-//    diaryTestDto.title = newTitle;
-//    diaryTestDto.data = objectMapper.readTree(newData);
-//    mvc.perform(post(ENDPOINT)
-//        .contentType(MediaType.APPLICATION_JSON)
-//        .content(objectMapper.writeValueAsString(diaryTestDto))
-//        .header(HttpHeaders.AUTHORIZATION, authHeader))
-//        .andExpect(status().isCreated());
-//    final var all = notebookRepository.findAll();
-//    assertThat(all).hasSize(1);
-//    final var diary = all.get(0);
-//    assertThat(diary.getTitle()).isEqualTo(newTitle);
-//    assertThat(diary.getData()).isEqualTo(newData);
-//  }
+  @Test
+  void findByIdTest() throws Exception {
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    final var notebook = createNotebook(USER_1);
+    final var note = createNote(notebook);
+    final var endpoint = String.format("/api/v1/notebooks/%d/notes/%d", notebook.getId(), note.getId());
+
+    final var content = mvc.perform(get(endpoint)
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.AUTHORIZATION, authHeader))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+    final var response = objectMapper.readValue(content, NoteDto.class);
+    assertThat(response.id).isEqualTo(note.getId());
+    assertThat(response.title).isEqualTo(note.getTitle());
+    assertThat(response.data.toString()).isEqualTo(note.getData());
+  }
+
+  @Test
+  void saveTest() throws Exception {
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    final var notebook = createNotebook(USER_1);
+    final var noteRequestDto = new NoteDto();
+    noteRequestDto.title = NOTE_TITLE;
+    noteRequestDto.data = objectMapper.readTree(NOTE_DATA);
+
+    final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
+
+    mvc.perform(post(endpoint)
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(noteRequestDto))
+              .header(HttpHeaders.AUTHORIZATION, authHeader))
+        .andExpect(status().isCreated());
+    final var noteResponse = noteRepository.findAll().get(0);
+    assertThat(noteResponse.getTitle()).isEqualTo(noteRequestDto.title);
+    assertThat(noteResponse.getData()).isEqualTo(noteRequestDto.data.toString());
+  }
+
+  @Test
+  void updateTest() throws Exception {
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    final var notebook = createNotebook(USER_1);
+    createNote(notebook);
+    final var noteId = notebookRepository.findAll().get(0).getId();
+    final var newTitle = "new Title";
+    final var newData = "{\"data\":\"new Data\"}";
+    final var notebookDto = new NotebookDto();
+    notebookDto.id = notebook.getId();
+    final var noteRequestDto = new NoteDto();
+    noteRequestDto.id = noteId;
+    noteRequestDto.notebookDto = notebookDto;
+    noteRequestDto.title = newTitle;
+    noteRequestDto.data = objectMapper.readTree(newData);
+    final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
+
+    mvc.perform(put(endpoint)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(noteRequestDto))
+        .header(HttpHeaders.AUTHORIZATION, authHeader))
+        .andExpect(status().isAccepted());
+
+    final var all = noteRepository.findAll();
+    assertThat(all).hasSize(1);
+    final var note = all.get(0);
+    assertThat(note.getTitle()).isEqualTo(newTitle);
+    assertThat(note.getData()).isEqualTo(newData);
+  }
 
 
   @Test
   void deleteTest() throws Exception {
     final var authHeader = getAuthHeader(mvc, USER_1);
-    createNotebook(USER_1);
-    final var diary = notebookRepository.findAll().get(0);
-    mvc.perform(delete(ENDPOINT +"/"+diary.getId())
+    final var notebook = createNotebook(USER_1);
+    final var note = createNote(notebook);
+    final var endpoint = String.format("/api/v1/notebooks/%d/notes/%d", notebook.getId(), note.getId());
+
+    mvc.perform(delete(endpoint)
               .contentType(MediaType.APPLICATION_JSON)
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isNoContent());
-    assertThat(notebookRepository.findAll()).isEmpty();
+
+    assertThat(noteRepository.findAll()).isEmpty();
   }
 
 }
