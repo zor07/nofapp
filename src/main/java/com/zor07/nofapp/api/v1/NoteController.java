@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.List;
 
@@ -84,10 +85,11 @@ public class NoteController {
             return ResponseEntity.notFound().build();
         }
         final var saved = noteRepository.save(NoteDto.toEntity(note, user));
-        return ResponseEntity.ok(NoteDto.toDto(saved));
+        return ResponseEntity.accepted().body(NoteDto.toDto(saved));
     }
 
     @DeleteMapping("/{noteId}")
+    @Transactional
     public ResponseEntity<Void> updateNote(final Principal principal,
                                            final @PathVariable Long notebookId,
                                            final @PathVariable Long noteId) {
