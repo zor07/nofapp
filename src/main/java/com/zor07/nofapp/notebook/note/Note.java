@@ -1,4 +1,6 @@
-package com.zor07.nofapp.notebook;
+package com.zor07.nofapp.notebook.note;
+
+import com.zor07.nofapp.notebook.Notebook;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
