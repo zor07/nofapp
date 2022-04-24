@@ -3,8 +3,8 @@ package com.zor07.nofapp.api.v1;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.api.v1.dto.NotebookDto;
-import com.zor07.nofapp.notebook.Note;
-import com.zor07.nofapp.notebook.NoteRepository;
+import com.zor07.nofapp.notebook.note.Note;
+import com.zor07.nofapp.notebook.note.NoteRepository;
 import com.zor07.nofapp.notebook.Notebook;
 import com.zor07.nofapp.notebook.NotebookRepository;
 import com.zor07.nofapp.test.AbstractApiTest;
@@ -134,7 +134,10 @@ public class NoteControllerTest extends AbstractApiTest {
   void saveTest() throws Exception {
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
+    final var notebookDto = new NotebookDto();
+    notebookDto.id = notebook.getId();
     final var noteRequestDto = new NoteDto();
+    noteRequestDto.notebookDto = notebookDto;
     noteRequestDto.title = NOTE_TITLE;
     noteRequestDto.data = objectMapper.readTree(NOTE_DATA);
 
@@ -166,6 +169,7 @@ public class NoteControllerTest extends AbstractApiTest {
     noteRequestDto.title = newTitle;
     noteRequestDto.data = objectMapper.readTree(newData);
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
+    assertThat(noteRepository.findAll()).hasSize(1);
 
     mvc.perform(put(endpoint)
         .contentType(MediaType.APPLICATION_JSON)
