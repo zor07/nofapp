@@ -1,4 +1,4 @@
-package com.zor07.nofapp.notebook;
+package com.zor07.nofapp.notebook.note;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,5 +1,7 @@
-package com.zor07.nofapp.notebook;
+package com.zor07.nofapp.notebook.note;
 
+import com.zor07.nofapp.notebook.Notebook;
+import com.zor07.nofapp.notebook.NotebookRepository;
 import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.user.Role;
@@ -8,6 +10,7 @@ import com.zor07.nofapp.user.User;
 import com.zor07.nofapp.user.UserRepository;
 import com.zor07.nofapp.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -50,6 +53,10 @@ public class NoteRepositoryTest extends AbstractApplicationTest {
     userService.saveRole(new Role(null, UserRole.ROLE_USER.getRoleName()));
     userService.addRoleToUser(USERNAME, UserRole.ROLE_USER.getRoleName());
     notebookRepository.save(new Notebook(null, user, NAME, DESCRIPTION));
+  }
+  @AfterClass
+  void teardown() {
+    clearDb();
   }
 
   @Test
