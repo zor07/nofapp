@@ -1,9 +1,11 @@
 package com.zor07.nofapp.api.v1;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zor07.nofapp.test.AbstractApiTest;
+import com.zor07.nofapp.timer.Timer;
+import com.zor07.nofapp.timer.TimerRepository;
+import com.zor07.nofapp.user.RoleRepository;
+import com.zor07.nofapp.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,12 +15,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.timer.Timer;
-import com.zor07.nofapp.timer.TimerRepository;
-import com.zor07.nofapp.user.RoleRepository;
-import com.zor07.nofapp.user.UserRepository;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -125,16 +125,50 @@ public class TimerControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void deleteTimerTest() throws Exception {
+  void deleteTimer_shouldDelete_test() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     createTimer(USER_1);
     final var timer = timerRepository.findAll().get(0);
-    mvc.perform(delete(TIMER_ENDPOINT+"/"+timer.getId())
-              .contentType(MediaType.APPLICATION_JSON)
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isNoContent());
+    //when
+    final var result = mvc.perform(delete(TIMER_ENDPOINT + "/" + timer.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isNoContent());
     assertThat(timerRepository.findAll()).isEmpty();
   }
+
+  @Test
+  void deleteTimer_shouldNotDeleteAnotherUsersTimer_test() throws Exception {
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    createTimer(USER_2);
+    final var timer = timerRepository.findAll().get(0);
+    //when
+    final var result = mvc.perform(delete(TIMER_ENDPOINT + "/" + timer.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isNoContent());
+    assertThat(timerRepository.findAll()).hasSize(1);
+  }
+
+  @Test
+  void deleteTimer_notExistingTimer_test() throws Exception {
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    createTimer(USER_1);
+    //when
+    final var result = mvc.perform(delete(TIMER_ENDPOINT + "/77777")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isNoContent());
+    assertThat(timerRepository.findAll()).hasSize(1);
+  }
+
+
 
   @Test
   void stopTimerTest() throws Exception{
