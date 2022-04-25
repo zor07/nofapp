@@ -1,10 +1,9 @@
 package com.zor07.nofapp.api.v1;
 
-import java.security.Principal;
-import java.time.Instant;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
+import com.zor07.nofapp.api.v1.dto.TimerDto;
+import com.zor07.nofapp.timer.TimerRepository;
+import com.zor07.nofapp.timer.TimerService;
+import com.zor07.nofapp.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -17,10 +16,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.zor07.nofapp.api.v1.dto.TimerDto;
-import com.zor07.nofapp.timer.TimerRepository;
-import com.zor07.nofapp.user.User;
-import com.zor07.nofapp.user.UserService;
+
+import javax.transaction.Transactional;
+import java.security.Principal;
+import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/timer")
@@ -30,10 +31,15 @@ public class TimerController {
 
   private final TimerRepository repository;
 
+  private final TimerService timerService;
+
   @Autowired
-  public TimerController(UserService userService, final TimerRepository repository) {
+  public TimerController(final UserService userService,
+                         final TimerRepository repository,
+                         final TimerService timerService) {
     this.userService = userService;
     this.repository = repository;
+    this.timerService = timerService;
   }
 
   @GetMapping(produces = "application/json")
@@ -69,14 +75,9 @@ public class TimerController {
   }
 
   @DeleteMapping("/{timerId}")
-  @Transactional
   public ResponseEntity<Void> delete(@PathVariable final Long timerId, final Principal principal) {
     final var user = userService.getUser(principal);
-    try {
-      repository.deleteByIdAndUserId(timerId, user.getId());
-    } catch (EmptyResultDataAccessException e) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    timerService.deleteByIdAndUserId(timerId, user.getId());
+    return ResponseEntity.noContent().build();
   }
 }
