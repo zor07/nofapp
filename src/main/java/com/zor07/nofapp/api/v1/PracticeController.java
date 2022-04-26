@@ -52,20 +52,9 @@ public class PracticeController {
 
     @GetMapping("/{practiceId}")
     public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId, final Principal principal) {
-        try {
-            final var practice = practiceRepository.getById(practiceId);
-            if (practice.isPublic()) {
-                return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
-            } else {
-                final var user = userService.getUser(principal);
-                if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
-                    return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
-                }
-            }
-        } catch (final EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final var user = userService.getUser(principal);
+        final var practice = practiceService.getPracticeForUser(practiceId, user);
+        return ResponseEntity.ok(PracticeDto.toDto(practice));
     }
 
     @PutMapping("/{practiceId}")
