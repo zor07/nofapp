@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,10 +49,9 @@ public class TimerController {
   }
 
   @PostMapping(consumes = "application/json")
-  @Transactional
   public ResponseEntity<Void> save(@RequestBody final TimerDto timer, final Principal principal) {
     final var user = userService.getUser(principal);
-    repository.save(TimerDto.toEntity(timer, user));
+    timerService.save(TimerDto.toEntity(timer, user));
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 

@@ -107,18 +107,21 @@ public class TimerControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void postTimerTest() throws Exception {
+  void saveTimerTest() throws Exception {
+    // given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var userId = userService.getUser(USER_1).getId();
     final var timerTestDto = new TimerTestDto();
     final var description = "test description";
     timerTestDto.description = description;
     timerTestDto.start = DATETIME;
-    mvc.perform(post(TIMER_ENDPOINT)
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(timerTestDto))
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isCreated());
+    //when
+    final var perform = mvc.perform(post(TIMER_ENDPOINT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(timerTestDto))
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    perform.andExpect(status().isCreated());
     final var timer = timerRepository.findAll().get(0);
     assertThat(timer.getDescription()).isEqualTo(description);
     assertThat(timer.getUser().getId()).isEqualTo(userId);

@@ -31,6 +31,10 @@ public class TimerService {
 //        return new ResponseEntity<>(HttpStatus.CREATED);
 //    }
 
+    public void save(final Timer timer) {
+        repository.save(timer);
+    }
+
     @Transactional
     public void stopTimer(final Long timerId, final Long userId) {
         final var timer = repository.findByIdAndUserId(timerId, userId);
