@@ -23,14 +23,17 @@ public class PracticeController {
     private final UserService userService;
     private final PracticeRepository practiceRepository;
     private final UserPracticeRepository userPracticeRepository;
+    private final PracticeService practiceService;
 
     @Autowired
     public PracticeController(final UserService userService,
                               final PracticeRepository practiceRepository,
-                              final UserPracticeRepository userPracticeRepository) {
+                              final UserPracticeRepository userPracticeRepository,
+                              final PracticeService practiceService) {
         this.userService = userService;
         this.practiceRepository = practiceRepository;
         this.userPracticeRepository = userPracticeRepository;
+        this.practiceService = practiceService;
     }
 
     @GetMapping
@@ -39,9 +42,8 @@ public class PracticeController {
         final var user = userService.getUser(principal);
 
         final var practices = isPublic
-                ? practiceRepository.findByIsPublic(true)
-                : userPracticeRepository.findAllByUserId(user.getId()).stream()
-                                        .map(UserPractice::getPractice).toList();
+                ? practiceService.getPublicPractices()
+                : practiceService.getUserPractices(user.getId());
 
         return practices.stream()
                 .map(PracticeDto::toDto)
