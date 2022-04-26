@@ -3,6 +3,7 @@ package com.zor07.nofapp.timer;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 
 @Service
 public class TimerService {
@@ -29,21 +30,15 @@ public class TimerService {
 //        repository.save(TimerDto.toEntity(timer, user));
 //        return new ResponseEntity<>(HttpStatus.CREATED);
 //    }
-//
-//    @PutMapping(path = "/{timerId}/stop")
-//    @Transactional
-//    // TODO accept stop time from client
-//    public ResponseEntity<Void> stop(@PathVariable final Long timerId, final Principal principal) {
-//        final var user = userService.getUser(principal);
-//        try {
-//            final var timer = repository.findByIdAndUserId(timerId, user.getId());
-//            timer.setStop(Instant.now());
-//            repository.save(timer);
-//        } catch (EmptyResultDataAccessException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(HttpStatus.ACCEPTED);
-//    }
+
+    @Transactional
+    public void stopTimer(final Long timerId, final Long userId) {
+        final var timer = repository.findByIdAndUserId(timerId, userId);
+        if (timer != null) {
+            timer.setStop(Instant.now());
+            repository.save(timer);
+        }
+    }
 
     @Transactional
     public void deleteByIdAndUserId(final Long timerId, final Long  userId) {
