@@ -1,7 +1,6 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.TimerDto;
-import com.zor07.nofapp.timer.TimerRepository;
 import com.zor07.nofapp.timer.TimerService;
 import com.zor07.nofapp.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +24,12 @@ import java.util.stream.Collectors;
 public class TimerController {
 
   private final UserService userService;
-
-  private final TimerRepository repository;
-
   private final TimerService timerService;
 
   @Autowired
   public TimerController(final UserService userService,
-                         final TimerRepository repository,
                          final TimerService timerService) {
     this.userService = userService;
-    this.repository = repository;
     this.timerService = timerService;
   }
 
