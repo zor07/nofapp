@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1;
 
+import com.zor07.nofapp.exception.IllegalResourceAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,4 +16,9 @@ public class RestControllerAdvice {
         // Nothing to do
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalResourceAccessException.class)
+    public void handleBadRequest() {
+        // Nothing to do
+    }
 }
