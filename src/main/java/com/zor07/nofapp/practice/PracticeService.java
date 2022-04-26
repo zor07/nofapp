@@ -1,5 +1,7 @@
 package com.zor07.nofapp.practice;
 
+import com.zor07.nofapp.exception.IllegalResourceAccessException;
+import com.zor07.nofapp.user.User;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,25 +30,18 @@ public class PracticeService {
                 .map(UserPractice::getPractice).toList();
     }
 
+    public Practice getPracticeForUser(final Long practiceId, final User user) {
+        final var practice = practiceRepository.getById(practiceId);
+        if (!practice.isPublic() && !isUsersPractice(user, practice)) {
+            throw new IllegalResourceAccessException();
+        }
+        return practice;
+    }
 
-//    @GetMapping("/{practiceId}")
-//    public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId, final Principal principal) {
-//        try {
-//            final var practice = practiceRepository.getById(practiceId);
-//            if (practice.isPublic()) {
-//                return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
-//            } else {
-//                final var user = userService.getUser(principal);
-//                if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
-//                    return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
-//                }
-//            }
-//        } catch (final EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//    }
-//
+    private boolean isUsersPractice(final User user, final Practice practice) {
+        return userPracticeRepository.findByUserAndPractice(user, practice) != null;
+    }
+
 //    @PutMapping("/{practiceId}")
 //    public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId, final Principal principal) {
 //        try {
@@ -144,9 +139,7 @@ public class PracticeService {
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //    }
 //
-//    private boolean isUsersPractice(final User user, final Practice practice) {
-//        return userPracticeRepository.findByUserAndPractice(user, practice) != null;
-//    }
+
 //
 }
 
