@@ -5,7 +5,6 @@ import com.zor07.nofapp.timer.TimerRepository;
 import com.zor07.nofapp.timer.TimerService;
 import com.zor07.nofapp.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.security.Principal;
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,17 +58,9 @@ public class TimerController {
   }
 
   @PutMapping(path = "/{timerId}/stop")
-  @Transactional
-  // TODO accept stop time from client
   public ResponseEntity<Void> stop(@PathVariable final Long timerId, final Principal principal) {
     final var user = userService.getUser(principal);
-    try {
-      final var timer = repository.findByIdAndUserId(timerId, user.getId());
-      timer.setStop(Instant.now());
-      repository.save(timer);
-    } catch (EmptyResultDataAccessException e) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    timerService.stopTimer(timerId, user.getId());
     return new ResponseEntity<>(HttpStatus.ACCEPTED);
   }
 
