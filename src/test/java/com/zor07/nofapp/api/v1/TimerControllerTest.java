@@ -89,22 +89,41 @@ public class TimerControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void getTimersTest() throws Exception {
+  void getTimers_should_return_2_timers_Test() throws Exception {
+    // given
     createTimer(USER_1);
     createTimer(USER_1);
     createTimer(USER_2);
     final var authHeader = getAuthHeader(mvc, USER_1);
 
+    // when
     final var content = mvc.perform(get(TIMER_ENDPOINT)
               .contentType(MediaType.APPLICATION_JSON)
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
+
+    // then
     final var timers = objectMapper.readValue(content, new TypeReference<List<TimerTestDto>>(){});
     assertThat(timers).hasSize(2);
-
     assertThat(timers.get(0).start).isEqualTo(DATETIME);
   }
+
+  @Test
+  void getTimers_should_return_0_timers_Test() throws Exception {
+    // given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    // when
+    final var content = mvc.perform(get(TIMER_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, authHeader))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+    // then
+    final var timers = objectMapper.readValue(content, new TypeReference<List<TimerTestDto>>(){});
+    assertThat(timers).isEmpty();
+  }
+
 
   @Test
   void saveTimerTest() throws Exception {

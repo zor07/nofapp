@@ -42,7 +42,7 @@ public class TimerController {
   @GetMapping(produces = "application/json")
   public List<TimerDto> findAll(final Principal principal) {
     final var user = userService.getUser(principal);
-    return repository.findAllByUserId(user.getId())
+    return timerService.findAllByUserId(user.getId())
         .stream()
         .map(TimerDto::toDto)
         .collect(Collectors.toList());
