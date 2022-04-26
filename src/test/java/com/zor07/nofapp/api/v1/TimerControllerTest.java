@@ -171,15 +171,31 @@ public class TimerControllerTest extends AbstractApiTest {
 
 
   @Test
-  void stopTimerTest() throws Exception{
+  void stopExistingTimerTest() throws Exception{
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     createTimer(USER_1);
     final var timer = timerRepository.findAll().get(0);
-    mvc.perform(put(TIMER_ENDPOINT+"/"+timer.getId()+"/stop")
-              .contentType(MediaType.APPLICATION_JSON)
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isAccepted());
+    //when
+    final var result = mvc.perform(put(TIMER_ENDPOINT + "/" + timer.getId() + "/stop")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    // then
+    result.andExpect(status().isAccepted());
     final var stoppedTimer = timerRepository.findAll().get(0);
     assertThat(stoppedTimer.getStop()).isNotNull();
+  }
+
+  @Test
+  void stopNotExistingTimerTest() throws Exception{
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    //when
+    final var result = mvc.perform(put(TIMER_ENDPOINT + "/7777" + "/stop")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    // then
+    result.andExpect(status().isAccepted());
+    assertThat(timerRepository.findAll()).isEmpty();
   }
 }
