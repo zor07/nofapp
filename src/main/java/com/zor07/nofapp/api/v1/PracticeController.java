@@ -59,23 +59,9 @@ public class PracticeController {
 
     @PutMapping("/{practiceId}")
     public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId, final Principal principal) {
-        try {
-            final var practice = practiceRepository.getById(practiceId);
-            if (practice.isPublic()) {
-                final var user = userService.getUser(principal);
-                if (userPracticeRepository.findByUserAndPractice(user, practice) == null) {
-                    userPracticeRepository.save(
-                            new UserPractice(new UserPracticeKey(user.getId(), practiceId), user, practice));
-                    return new ResponseEntity<>(HttpStatus.ACCEPTED);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (final EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        final var user = userService.getUser(principal);
+        practiceService.addPracticeToUser(practiceId, user);
+        return ResponseEntity.accepted().build();
     }
 
 
