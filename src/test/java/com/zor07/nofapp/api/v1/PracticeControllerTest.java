@@ -174,19 +174,20 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void addPracticeToUser_shouldReturnAlreadyReportedWhenAlreadyAdded() throws Exception {
+    void addPracticeToUser_shouldReturnAcceptedWhenAlreadyAdded() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(true));
         addPracticeToUser(practice, USER_1);
         final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
 
         //when
-        mvc.perform(put(endpoint)
+        final var result = mvc.perform(put(endpoint)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
+
         //then
-                .andExpect(status().isAlreadyReported());
+        result.andExpect(status().isAccepted());
     }
 
     @Test
