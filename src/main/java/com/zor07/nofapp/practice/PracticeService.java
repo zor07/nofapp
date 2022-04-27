@@ -38,32 +38,23 @@ public class PracticeService {
         return practice;
     }
 
+    public void addPracticeToUser(final Long practiceId, final User user) {
+        final var practice = practiceRepository.getById(practiceId);
+        if (practice.isPublic()) {
+            if (!isUsersPractice(user, practice)) {
+                userPracticeRepository.save(
+                        new UserPractice(new UserPracticeKey(user.getId(), practiceId), user, practice));
+            }
+        } else {
+            throw new IllegalResourceAccessException();
+        }
+    }
+
     private boolean isUsersPractice(final User user, final Practice practice) {
         return userPracticeRepository.findByUserAndPractice(user, practice) != null;
     }
 
-//    @PutMapping("/{practiceId}")
-//    public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId, final Principal principal) {
-//        try {
-//            final var practice = practiceRepository.getById(practiceId);
-//            if (practice.isPublic()) {
-//                final var user = userService.getUser(principal);
-//                if (userPracticeRepository.findByUserAndPractice(user, practice) == null) {
-//                    userPracticeRepository.save(
-//                            new UserPractice(new UserPracticeKey(user.getId(), practiceId), user, practice));
-//                    return new ResponseEntity<>(HttpStatus.ACCEPTED);
-//                } else {
-//                    return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
-//                }
-//            } else {
-//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//            }
-//        } catch (final EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//
+
 //    @PostMapping(consumes = "application/json")
 //    @Transactional
 //    public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
