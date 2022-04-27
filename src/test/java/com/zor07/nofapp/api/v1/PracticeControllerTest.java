@@ -262,19 +262,16 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void getUserPractice_shouldReturnBadRequestWhenPracticeNotExists() throws Exception {
+    void getUserPractice_shouldReturnNotFoundWhenPracticeNotExists() throws Exception {
         //given
-        final var practice = practiceRepository.save(createPractice(false));
-        addPracticeToUser(practice, USER_2);
-        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
-
+        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, "7777");
         //when
-        mvc.perform(get(endpoint)
+        final var result = mvc.perform(get(endpoint)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
         //then
-                .andExpect(status().isBadRequest());
+        result.andExpect(status().isNotFound());
     }
 
     @Test
