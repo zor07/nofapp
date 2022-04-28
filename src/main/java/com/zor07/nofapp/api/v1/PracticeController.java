@@ -37,7 +37,6 @@ public class PracticeController {
     private final PracticeRepository practiceRepository;
     private final UserPracticeRepository userPracticeRepository;
     private final PracticeService practiceService;
-
     @Autowired
     public PracticeController(final UserService userService,
                               final PracticeRepository practiceRepository,
@@ -78,7 +77,6 @@ public class PracticeController {
     }
 
     @PostMapping(consumes = "application/json")
-    @Transactional
     public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = userService.getUser(principal);
         final var practice = practiceService.savePractice(PracticeDto.toEntity(practiceDto), user);
@@ -90,22 +88,10 @@ public class PracticeController {
     }
 
     @PutMapping(consumes = "application/json")
-    @Transactional
-    public ResponseEntity<Void> updatePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
+    public ResponseEntity<PracticeDto> updatePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = userService.getUser(principal);
-        if (practiceDto.id == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        if (practiceDto.isPublic && !SecurityUtils.isUserAdmin(user)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        if (!practiceDto.isPublic && userPracticeRepository.findAllByUserId(user.getId())
-                .stream()
-                .noneMatch(userPractice -> userPractice.getPractice().getId().equals(practiceDto.id))){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        practiceRepository.save(PracticeDto.toEntity(practiceDto));
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        final var practice = practiceService.updatePractice(PracticeDto.toEntity(practiceDto), user);
+        return ResponseEntity.accepted().body(PracticeDto.toDto(practice));
     }
 
     @DeleteMapping("/{practiceId}")

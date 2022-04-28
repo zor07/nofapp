@@ -18,7 +18,7 @@ public class RestControllerAdvice {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(IllegalResourceAccessException.class)
+    @ExceptionHandler({IllegalArgumentException.class, IllegalResourceAccessException.class})
     public void handleBadRequest() {
         // Nothing to do
     }

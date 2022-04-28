@@ -65,30 +65,23 @@ public class PracticeService {
         return saved;
     }
 
+    public Practice updatePractice(final Practice practice, final User user) {
+        if (practice.getId() == null) {
+            throw new IllegalArgumentException();
+        }
+        if (practice.isPublic() && !SecurityUtils.isUserAdmin(user)) {
+            throw new IllegalResourceAccessException();
+        }
+        if (!practice.isPublic() && !isUsersPractice(user, practice)) {
+            throw new IllegalResourceAccessException();
+        }
+        return practiceRepository.save(practice);
+    }
 
     private boolean isUsersPractice(final User user, final Practice practice) {
         return userPracticeRepository.findByUserAndPractice(user, practice) != null;
     }
 
-//    @PutMapping(consumes = "application/json")
-//    @Transactional
-//    public ResponseEntity<Void> updatePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
-//        final var user = userService.getUser(principal);
-//        if (practiceDto.id == null) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//        if (practiceDto.isPublic && !SecurityUtils.isUserAdmin(user)) {
-//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//        }
-//        if (!practiceDto.isPublic && userPracticeRepository.findAllByUserId(user.getId())
-//                .stream()
-//                .noneMatch(userPractice -> userPractice.getPractice().getId().equals(practiceDto.id))){
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//        practiceRepository.save(PracticeDto.toEntity(practiceDto));
-//        return new ResponseEntity<>(HttpStatus.ACCEPTED);
-//    }
-//
 //    @DeleteMapping("/{practiceId}")
 //    @Transactional
 //    public ResponseEntity<Void> deletePractice(@PathVariable final Long practiceId, final Principal principal) {
