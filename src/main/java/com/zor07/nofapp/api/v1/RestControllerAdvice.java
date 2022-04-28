@@ -11,7 +11,7 @@ import javax.persistence.EntityNotFoundException;
 @ControllerAdvice
 public class RestControllerAdvice {
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Resource is not found")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT, reason = "Resource is not found")
     @ExceptionHandler(EntityNotFoundException.class)
     public void handleNotFound() {
         // Nothing to do
