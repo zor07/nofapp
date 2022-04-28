@@ -191,7 +191,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void addPracticeToUser_shouldReturnNotFoundWhenPracticeNotExists() throws Exception {
+    void addPracticeToUser_shouldReturnNoContentWhenPracticeNotExists() throws Exception {
         //given
         final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, "12");
 
@@ -201,7 +201,7 @@ public class PracticeControllerTest extends AbstractApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
                 //then
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void getUserPractice_shouldReturnNotFoundWhenPracticeNotExists() throws Exception {
+    void getUserPractice_shouldReturnNoContentWhenPracticeNotExists() throws Exception {
         //given
         final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, "7777");
         //when
@@ -272,7 +272,7 @@ public class PracticeControllerTest extends AbstractApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
         //then
-        result.andExpect(status().isNotFound());
+        result.andExpect(status().isNoContent());
     }
 
     @Test

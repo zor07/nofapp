@@ -158,7 +158,7 @@ public class NoteControllerTest extends AbstractApiTest {
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
     createNote(notebook);
-    final var noteId = notebookRepository.findAll().get(0).getId();
+    final var noteId = noteRepository.findAll().get(0).getId();
     final var newTitle = "new Title";
     final var newData = "{\"data\":\"new Data\"}";
     final var notebookDto = new NotebookDto();
