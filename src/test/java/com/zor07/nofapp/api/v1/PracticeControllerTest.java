@@ -326,18 +326,18 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void savePublicPractice_isForbiddenForUser() throws Exception {
+    void savePublicPractice_isBadRequestForNotAdmin() throws Exception {
         // given
         final var dtoString = createPracticeDtoString(true);
         final var userAuthHeader = getAuthHeader(mvc, USER_1);
 
         //when
-        mvc.perform(post(PRACTICE_ENDPOINT)
+        final var result = mvc.perform(post(PRACTICE_ENDPOINT)
                 .content(dtoString)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, userAuthHeader))
+                .header(HttpHeaders.AUTHORIZATION, userAuthHeader));
         //then
-                .andExpect(status().isForbidden());
+        result.andExpect(status().isBadRequest());
     }
 
     @Test

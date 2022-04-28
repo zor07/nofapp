@@ -1,6 +1,7 @@
 package com.zor07.nofapp.practice;
 
 import com.zor07.nofapp.exception.IllegalResourceAccessException;
+import com.zor07.nofapp.security.SecurityUtils;
 import com.zor07.nofapp.user.User;
 import org.springframework.stereotype.Service;
 
@@ -50,28 +51,25 @@ public class PracticeService {
         }
     }
 
+    public Practice savePractice(final Practice practice, final User user) {
+        Practice saved;
+        if (practice.isPublic()) {
+            if (!SecurityUtils.isUserAdmin(user)) {
+                throw new IllegalResourceAccessException();
+            }
+            saved = practiceRepository.save(practice);
+        } else {
+            saved = practiceRepository.save(practice);
+            userPracticeRepository.save(new UserPractice(new UserPracticeKey(user.getId(), practice.getId()), user, practice));
+        }
+        return saved;
+    }
+
+
     private boolean isUsersPractice(final User user, final Practice practice) {
         return userPracticeRepository.findByUserAndPractice(user, practice) != null;
     }
 
-
-//    @PostMapping(consumes = "application/json")
-//    @Transactional
-//    public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
-//        final var user = userService.getUser(principal);
-//        Practice practice;
-//        if (practiceDto.isPublic) {
-//            if (!SecurityUtils.isUserAdmin(user)) {
-//                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//            }
-//            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
-//        } else {
-//            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
-//            userPracticeRepository.save(new UserPractice(new UserPracticeKey(user.getId(), practice.getId()), user, practice));
-//        }
-//        return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.CREATED);
-//    }
-//
 //    @PutMapping(consumes = "application/json")
 //    @Transactional
 //    public ResponseEntity<Void> updatePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {

@@ -1,17 +1,30 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
-import com.zor07.nofapp.practice.*;
+import com.zor07.nofapp.practice.Practice;
+import com.zor07.nofapp.practice.PracticeRepository;
+import com.zor07.nofapp.practice.PracticeService;
+import com.zor07.nofapp.practice.UserPracticeRepository;
 import com.zor07.nofapp.security.SecurityUtils;
 import com.zor07.nofapp.user.User;
 import com.zor07.nofapp.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -64,22 +77,16 @@ public class PracticeController {
         return ResponseEntity.accepted().build();
     }
 
-
     @PostMapping(consumes = "application/json")
     @Transactional
     public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = userService.getUser(principal);
-        Practice practice;
-        if (practiceDto.isPublic) {
-            if (!SecurityUtils.isUserAdmin(user)) {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
-        } else {
-            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
-            userPracticeRepository.save(new UserPractice(new UserPracticeKey(user.getId(), practice.getId()), user, practice));
-        }
-        return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.CREATED);
+        final var practice = practiceService.savePractice(PracticeDto.toEntity(practiceDto), user);
+        final var uri = URI.create(ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(String.format("/api/v1/practice/%s", practice.getId()))
+                .toUriString());
+        return ResponseEntity.created(uri).body(PracticeDto.toDto(practice));
     }
 
     @PutMapping(consumes = "application/json")
