@@ -51,6 +51,13 @@ public class PracticeService {
         }
     }
 
+    public void removePracticeFromUser(final Long practiceId, final User user) {
+        final var practice = practiceRepository.getById(practiceId);
+        if (isUsersPractice(user, practice)) {
+            userPracticeRepository.deleteByUserAndPractice(user, practice);
+        }
+    }
+
     public Practice savePractice(final Practice practice, final User user) {
         Practice saved;
         if (practice.isPublic()) {
