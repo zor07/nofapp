@@ -221,6 +221,41 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
+    void removePracticeFromUser_shouldRemovePracticeFromUser() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_1);
+        final var endpoint = String.format("%s/%s/userPractice", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        final var result = mvc.perform(delete(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
+        //then
+        result.andExpect(status().isNoContent());
+        assertThat(userPracticeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void removePracticeFromUser_shouldNotRemovePracticeFromAnotherUser() throws Exception {
+        //given
+        final var practice = practiceRepository.save(createPractice(false));
+        addPracticeToUser(practice, USER_2);
+        final var endpoint = String.format("%s/%s/userPractice", PRACTICE_ENDPOINT, practice.getId().toString());
+
+        //when
+        final var result = mvc.perform(delete(endpoint)
+                .param(IS_PUBLIC_PARAM, String.valueOf(false))
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
+        //then
+        result.andExpect(status().isNoContent());
+        assertThat(userPracticeRepository.findAll()).hasSize(1);
+    }
+
+
+    @Test
     void getUserPractice_shouldReturnPracticeTest() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(false));

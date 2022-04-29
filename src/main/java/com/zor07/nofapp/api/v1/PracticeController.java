@@ -76,6 +76,13 @@ public class PracticeController {
         return ResponseEntity.accepted().build();
     }
 
+    @DeleteMapping("/{practiceId}/userPractice")
+    public ResponseEntity<Void> removePracticeFromUser(@PathVariable final Long practiceId, final Principal principal) {
+        final var user = userService.getUser(principal);
+        practiceService.removePracticeFromUser(practiceId, user);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping(consumes = "application/json")
     public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = userService.getUser(principal);
