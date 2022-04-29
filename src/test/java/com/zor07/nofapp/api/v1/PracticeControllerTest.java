@@ -156,10 +156,10 @@ public class PracticeControllerTest extends AbstractApiTest {
     void addPracticeToUser_shouldAddPracticeToUser() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(true));
-        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+        final var endpoint = String.format("%s/%s/userPractice", PRACTICE_ENDPOINT, practice.getId().toString());
 
         //when
-        mvc.perform(put(endpoint)
+        mvc.perform(post(endpoint)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
@@ -178,10 +178,10 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(true));
         addPracticeToUser(practice, USER_1);
-        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+        final var endpoint = String.format("%s/%s/userPractice", PRACTICE_ENDPOINT, practice.getId().toString());
 
         //when
-        final var result = mvc.perform(put(endpoint)
+        final var result = mvc.perform(post(endpoint)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
@@ -193,10 +193,10 @@ public class PracticeControllerTest extends AbstractApiTest {
     @Test
     void addPracticeToUser_shouldReturnNoContentWhenPracticeNotExists() throws Exception {
         //given
-        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, "12");
+        final var endpoint = String.format("%s/%s/userPractice", PRACTICE_ENDPOINT, "12");
 
         //when
-        mvc.perform(put(endpoint)
+        mvc.perform(post(endpoint)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))
@@ -209,10 +209,10 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_2);
-        final var endpoint = String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString());
+        final var endpoint = String.format("%s/%s/userPractice", PRACTICE_ENDPOINT, practice.getId().toString());
 
         //when
-        mvc.perform(put(endpoint)
+        mvc.perform(post(endpoint)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION,  getAuthHeader(mvc, USER_1)))

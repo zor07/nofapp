@@ -69,7 +69,7 @@ public class PracticeController {
         return ResponseEntity.ok(PracticeDto.toDto(practice));
     }
 
-    @PutMapping("/{practiceId}")
+    @PostMapping("/{practiceId}/userPractice")
     public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId, final Principal principal) {
         final var user = userService.getUser(principal);
         practiceService.addPracticeToUser(practiceId, user);
