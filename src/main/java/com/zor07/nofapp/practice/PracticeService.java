@@ -85,50 +85,27 @@ public class PracticeService {
         return practiceRepository.save(practice);
     }
 
+    public void deletePractice(final Long practiceId, final User user) {
+        final var practice = practiceRepository.getById(practiceId);
+        if (practice.isPublic() ) {
+            if (SecurityUtils.isUserAdmin(user)) {
+                userPracticeRepository.deleteAllByPractice(practice);
+                practiceRepository.delete(practice);
+            } else {
+                throw new IllegalResourceAccessException();
+            }
+        } else {
+            if (isUsersPractice(user, practice)) {
+                userPracticeRepository.deleteByUserAndPractice(user, practice);
+                practiceRepository.delete(practice);
+            } else {
+                throw new IllegalResourceAccessException();
+            }
+        }
+    }
+
     private boolean isUsersPractice(final User user, final Practice practice) {
         return userPracticeRepository.findByUserAndPractice(user, practice) != null;
     }
-
-//    @DeleteMapping("/{practiceId}")
-//    @Transactional
-//    public ResponseEntity<Void> deletePractice(@PathVariable final Long practiceId, final Principal principal) {
-//        final var user = userService.getUser(principal);
-//        try {
-//            final var practice = practiceRepository.getById(practiceId);
-//            if (SecurityUtils.isUserAdmin(user)) {
-//                if (practice.isPublic()) {
-//                    if (isUsersPractice(user, practice)) {
-//                        userPracticeRepository.deleteByUserAndPractice(user, practice);
-//                    } else {
-//                        userPracticeRepository.deleteAllByPractice(practice);
-//                        practiceRepository.delete(practice);
-//                    }
-//                } else {
-//                    if (isUsersPractice(user, practice)) {
-//                        userPracticeRepository.deleteByUserAndPractice(user, practice);
-//                    } else {
-//                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//                    }
-//                }
-//            } else {
-//                if (practice.isPublic()) {
-//                    userPracticeRepository.deleteByUserAndPractice(user, practice);
-//                } else {
-//                    if (isUsersPractice(user, practice)) {
-//                        userPracticeRepository.deleteByUserAndPractice(user, practice);
-//                        practiceRepository.delete(practice);
-//                    } else {
-//                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//                    }
-//                }
-//            }
-//        } catch (final EntityNotFoundException e) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-//
-
-//
 }
 

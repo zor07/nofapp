@@ -541,18 +541,18 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void deleteUserPractice_adminRole_isForbiddenTest() throws Exception {
+    void deleteUserPractice_adminRole_isBadRequest() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_1);
         final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
         //when
-        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+        final var result = mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
                 .content(dtoString)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_ADMIN)))
+                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_ADMIN)));
         //then
-                .andExpect(status().isForbidden());
+        result.andExpect(status().isBadRequest());
     }
 
     @Test
@@ -573,39 +573,6 @@ public class PracticeControllerTest extends AbstractApiTest {
                 .isNotNull();
         assertThat(userPracticeRepository.findByUserAndPractice(getUser(USER_ADMIN), practice))
                 .isNull();
-    }
-
-    @Test
-    void deletePublicPractice_userRole_shouldDeleteUserPracticeTest() throws Exception {
-        //given
-        final var practice = practiceRepository.save(createPractice(true));
-        addPracticeToUser(practice, USER_1);
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
-        //when
-        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
-                .content(dtoString)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
-                .andExpect(status().isNoContent());
-        //then
-        assertThat(practiceRepository.findAll()).hasSize(1);
-        assertThat(userPracticeRepository.findAll()).isEmpty();
-    }
-
-    @Test
-    void deletePublicPractice_userRole_shouldNotDeleteUserPracticeIfNotHisPracticeTest() throws Exception {
-        //given
-        final var practice = practiceRepository.save(createPractice(true));
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
-        //when
-        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
-                .content(dtoString)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
-                .andExpect(status().isNoContent());
-        //then
-        assertThat(practiceRepository.findAll()).hasSize(1);
-        assertThat(userPracticeRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -631,12 +598,12 @@ public class PracticeControllerTest extends AbstractApiTest {
         final var practice = practiceRepository.save(createPractice(false));
         final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
         //when
-        mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
-                .content(dtoString)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)))
-                .andExpect(status().isForbidden());
+        final var resultActions = mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
+                        .content(dtoString)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, getAuthHeader(mvc, USER_1)));
         //then
+        resultActions.andExpect(status().isBadRequest());
         assertThat(practiceRepository.findAll()).hasSize(1);
         assertThat(userPracticeRepository.findAll()).isEmpty();
     }
