@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.repository.NoteRepository;
+import com.zor07.nofapp.service.NoteService;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -28,25 +29,25 @@ public class NoteController {
     private final NoteRepository noteRepository;
     private final NotebookRepository notebookRepository;
     private final UserService userService;
+    private final NoteService noteService;
     public NoteController(final NoteRepository noteRepository,
                           final NotebookRepository notebookRepository,
-                          final UserService userService) {
+                          final UserService userService,
+                          final NoteService noteService) {
         this.noteRepository = noteRepository;
         this.notebookRepository = notebookRepository;
         this.userService = userService;
+        this.noteService = noteService;
     }
     @GetMapping
     public ResponseEntity<List<NoteDto>> getNotesByBook(final Principal principal,
                                                         final @PathVariable Long notebookId) {
-        if (notebookRepository.findByIdAndUserId(notebookId, userService.getUser(principal).getId()) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        final var notes = noteRepository.findAllByNotebookId(notebookId)
+        final var userId = userService.getUser(principal).getId();
+        final var notes = noteService.getNotesByNotebookIdForUser(notebookId, userId)
                 .stream()
                 .map(NoteDto::toDto)
                 .toList();
-        return new ResponseEntity<>(notes, HttpStatus.OK);
+        return ResponseEntity.ok(notes);
     }
 
     @PostMapping
