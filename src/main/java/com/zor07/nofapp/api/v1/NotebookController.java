@@ -1,10 +1,8 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.NotebookDto;
-import com.zor07.nofapp.repository.NotebookRepository;
+import com.zor07.nofapp.service.NotebookService;
 import com.zor07.nofapp.service.UserService;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -23,55 +23,58 @@ import java.util.List;
 @RequestMapping("/api/v1/notebooks")
 public class NotebookController {
 
-    private final NotebookRepository notebookRepository;
+    private final NotebookService notebookService;
     private final UserService userService;
 
-    public NotebookController(final NotebookRepository notebookRepository,
+    public NotebookController(final NotebookService notebookService,
                               final UserService userService) {
-        this.notebookRepository = notebookRepository;
+        this.notebookService = notebookService;
         this.userService = userService;
+    }
+
+    @GetMapping("/{notebookId}")
+    public ResponseEntity<NotebookDto> getNotebook(final Principal principal,
+                                   final @PathVariable Long notebookId) {
+        final var user = userService.getUser(principal);
+        final var notebook = notebookService.getNotebook(notebookId, user.getId());
+        return ResponseEntity.ok().body(NotebookDto.toDto(notebook));
     }
 
     @GetMapping
     public List<NotebookDto> getNotebooks(final Principal principal) {
         final var user = userService.getUser(principal);
-        return notebookRepository.findAllByUserId(user.getId())
+        return notebookService.getNotebooks(user.getId())
                 .stream()
                 .map(NotebookDto::toDto)
                 .toList();
     }
 
     @PostMapping
-    public ResponseEntity<Void> createNotebook(final Principal principal,
-                                               final @RequestBody NotebookDto dto) {
-        notebookRepository.save(NotebookDto.toEntity(dto, userService.getUser(principal)));
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{notebookId}")
-    public NotebookDto getNotebook(final Principal principal,
-                                                   final @PathVariable Long notebookId) {
-        return NotebookDto.toDto(
-                notebookRepository.findByIdAndUserId(notebookId, userService.getUser(principal).getId())
-        );
+    public ResponseEntity<NotebookDto> createNotebook(final Principal principal,
+                                                   final @RequestBody NotebookDto dto) {
+        final var user = userService.getUser(principal);
+        final var saved = notebookService.saveNotebook(NotebookDto.toEntity(dto, user));
+        final var uri = URI.create(ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(String.format("/api/v1/notebooks/%d", saved.getId()))
+                .toUriString());
+        return ResponseEntity.created(uri).body(NotebookDto.toDto(saved));
     }
 
     @PutMapping("/{notebook}")
     public ResponseEntity<NotebookDto> updateNotebook(final Principal principal,
                                                       final @PathVariable NotebookDto notebook) {
-        notebookRepository.save(NotebookDto.toEntity(notebook, userService.getUser(principal)));
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        final var user = userService.getUser(principal);
+        final var updated = notebookService.updateNotebook(NotebookDto.toEntity(notebook, user));
+        return ResponseEntity.accepted().body(NotebookDto.toDto(updated));
     }
 
     @DeleteMapping("/{notebookId}")
     @Transactional
     public ResponseEntity<Void> deleteNotebook(final Principal principal,
                                                final @PathVariable Long notebookId) {
-        try {
-            notebookRepository.deleteByIdAndUserId(notebookId, userService.getUser(principal).getId());
-        } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        final var user = userService.getUser(principal);
+        notebookService.deleteNotebook(notebookId, user.getId());
         return ResponseEntity.noContent().build();
     }
 
