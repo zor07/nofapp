@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.api.v1.dto.NotebookDto;
 import com.zor07.nofapp.entity.Note;
-import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.entity.Notebook;
+import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.repository.NotebookRepository;
-import com.zor07.nofapp.test.AbstractApiTest;
 import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserRepository;
+import com.zor07.nofapp.test.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -198,6 +198,21 @@ public class NoteControllerTest extends AbstractApiTest {
         .andExpect(status().isNoContent());
 
     assertThat(noteRepository.findAll()).isEmpty();
+  }
+
+  @Test
+  void deleteTest_whenNoteNotExists_shouldReturnBadRequest() throws Exception {
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    final var endpoint = "/api/v1/notebooks/777/notes/777";
+
+    // when
+    final var result = mvc.perform(delete(endpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isBadRequest());
+
   }
 
 }

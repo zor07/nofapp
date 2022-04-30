@@ -52,59 +52,14 @@ public class NoteService {
         return saveNote(note);
     }
 
+    public void deleteNote(final Long notebookId, final Long noteId, final Long userId) {
+        if (notUsersNotebook(userId, notebookId)) {
+            throw new IllegalResourceAccessException();
+        }
+        noteRepository.deleteAllByIdAndNotebookId(noteId, notebookId);
+    }
+
     private boolean notUsersNotebook(final Long userId, final Long notebookId) {
         return notebookRepository.findByIdAndUserId(notebookId, userId) == null;
     }
-
-//    @PostMapping
-//    public ResponseEntity<NoteDto> createNote(final Principal principal,
-//                                              final @PathVariable Long notebookId,
-//                                              final @RequestBody NoteDto dto) throws JsonProcessingException {
-//
-//        final var user = userService.getUser(principal);
-//        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        final var note = NoteDto.toEntity(dto, user);
-//        final var saved = noteRepository.save(note);
-//        return new ResponseEntity<>(NoteDto.toDto(saved), HttpStatus.CREATED);
-//    }
-
-//    @PutMapping
-//    public ResponseEntity<NoteDto> updateNote(final Principal principal,
-//                                              final @PathVariable Long notebookId,
-//                                              final @RequestBody NoteDto note) throws JsonProcessingException {
-//        if (note.id == null) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        final var user = userService.getUser(principal);
-//        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        final var entity = NoteDto.toEntity(note, user);
-//        final var saved = noteRepository.save(entity);
-//        return ResponseEntity.accepted().body(NoteDto.toDto(saved));
-//    }
-//
-//    @DeleteMapping("/{noteId}")
-//    @Transactional
-//    public ResponseEntity<Void> updateNote(final Principal principal,
-//                                           final @PathVariable Long notebookId,
-//                                           final @PathVariable Long noteId) {
-//        final var user = userService.getUser(principal);
-//        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        try {
-//            noteRepository.deleteAllByIdAndNotebookId(noteId, notebookId);
-//        } catch (EmptyResultDataAccessException e) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.noContent().build();
-//    }
-
-
-
-
 }

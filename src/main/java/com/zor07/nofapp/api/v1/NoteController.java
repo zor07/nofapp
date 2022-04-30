@@ -2,11 +2,8 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
-import com.zor07.nofapp.repository.NoteRepository;
-import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.service.NoteService;
 import com.zor07.nofapp.service.UserService;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
@@ -27,16 +23,10 @@ import java.util.List;
 @RequestMapping("/api/v1/notebooks/{notebookId}/notes")
 public class NoteController {
 
-    private final NoteRepository noteRepository;
-    private final NotebookRepository notebookRepository;
     private final UserService userService;
     private final NoteService noteService;
-    public NoteController(final NoteRepository noteRepository,
-                          final NotebookRepository notebookRepository,
-                          final UserService userService,
+    public NoteController(final UserService userService,
                           final NoteService noteService) {
-        this.noteRepository = noteRepository;
-        this.notebookRepository = notebookRepository;
         this.userService = userService;
         this.noteService = noteService;
     }
@@ -84,20 +74,11 @@ public class NoteController {
     }
 
     @DeleteMapping("/{noteId}")
-    @Transactional
     public ResponseEntity<Void> updateNote(final Principal principal,
                                            final @PathVariable Long notebookId,
                                            final @PathVariable Long noteId) {
         final var user = userService.getUser(principal);
-        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        try {
-            noteRepository.deleteAllByIdAndNotebookId(noteId, notebookId);
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        noteService.deleteNote(notebookId, noteId, user.getId());
         return ResponseEntity.noContent().build();
     }
 
