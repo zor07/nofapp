@@ -2,10 +2,10 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.timer.Timer;
-import com.zor07.nofapp.timer.TimerRepository;
-import com.zor07.nofapp.user.RoleRepository;
-import com.zor07.nofapp.user.UserRepository;
+import com.zor07.nofapp.entity.Timer;
+import com.zor07.nofapp.repository.TimerRepository;
+import com.zor07.nofapp.repository.RoleRepository;
+import com.zor07.nofapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

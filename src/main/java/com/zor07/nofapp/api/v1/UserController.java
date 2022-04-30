@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.zor07.nofapp.api.v1.dto.RoleToUserDto;
-import com.zor07.nofapp.user.Role;
-import com.zor07.nofapp.user.User;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.entity.Role;
+import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.service.UserService;
 
 @RestController
 @RequestMapping("/api/v1")

@@ -2,11 +2,11 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.zor07.nofapp.diary.Diary;
-import com.zor07.nofapp.diary.DiaryRepository;
+import com.zor07.nofapp.entity.Diary;
+import com.zor07.nofapp.repository.DiaryRepository;
 import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.user.RoleRepository;
-import com.zor07.nofapp.user.UserRepository;
+import com.zor07.nofapp.repository.RoleRepository;
+import com.zor07.nofapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

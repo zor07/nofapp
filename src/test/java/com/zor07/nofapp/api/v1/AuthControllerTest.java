@@ -10,8 +10,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.user.RoleRepository;
-import com.zor07.nofapp.user.UserRepository;
+import com.zor07.nofapp.repository.RoleRepository;
+import com.zor07.nofapp.repository.UserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;

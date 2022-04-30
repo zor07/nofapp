@@ -3,13 +3,13 @@ package com.zor07.nofapp.api.v1.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.diary.Diary;
-import com.zor07.nofapp.diary.IdAndTitleOnly;
-import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.entity.Diary;
+import com.zor07.nofapp.entity.DiaryIdAndTitle;
+import com.zor07.nofapp.entity.User;
 
 public class DiaryDto {
 
-  public static DiaryDto toDto(final IdAndTitleOnly entity) {
+  public static DiaryDto toDto(final DiaryIdAndTitle entity) {
     final var diary = new DiaryDto();
     diary.id = entity.getId();
     diary.title = entity.getTitle();

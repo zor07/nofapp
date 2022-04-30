@@ -1,8 +1,8 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
-import com.zor07.nofapp.practice.PracticeService;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.service.PracticeService;
+import com.zor07.nofapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

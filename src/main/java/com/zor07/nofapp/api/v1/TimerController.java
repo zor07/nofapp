@@ -1,8 +1,8 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.TimerDto;
-import com.zor07.nofapp.timer.TimerService;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.service.TimerService;
+import com.zor07.nofapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

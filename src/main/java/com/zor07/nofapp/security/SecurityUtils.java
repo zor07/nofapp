@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.user.Role;
+import com.zor07.nofapp.entity.Role;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -32,7 +32,7 @@ public class SecurityUtils {
         .sign(getAlgorithm());
   }
 
-  public static boolean isUserAdmin(final com.zor07.nofapp.user.User user) {
+  public static boolean isUserAdmin(final com.zor07.nofapp.entity.User user) {
     return user.getRoles().stream().anyMatch(role -> role.getName().equals(UserRole.ROLE_ADMIN.getRoleName()));
   }
 
@@ -44,7 +44,7 @@ public class SecurityUtils {
         .sign(getAlgorithm());
   }
 
-  public static String createAccessToken(final com.zor07.nofapp.user.User user, final String issuer) {
+  public static String createAccessToken(final com.zor07.nofapp.entity.User user, final String issuer) {
     return createAccessToken(user.getUsername(), issuer,
         user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
   }

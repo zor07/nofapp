@@ -8,9 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.user.Role;
-import com.zor07.nofapp.user.User;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.entity.Role;
+import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.service.UserService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 

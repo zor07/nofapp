@@ -1,6 +1,6 @@
 package com.zor07.nofapp.api.v1.dto;
 
-import com.zor07.nofapp.practice.PracticeTag;
+import com.zor07.nofapp.entity.PracticeTag;
 
 public class PracticeTagDto {
 

@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1.dto;
 
-import com.zor07.nofapp.notebook.Notebook;
-import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.entity.Notebook;
+import com.zor07.nofapp.entity.User;
 
 public class NotebookDto {
 

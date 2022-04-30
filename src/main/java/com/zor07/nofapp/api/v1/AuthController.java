@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.security.SecurityUtils;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.service.UserService;
 
 @RestController
 @RequestMapping("/api/v1/auth")

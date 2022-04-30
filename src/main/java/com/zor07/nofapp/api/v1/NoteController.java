@@ -2,9 +2,9 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
-import com.zor07.nofapp.notebook.NotebookRepository;
-import com.zor07.nofapp.notebook.note.NoteRepository;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.repository.NotebookRepository;
+import com.zor07.nofapp.repository.NoteRepository;
+import com.zor07.nofapp.service.UserService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

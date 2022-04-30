@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.zor07.nofapp.timer.Timer;
-import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.entity.Timer;
+import com.zor07.nofapp.entity.User;
 
 public class TimerDto {
 

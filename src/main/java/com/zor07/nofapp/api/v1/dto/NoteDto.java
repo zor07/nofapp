@@ -3,9 +3,9 @@ package com.zor07.nofapp.api.v1.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.notebook.note.Note;
-import com.zor07.nofapp.notebook.note.NoteIdAndTitle;
-import com.zor07.nofapp.user.User;
+import com.zor07.nofapp.entity.Note;
+import com.zor07.nofapp.entity.NoteIdAndTitle;
+import com.zor07.nofapp.entity.User;
 
 public class NoteDto {
 

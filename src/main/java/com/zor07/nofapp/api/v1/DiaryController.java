@@ -17,9 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.DiaryDto;
-import com.zor07.nofapp.diary.DiaryRepository;
-import com.zor07.nofapp.user.User;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.repository.DiaryRepository;
+import com.zor07.nofapp.service.UserService;
 
 @RestController
 @RequestMapping("/api/v1/diary")

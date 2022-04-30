@@ -1,8 +1,8 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.NotebookDto;
-import com.zor07.nofapp.notebook.NotebookRepository;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.repository.NotebookRepository;
+import com.zor07.nofapp.service.UserService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
