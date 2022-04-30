@@ -1,7 +1,5 @@
 package com.zor07.nofapp.entity;
 
-import com.zor07.nofapp.entity.Notebook;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
