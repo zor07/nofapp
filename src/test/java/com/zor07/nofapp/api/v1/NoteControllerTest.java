@@ -159,7 +159,7 @@ public class NoteControllerTest extends AbstractApiTest {
     resultActions.andExpect(status().isCreated());
     final var noteResponse = noteRepository.findAll().get(0);
     assertThat(noteResponse.getTitle()).isEqualTo(noteRequestDto.title);
-    assertThat(noteResponse.getData()).isEqualTo(noteRequestDto.data.toString());
+    assertThat(objectMapper.readTree(noteResponse.getData())).isEqualTo(noteRequestDto.data);
   }
 
   @Test
@@ -192,7 +192,7 @@ public class NoteControllerTest extends AbstractApiTest {
     assertThat(all).hasSize(1);
     final var note = all.get(0);
     assertThat(note.getTitle()).isEqualTo(newTitle);
-    assertThat(note.getData()).isEqualTo(newData);
+    assertThat(objectMapper.readTree(note.getData())).isEqualTo(objectMapper.readTree(newData));
   }
 
 

@@ -1,5 +1,10 @@
 package com.zor07.nofapp.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +16,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "note", schema = "public")
+@TypeDef(
+        name = "json",
+        typeClass = JsonType.class
+)
 public class Note {
 
   @Id
@@ -31,6 +40,8 @@ public class Note {
 
   private String title;
 
+  @Type(type = "json")
+  @Column(columnDefinition = "jsonb")
   private String data;
 
   public Note(Long id, Notebook notebook, String title, String data) {

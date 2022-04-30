@@ -24,7 +24,7 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
                 <constraints  nullable="false"/>
             </column>
 
-            <column  name="data"  type="varchar">
+            <column  name="data"  type="jsonb">
                 <constraints  nullable="false"/>
             </column>
 
