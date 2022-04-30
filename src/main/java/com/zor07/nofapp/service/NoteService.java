@@ -22,14 +22,14 @@ public class NoteService {
         this.notebookRepository = notebookRepository;
     }
 
-    public Note getNoteByNotebookIdForUser(final Long notebookId, final Long noteId, final Long userId) {
+    public Note getNote(final Long notebookId, final Long noteId, final Long userId) {
         if (notUsersNotebook(userId, notebookId)) {
             throw new IllegalResourceAccessException();
         }
         return noteRepository.getById(noteId);
     }
 
-    public List<NoteIdAndTitle> getNotesByNotebookIdForUser(final Long notebookId, final Long userId) {
+    public List<NoteIdAndTitle> getNotes(final Long notebookId, final Long userId) {
         if (notUsersNotebook(userId, notebookId)) {
             throw new IllegalResourceAccessException();
         }

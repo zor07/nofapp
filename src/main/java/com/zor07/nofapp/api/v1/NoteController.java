@@ -45,14 +45,14 @@ public class NoteController {
                                            final @PathVariable Long notebookId,
                                            final @PathVariable Long noteId) throws JsonProcessingException {
         final var userId = userService.getUser(principal).getId();
-        return ResponseEntity.ok(NoteDto.toDto(noteService.getNoteByNotebookIdForUser(notebookId, noteId, userId)));
+        return ResponseEntity.ok(NoteDto.toDto(noteService.getNote(notebookId, noteId, userId)));
     }
 
     @GetMapping
     public ResponseEntity<List<NoteDto>> getNotesByBook(final Principal principal,
                                                         final @PathVariable Long notebookId) {
         final var userId = userService.getUser(principal).getId();
-        final var notes = noteService.getNotesByNotebookIdForUser(notebookId, userId)
+        final var notes = noteService.getNotes(notebookId, userId)
                 .stream()
                 .map(NoteDto::toDto)
                 .toList();
