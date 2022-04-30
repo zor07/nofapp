@@ -82,17 +82,21 @@ public class NotebookControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void findAllTest() throws Exception {
+  void getNotebooks_shouldReturnNotebooks() throws Exception {
+    //given
     createNotebook(USER_1);
     createNotebook(USER_1);
     createNotebook(USER_2);
     final var authHeader = getAuthHeader(mvc, USER_1);
 
+    //when
     final var content = mvc.perform(get(ENDPOINT)
               .contentType(MediaType.APPLICATION_JSON)
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
+
+    //then
     final var notebooks = objectMapper.readValue(content, new TypeReference<List<NotebookTestDto>>(){});
     assertThat(notebooks).hasSize(2);
     assertThat(notebooks.get(0).id).isNotNull();
@@ -104,17 +108,21 @@ public class NotebookControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void findByIdTest() throws Exception {
+  void getNotebook_shouldReturnNotebook() throws Exception {
+    //given
     createNotebook(USER_1);
     final var userId = userRepository.findByUsername(USER_1).getId();
     final var diaryId = notebookRepository.findAllByUserId(userId).get(0).getId();
     final var authHeader = getAuthHeader(mvc, USER_1);
 
+    //when
     final var content = mvc.perform(get(ENDPOINT+"/"+diaryId)
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
+
+    //then
     final var notebook = objectMapper.readValue(content, NotebookTestDto.class);
     assertThat(notebook.id).isEqualTo(diaryId);
     assertThat(notebook.name).isEqualTo(NAME);
@@ -122,16 +130,21 @@ public class NotebookControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void saveTest() throws Exception {
+  void createNotebook_shouldCreateNotebook() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebookTestDto = new NotebookTestDto();
     notebookTestDto.name = NAME;
     notebookTestDto.description = DESCRIPTION;
+
+    //when
     mvc.perform(post(ENDPOINT)
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(notebookTestDto))
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isCreated());
+
+    //then
     final var notebook = notebookRepository.findAll().get(0);
     assertThat(notebook.getName()).isEqualTo(NAME);
     assertThat(notebook.getDescription()).isEqualTo(DESCRIPTION);
@@ -139,7 +152,8 @@ public class NotebookControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void updateTest() throws Exception {
+  void updateNotebook_shouldUpdateNotebook() throws Exception {
+    //given
     createNotebook(USER_1);
     final var id = notebookRepository.findAll().get(0).getId();
     final var authHeader = getAuthHeader(mvc, USER_1);
@@ -149,11 +163,15 @@ public class NotebookControllerTest extends AbstractApiTest {
     notebookTestDto.id = id;
     notebookTestDto.name = newName;
     notebookTestDto.description = newDesc;
+
+    //when
     mvc.perform(post(ENDPOINT)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(notebookTestDto))
         .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isCreated());
+
+    //then
     final var all = notebookRepository.findAll();
     assertThat(all).hasSize(1);
     final var notebook = all.get(0);
@@ -164,14 +182,17 @@ public class NotebookControllerTest extends AbstractApiTest {
 
 
   @Test
-  void deleteTest() throws Exception {
+  void deleteNotebook_shouldDeleteNotebook() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     createNotebook(USER_1);
     final var notebook = notebookRepository.findAll().get(0);
+    //when
     mvc.perform(delete(ENDPOINT +"/"+notebook.getId())
               .contentType(MediaType.APPLICATION_JSON)
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isNoContent());
+    //then
     assertThat(notebookRepository.findAll()).isEmpty();
   }
 

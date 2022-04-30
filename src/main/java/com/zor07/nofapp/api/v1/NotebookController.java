@@ -50,7 +50,7 @@ public class NotebookController {
 
     @PostMapping
     public ResponseEntity<NotebookDto> createNotebook(final Principal principal,
-                                                   final @RequestBody NotebookDto dto) {
+                                                      final @RequestBody NotebookDto dto) {
         final var user = userService.getUser(principal);
         final var saved = notebookService.saveNotebook(NotebookDto.toEntity(dto, user));
         final var uri = URI.create(ServletUriComponentsBuilder
