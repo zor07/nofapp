@@ -89,19 +89,22 @@ public class NoteControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void findAllTest() throws Exception {
+  void getNotes_shouldReturnNotes() throws Exception {
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
     createNote(notebook);
     createNote(notebook);
-    final var authHeader = getAuthHeader(mvc, USER_1);
-
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
 
+    //when
     final var content = mvc.perform(get(endpoint)
-              .contentType(MediaType.APPLICATION_JSON)
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, authHeader))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+    //then
     final var notes = objectMapper.readValue(content, new TypeReference<List<NoteDto>>(){});
     assertThat(notes).hasSize(2);
     assertThat(notes.get(0).id).isNotNull();
@@ -113,17 +116,19 @@ public class NoteControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void findByIdTest() throws Exception {
+  void getNote_shouldReturnNote() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
     final var note = createNote(notebook);
     final var endpoint = String.format("/api/v1/notebooks/%d/notes/%d", notebook.getId(), note.getId());
-
+    //when
     final var content = mvc.perform(get(endpoint)
-        .contentType(MediaType.APPLICATION_JSON)
-        .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .header(HttpHeaders.AUTHORIZATION, authHeader))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+    //then
     final var response = objectMapper.readValue(content, NoteDto.class);
     assertThat(response.id).isEqualTo(note.getId());
     assertThat(response.title).isEqualTo(note.getTitle());
@@ -131,7 +136,8 @@ public class NoteControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void saveTest() throws Exception {
+  void createNote_shouldCreateNote() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
     final var notebookDto = new NotebookDto();
@@ -143,18 +149,22 @@ public class NoteControllerTest extends AbstractApiTest {
 
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
 
-    mvc.perform(post(endpoint)
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(noteRequestDto))
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isCreated());
+    //when
+    final var resultActions = mvc.perform(post(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(noteRequestDto))
+                    .header(HttpHeaders.AUTHORIZATION, authHeader));
+
+    //then
+    resultActions.andExpect(status().isCreated());
     final var noteResponse = noteRepository.findAll().get(0);
     assertThat(noteResponse.getTitle()).isEqualTo(noteRequestDto.title);
     assertThat(noteResponse.getData()).isEqualTo(noteRequestDto.data.toString());
   }
 
   @Test
-  void updateTest() throws Exception {
+  void updateNote_shouldUpdateNote() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
     createNote(notebook);
@@ -169,14 +179,15 @@ public class NoteControllerTest extends AbstractApiTest {
     noteRequestDto.title = newTitle;
     noteRequestDto.data = objectMapper.readTree(newData);
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
-    assertThat(noteRepository.findAll()).hasSize(1);
 
+    //when
     mvc.perform(put(endpoint)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(noteRequestDto))
         .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isAccepted());
 
+    //then
     final var all = noteRepository.findAll();
     assertThat(all).hasSize(1);
     final var note = all.get(0);
@@ -186,22 +197,25 @@ public class NoteControllerTest extends AbstractApiTest {
 
 
   @Test
-  void deleteTest() throws Exception {
+  void deleteNote_shouldDeleteNote() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
     final var note = createNote(notebook);
     final var endpoint = String.format("/api/v1/notebooks/%d/notes/%d", notebook.getId(), note.getId());
 
+    //when
     mvc.perform(delete(endpoint)
               .contentType(MediaType.APPLICATION_JSON)
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isNoContent());
 
+    //then
     assertThat(noteRepository.findAll()).isEmpty();
   }
 
   @Test
-  void deleteTest_whenNoteNotExists_shouldReturnBadRequest() throws Exception {
+  void deleteNote_whenNoteNotExists_shouldReturnBadRequest() throws Exception {
     //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var endpoint = "/api/v1/notebooks/777/notes/777";

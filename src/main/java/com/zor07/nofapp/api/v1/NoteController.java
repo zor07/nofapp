@@ -74,7 +74,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/{noteId}")
-    public ResponseEntity<Void> updateNote(final Principal principal,
+    public ResponseEntity<Void> deleteNote(final Principal principal,
                                            final @PathVariable Long notebookId,
                                            final @PathVariable Long noteId) {
         final var user = userService.getUser(principal);
