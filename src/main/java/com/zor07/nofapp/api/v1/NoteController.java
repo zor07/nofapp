@@ -2,12 +2,11 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
-import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.repository.NoteRepository;
+import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.service.NoteService;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -65,28 +66,21 @@ public class NoteController {
                                               final @RequestBody NoteDto dto) throws JsonProcessingException {
 
         final var user = userService.getUser(principal);
-        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        final var note = NoteDto.toEntity(dto, user);
-        final var saved = noteRepository.save(note);
-        return new ResponseEntity<>(NoteDto.toDto(saved), HttpStatus.CREATED);
+        final var note = noteService.saveNote(NoteDto.toEntity(dto, user));
+        final var uri = URI.create(ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(String.format("/api/v1/notebooks/%d/notes/%d", note.getNotebook().getId(), note.getId()))
+                .toUriString());
+        return ResponseEntity.created(uri).body(NoteDto.toDto(note));
     }
 
     @PutMapping
     public ResponseEntity<NoteDto> updateNote(final Principal principal,
                                               final @PathVariable Long notebookId,
-                                              final @RequestBody NoteDto note) throws JsonProcessingException {
-        if (note.id == null) {
-            return ResponseEntity.badRequest().build();
-        }
+                                              final @RequestBody NoteDto dto) throws JsonProcessingException {
         final var user = userService.getUser(principal);
-        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        final var entity = NoteDto.toEntity(note, user);
-        final var saved = noteRepository.save(entity);
-        return ResponseEntity.accepted().body(NoteDto.toDto(saved));
+        final var note = noteService.updateNote(NoteDto.toEntity(dto, user));
+        return ResponseEntity.accepted().body(NoteDto.toDto(note));
     }
 
     @DeleteMapping("/{noteId}")

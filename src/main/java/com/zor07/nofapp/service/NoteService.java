@@ -36,6 +36,22 @@ public class NoteService {
         return noteRepository.findAllByNotebookId(notebookId);
     }
 
+    public Note saveNote(final Note note) {
+        final var userId = note.getNotebook().getUser().getId();
+        final var notebookId = note.getNotebook().getId();
+        if (notUsersNotebook(userId, notebookId)) {
+            throw new IllegalResourceAccessException();
+        }
+        return noteRepository.save(note);
+    }
+
+    public Note updateNote(final Note note) {
+        if (note.getId() == null) {
+            throw new IllegalArgumentException();
+        }
+        return saveNote(note);
+    }
+
     private boolean notUsersNotebook(final Long userId, final Long notebookId) {
         return notebookRepository.findByIdAndUserId(notebookId, userId) == null;
     }
