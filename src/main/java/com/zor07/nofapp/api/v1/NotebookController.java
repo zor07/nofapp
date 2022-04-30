@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
@@ -70,7 +69,6 @@ public class NotebookController {
     }
 
     @DeleteMapping("/{notebookId}")
-    @Transactional
     public ResponseEntity<Void> deleteNotebook(final Principal principal,
                                                final @PathVariable Long notebookId) {
         final var user = userService.getUser(principal);
