@@ -1,5 +1,6 @@
 package com.zor07.nofapp.service;
 
+import com.zor07.nofapp.entity.Note;
 import com.zor07.nofapp.entity.NoteIdAndTitle;
 import com.zor07.nofapp.exception.IllegalResourceAccessException;
 import com.zor07.nofapp.repository.NoteRepository;
@@ -21,6 +22,13 @@ public class NoteService {
         this.notebookRepository = notebookRepository;
     }
 
+    public Note getNoteByNotebookIdForUser(final Long notebookId, final Long noteId, final Long userId) {
+        if (notUsersNotebook(userId, notebookId)) {
+            throw new IllegalResourceAccessException();
+        }
+        return noteRepository.getById(noteId);
+    }
+
     public List<NoteIdAndTitle> getNotesByNotebookIdForUser(final Long notebookId, final Long userId) {
         if (notUsersNotebook(userId, notebookId)) {
             throw new IllegalResourceAccessException();
@@ -32,20 +40,6 @@ public class NoteService {
         return notebookRepository.findByIdAndUserId(notebookId, userId) == null;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<NoteDto>> getNotesByBook(final Principal principal,
-//                                                        final @PathVariable Long notebookId) {
-//        if (notebookRepository.findByIdAndUserId(notebookId, userService.getUser(principal).getId()) == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        final var notes = noteRepository.findAllByNotebookId(notebookId)
-//                .stream()
-//                .map(NoteDto::toDto)
-//                .toList();
-//        return new ResponseEntity<>(notes, HttpStatus.OK);
-//    }
-//
 //    @PostMapping
 //    public ResponseEntity<NoteDto> createNote(final Principal principal,
 //                                              final @PathVariable Long notebookId,
@@ -59,19 +53,7 @@ public class NoteService {
 //        final var saved = noteRepository.save(note);
 //        return new ResponseEntity<>(NoteDto.toDto(saved), HttpStatus.CREATED);
 //    }
-//
-//    @GetMapping("/{noteId}")
-//    public ResponseEntity<NoteDto> getNote(final Principal principal,
-//                                           final @PathVariable Long notebookId,
-//                                           final @PathVariable Long noteId) throws JsonProcessingException {
-//        final var user = userService.getUser(principal);
-//        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        return ResponseEntity.ok(NoteDto.toDto(noteRepository.getById(noteId)));
-//    }
-//
+
 //    @PutMapping
 //    public ResponseEntity<NoteDto> updateNote(final Principal principal,
 //                                              final @PathVariable Long notebookId,

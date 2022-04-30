@@ -39,6 +39,15 @@ public class NoteController {
         this.userService = userService;
         this.noteService = noteService;
     }
+
+    @GetMapping("/{noteId}")
+    public ResponseEntity<NoteDto> getNote(final Principal principal,
+                                           final @PathVariable Long notebookId,
+                                           final @PathVariable Long noteId) throws JsonProcessingException {
+        final var userId = userService.getUser(principal).getId();
+        return ResponseEntity.ok(NoteDto.toDto(noteService.getNoteByNotebookIdForUser(notebookId, noteId, userId)));
+    }
+
     @GetMapping
     public ResponseEntity<List<NoteDto>> getNotesByBook(final Principal principal,
                                                         final @PathVariable Long notebookId) {
@@ -62,18 +71,6 @@ public class NoteController {
         final var note = NoteDto.toEntity(dto, user);
         final var saved = noteRepository.save(note);
         return new ResponseEntity<>(NoteDto.toDto(saved), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{noteId}")
-    public ResponseEntity<NoteDto> getNote(final Principal principal,
-                                           final @PathVariable Long notebookId,
-                                           final @PathVariable Long noteId) throws JsonProcessingException {
-        final var user = userService.getUser(principal);
-        if (notebookRepository.findByIdAndUserId(notebookId, user.getId()) == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(NoteDto.toDto(noteRepository.getById(noteId)));
     }
 
     @PutMapping
