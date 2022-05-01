@@ -620,7 +620,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         dto.name = PRACTICE_NAME;
         dto.data = objectMapper.readTree(PRACTICE_DATA_JSON);
         dto.description = PRACTICE_DESC;
-        dto.practiceTag = PracticeTagDto.toDto(tagRepository.findAll().get(0));
+        dto.practiceTag = practiceMapper.toPracticeTagDto(tagRepository.findAll().get(0));
         return dto;
     }
 
