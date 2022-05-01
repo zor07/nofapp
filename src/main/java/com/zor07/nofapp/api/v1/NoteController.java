@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
+import com.zor07.nofapp.api.v1.mapper.NoteMapper;
 import com.zor07.nofapp.service.NoteService;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +25,21 @@ public class NoteController {
 
     private final UserService userService;
     private final NoteService noteService;
+    private final NoteMapper noteMapper;
     public NoteController(final UserService userService,
-                          final NoteService noteService) {
+                          final NoteService noteService,
+                          final NoteMapper noteMapper) {
         this.userService = userService;
         this.noteService = noteService;
+        this.noteMapper = noteMapper;
     }
 
     @GetMapping("/{noteId}")
     public ResponseEntity<NoteDto> getNote(final Principal principal,
                                            final @PathVariable Long notebookId,
-                                           final @PathVariable Long noteId) throws JsonProcessingException {
+                                           final @PathVariable Long noteId) {
         final var userId = userService.getUser(principal).getId();
-        return ResponseEntity.ok(NoteDto.toDto(noteService.getNote(notebookId, noteId, userId)));
+        return ResponseEntity.ok(noteMapper.toDto(noteService.getNote(notebookId, noteId, userId)));
     }
 
     @GetMapping
@@ -45,7 +48,7 @@ public class NoteController {
         final var userId = userService.getUser(principal).getId();
         final var notes = noteService.getNotes(notebookId, userId)
                 .stream()
-                .map(NoteDto::toDto)
+                .map(noteMapper::toDto)
                 .toList();
         return ResponseEntity.ok(notes);
     }
@@ -53,24 +56,24 @@ public class NoteController {
     @PostMapping
     public ResponseEntity<NoteDto> createNote(final Principal principal,
                                               final @PathVariable Long notebookId,
-                                              final @RequestBody NoteDto dto) throws JsonProcessingException {
+                                              final @RequestBody NoteDto dto) {
 
         final var user = userService.getUser(principal);
-        final var note = noteService.saveNote(NoteDto.toEntity(dto, user));
+        final var note = noteService.saveNote(noteMapper.toEntity(dto, user));
         final var uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(String.format("/api/v1/notebooks/%d/notes/%d", note.getNotebook().getId(), note.getId()))
                 .toUriString());
-        return ResponseEntity.created(uri).body(NoteDto.toDto(note));
+        return ResponseEntity.created(uri).body(noteMapper.toDto(note));
     }
 
     @PutMapping
     public ResponseEntity<NoteDto> updateNote(final Principal principal,
                                               final @PathVariable Long notebookId,
-                                              final @RequestBody NoteDto dto) throws JsonProcessingException {
+                                              final @RequestBody NoteDto dto) {
         final var user = userService.getUser(principal);
-        final var note = noteService.updateNote(NoteDto.toEntity(dto, user));
-        return ResponseEntity.accepted().body(NoteDto.toDto(note));
+        final var note = noteService.updateNote(noteMapper.toEntity(dto, user));
+        return ResponseEntity.accepted().body(noteMapper.toDto(note));
     }
 
     @DeleteMapping("/{noteId}")
