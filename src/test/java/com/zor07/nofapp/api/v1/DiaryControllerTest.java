@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Deprecated //soon will be replaced with Note
 public class DiaryControllerTest extends AbstractApiTest {
 
   private static final String USER_1 = "user1";

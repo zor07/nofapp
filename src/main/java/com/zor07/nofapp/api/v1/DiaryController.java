@@ -1,9 +1,9 @@
 package com.zor07.nofapp.api.v1;
 
-import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.zor07.nofapp.api.v1.dto.DiaryDto;
+import com.zor07.nofapp.repository.DiaryRepository;
+import com.zor07.nofapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -15,13 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zor07.nofapp.api.v1.dto.DiaryDto;
-import com.zor07.nofapp.repository.DiaryRepository;
-import com.zor07.nofapp.service.UserService;
+
+import javax.transaction.Transactional;
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/diary")
+@Deprecated //soon will be replaced with Note
 public class DiaryController {
 
   private final UserService userService;

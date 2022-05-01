@@ -1,21 +1,18 @@
 package com.zor07.nofapp.repository;
 
-import java.util.ArrayList;
-
 import com.zor07.nofapp.entity.Diary;
-import com.zor07.nofapp.repository.DiaryRepository;
+import com.zor07.nofapp.entity.Role;
+import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.repository.RoleRepository;
-import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.repository.UserRepository;
-import com.zor07.nofapp.service.UserService;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+@Deprecated //soon will be replaced with Note
 public class DiaryRepositoryTest extends AbstractApplicationTest {
 
   @Autowired

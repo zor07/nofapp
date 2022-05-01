@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "diary", schema = "public")
+@Deprecated //soon will be replaced with Note
 public class Diary {
 
   @Id

@@ -7,6 +7,7 @@ import com.zor07.nofapp.entity.Diary;
 import com.zor07.nofapp.entity.DiaryIdAndTitle;
 import com.zor07.nofapp.entity.User;
 
+@Deprecated //soon will be replaced with Note
 public class DiaryDto {
 
   public static DiaryDto toDto(final DiaryIdAndTitle entity) {

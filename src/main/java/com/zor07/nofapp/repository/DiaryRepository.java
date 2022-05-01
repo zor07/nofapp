@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+@Deprecated //soon will be replaced with Note
 public interface DiaryRepository  extends JpaRepository<Diary, Long> {
   List<DiaryIdAndTitle> findAllByUserId(Long userId);
   void deleteByIdAndUserId(Long id, Long userId);
