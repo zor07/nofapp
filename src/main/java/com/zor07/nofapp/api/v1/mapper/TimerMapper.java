@@ -14,11 +14,13 @@ import java.util.TimeZone;
 @Mapper(componentModel = "spring")
 public interface TimerMapper {
 
-    default LocalDateTime fromInstant(Instant instant, @Context TimeZone timeZone) {
+    default LocalDateTime fromInstant(final Instant instant,
+                                      final @Context TimeZone timeZone) {
         return instant == null ? null : LocalDateTime.ofInstant(instant, timeZone.toZoneId());
     }
 
-    default Instant fromLocalDateTime(LocalDateTime localDateTime, @Context TimeZone timeZone) {
+    default Instant fromLocalDateTime(final LocalDateTime localDateTime,
+                                      final @Context TimeZone timeZone) {
         return localDateTime == null ? null : localDateTime.atZone(timeZone.toZoneId()).toInstant();
     }
 

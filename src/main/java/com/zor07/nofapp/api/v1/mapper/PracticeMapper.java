@@ -13,12 +13,14 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PracticeMapper {
 
-    default String fromJsonNode(JsonNode jsonNode) {
+    ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    default String fromJsonNode(final JsonNode jsonNode) {
         return jsonNode == null ? null : jsonNode.toString();
     }
 
-    default JsonNode fromString(String string) throws JsonProcessingException {
-        return string == null ? null : new ObjectMapper().readTree(string);
+    default JsonNode fromString(final String string) throws JsonProcessingException {
+        return string == null ? null : OBJECT_MAPPER.readTree(string);
     }
 
     PracticeTagDto toPracticeTagDto(final PracticeTag entity);
