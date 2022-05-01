@@ -2,17 +2,22 @@ package com.zor07.nofapp.repository;
 
 import com.zor07.nofapp.entity.Practice;
 import com.zor07.nofapp.entity.PracticeTag;
-import com.zor07.nofapp.repository.PracticeRepository;
-import com.zor07.nofapp.repository.PracticeTagRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PracticeRepositoryTest extends AbstractApplicationTest {
-
+    private static final String TAG_NAME = "tag";
+    private static final String PRACTICE_NAME = "practice";
+    private static final String PRACTICE_NAME_NEW = "new practice";
+    private static final String PRACTICE_DESCRIPTION = "description";
+    private static final String PRACTICE_DATA = "{\"data\": \"value\"}";
     @Autowired
     private PracticeRepository practiceRepository;
 
@@ -42,24 +47,25 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
-    void testCrud() {
+    void testCrud() throws IOException {
+        final var objectMapper = new ObjectMapper();
         final var practice = createPractice(true);
 
         final var id = practiceRepository.save(practice).getId();
         final var inserted = practiceRepository.findById(id).get();
         assertThat(inserted).isNotNull();
-        assertThat(inserted.getPracticeTag().getName()).isEqualTo("tag");
-        assertThat(inserted.getName()).isEqualTo("practice");
-        assertThat(inserted.getDescription()).isEqualTo("description");
-        assertThat(inserted.getData()).isEqualTo("data");
+        assertThat(inserted.getPracticeTag().getName()).isEqualTo(TAG_NAME);
+        assertThat(inserted.getName()).isEqualTo(PRACTICE_NAME);
+        assertThat(inserted.getDescription()).isEqualTo(PRACTICE_DESCRIPTION);
+        assertThat(objectMapper.readTree(inserted.getData())).isEqualTo(objectMapper.readTree(PRACTICE_DATA));
         assertThat(inserted.isPublic()).isTrue();
 
-        inserted.setName("new name");
+        inserted.setName(PRACTICE_NAME_NEW);
         inserted.setPublic(true);
         practiceRepository.save(inserted);
 
         final var updated = practiceRepository.findById(id).get();
-        assertThat(updated.getName()).isEqualTo("new name");
+        assertThat(updated.getName()).isEqualTo(PRACTICE_NAME_NEW);
         assertThat(updated.isPublic()).isTrue();
 
         practiceRepository.delete(updated);
@@ -69,16 +75,16 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
 
     private void createPracticeTag() {
         final var practiceTag = new PracticeTag();
-        practiceTag.setName("tag");
+        practiceTag.setName(TAG_NAME);
         tagRepository.save(practiceTag);
     }
 
     private Practice createPractice(final boolean isPublic) {
         final var practice = new Practice();
         practice.setPracticeTag(tagRepository.findAll().get(0));
-        practice.setName("practice");
-        practice.setDescription("description");
-        practice.setData("data");
+        practice.setName(PRACTICE_NAME);
+        practice.setDescription(PRACTICE_DESCRIPTION);
+        practice.setData(PRACTICE_DATA);
         practice.setPublic(isPublic);
         return practice;
     }

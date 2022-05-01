@@ -2,17 +2,12 @@ package com.zor07.nofapp.repository;
 
 import com.zor07.nofapp.entity.Practice;
 import com.zor07.nofapp.entity.PracticeTag;
+import com.zor07.nofapp.entity.Role;
+import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.entity.UserPractice;
 import com.zor07.nofapp.entity.UserPracticeKey;
-import com.zor07.nofapp.repository.PracticeRepository;
-import com.zor07.nofapp.repository.PracticeTagRepository;
-import com.zor07.nofapp.repository.UserPracticeRepository;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.repository.RoleRepository;
-import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -29,7 +24,7 @@ public class UserPracticeRepositoryTest extends AbstractApplicationTest {
     private static final String TAG_NAME = "tag";
     private static final String PRACTICE_NAME = "practice";
     private static final String PRACTICE_DESCRIPTION = "description";
-    private static final String PRACTICE_DATA = "data";
+    private static final String PRACTICE_DATA = "{\"data\": \"value\"}";
 
     private @Autowired PracticeRepository practiceRepository;
     private @Autowired PracticeTagRepository tagRepository;

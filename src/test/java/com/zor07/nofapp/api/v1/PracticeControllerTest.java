@@ -2,21 +2,21 @@ package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
-import com.zor07.nofapp.api.v1.dto.PracticeTagDto;
 import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
 import com.zor07.nofapp.entity.Practice;
-import com.zor07.nofapp.repository.PracticeRepository;
 import com.zor07.nofapp.entity.PracticeTag;
-import com.zor07.nofapp.repository.PracticeTagRepository;
+import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.entity.UserPractice;
 import com.zor07.nofapp.entity.UserPracticeKey;
+import com.zor07.nofapp.repository.PracticeRepository;
+import com.zor07.nofapp.repository.PracticeTagRepository;
+import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserPracticeRepository;
+import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.repository.RoleRepository;
-import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -396,7 +396,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(all.get(0)).matches(p ->
                 p.isPublic() &&
                         p.getPracticeTag().getName().equals(TAG_NAME) &&
-                        p.getData().equals(PRACTICE_DATA_JSON) &&
+                        toJsonNode(p.getData()).equals(toJsonNode(PRACTICE_DATA_JSON)) &&
                         p.getDescription().equals(PRACTICE_DESC) &&
                         p.getName().equals(PRACTICE_NAME)
         );
@@ -421,7 +421,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices.get(0)).matches(p ->
                 !p.isPublic() &&
                 p.getPracticeTag().getName().equals(TAG_NAME) &&
-                p.getData().equals(PRACTICE_DATA_JSON) &&
+                toJsonNode(p.getData()).equals(toJsonNode(PRACTICE_DATA_JSON)) &&
                 p.getDescription().equals(PRACTICE_DESC) &&
                 p.getName().equals(PRACTICE_NAME)
         );
@@ -499,7 +499,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //then
         final var practices = practiceRepository.findAll();
         assertThat(practices).hasSize(1);
-        assertThat(practices.get(0).getData()).isEqualTo(newData);
+        assertThat(toJsonNode(practices.get(0).getData())).isEqualTo(toJsonNode(newData));
     }
 
     @Test
@@ -522,7 +522,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //then
         final var practices = practiceRepository.findAll();
         assertThat(practices).hasSize(1);
-        assertThat(practices.get(0).getData()).isEqualTo(newData);
+        assertThat(toJsonNode(practices.get(0).getData())).isEqualTo(toJsonNode(newData));
     }
 
     @Test
@@ -640,6 +640,13 @@ public class PracticeControllerTest extends AbstractApiTest {
         userPracticeRepository.save(userPractice);
     }
 
+    private JsonNode toJsonNode(final String json) {
+        try {
+            return objectMapper.readTree(json);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
 
     private Practice createPractice(final boolean isPublic) {
         final var practice = new Practice();
