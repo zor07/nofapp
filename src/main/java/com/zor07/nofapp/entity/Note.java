@@ -1,6 +1,7 @@
 package com.zor07.nofapp.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import com.zor07.nofapp.validation.JsonString;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -42,6 +43,7 @@ public class Note {
 
   @Type(type = "json")
   @Column(columnDefinition = "jsonb")
+  @JsonString
   private String data;
 
   public Note(Long id, Notebook notebook, String title, String data) {

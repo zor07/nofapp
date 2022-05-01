@@ -8,6 +8,7 @@ import com.zor07.nofapp.repository.NotebookRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -36,7 +37,7 @@ public class NoteService {
         return noteRepository.findAllByNotebookId(notebookId);
     }
 
-    public Note saveNote(final Note note) {
+    public Note saveNote(final @Valid Note note) {
         final var userId = note.getNotebook().getUser().getId();
         final var notebookId = note.getNotebook().getId();
         if (notUsersNotebook(userId, notebookId)) {
@@ -45,7 +46,7 @@ public class NoteService {
         return noteRepository.save(note);
     }
 
-    public Note updateNote(final Note note) {
+    public Note updateNote(final @Valid Note note) {
         if (note.getId() == null) {
             throw new IllegalArgumentException();
         }
