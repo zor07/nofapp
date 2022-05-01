@@ -113,7 +113,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         assertThat(practices).hasSize(3);
         assertThat(practices).allMatch(p ->
                 p.isPublic &&
-                p.practiceTag.name.equals(TAG_NAME) &&
+                p.practiceTag.name().equals(TAG_NAME) &&
                 p.data.toString().equals(PRACTICE_DATA_JSON) &&
                 p.description.equals(PRACTICE_DESC) &&
                 p.name.equals(PRACTICE_NAME));
@@ -146,8 +146,8 @@ public class PracticeControllerTest extends AbstractApiTest {
         //then
         final var dto = objectMapper.readValue(content, PracticeDto.class);
         assertThat(dto.id).isNotNull();
-        assertThat(dto.practiceTag.id).isNotNull();
-        assertThat(dto.practiceTag.name).isEqualTo(TAG_NAME);
+        assertThat(dto.practiceTag.id()).isNotNull();
+        assertThat(dto.practiceTag.name()).isEqualTo(TAG_NAME);
         assertThat(dto.name).isEqualTo(PRACTICE_NAME);
         assertThat(dto.description).isEqualTo(PRACTICE_DESC);
         assertThat(dto.data.toString()).isEqualTo(PRACTICE_DATA_JSON);
@@ -275,8 +275,8 @@ public class PracticeControllerTest extends AbstractApiTest {
         //then
         final var dto = objectMapper.readValue(content, PracticeDto.class);
         assertThat(dto.id).isNotNull();
-        assertThat(dto.practiceTag.id).isNotNull();
-        assertThat(dto.practiceTag.name).isEqualTo(TAG_NAME);
+        assertThat(dto.practiceTag.id()).isNotNull();
+        assertThat(dto.practiceTag.name()).isEqualTo(TAG_NAME);
         assertThat(dto.name).isEqualTo(PRACTICE_NAME);
         assertThat(dto.description).isEqualTo(PRACTICE_DESC);
         assertThat(dto.data.toString()).isEqualTo(PRACTICE_DATA_JSON);

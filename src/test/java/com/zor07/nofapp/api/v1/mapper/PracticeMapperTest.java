@@ -23,9 +23,7 @@ public class PracticeMapperTest {
     @Test
     void shouldMapDtoToEntity() throws Exception {
         //given
-        final var tagDto = new PracticeTagDto();
-        tagDto.id = ID;
-        tagDto.name = NAME;
+        final var tagDto = new PracticeTagDto(ID, NAME);
 
         final var practiceDto = new PracticeDto();
         practiceDto.id = ID;
@@ -64,8 +62,8 @@ public class PracticeMapperTest {
         //when
         final var dto = mapper.toDto(practice);
         assertThat(dto.id).isEqualTo(ID);
-        assertThat(dto.practiceTag.id).isEqualTo(ID);
-        assertThat(dto.practiceTag.name).isEqualTo(NAME);
+        assertThat(dto.practiceTag.id()).isEqualTo(ID);
+        assertThat(dto.practiceTag.name()).isEqualTo(NAME);
         assertThat(dto.name).isEqualTo(NAME);
         assertThat(dto.description).isEqualTo(DESCRIPTION);
         assertThat(dto.data).isEqualTo(objectMapper.readTree(DATA));

@@ -1,8 +1,5 @@
 package com.zor07.nofapp.api.v1.dto;
 
-public class PracticeTagDto {
-
-    public Long id;
-    public String name;
+public record PracticeTagDto(Long id, String name) {
 
 }
