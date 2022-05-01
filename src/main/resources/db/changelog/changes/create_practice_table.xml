@@ -32,7 +32,7 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
             </column>
 
             <column name="data"
-                    type="varchar">
+                    type="jsonb">
                 <constraints nullable="false"/>
             </column>
 
