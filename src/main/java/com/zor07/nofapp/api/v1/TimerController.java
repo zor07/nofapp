@@ -1,6 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.TimerDto;
+import com.zor07.nofapp.api.v1.mapper.TimerMapper;
 import com.zor07.nofapp.service.TimerService;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +17,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/timer")
 public class TimerController {
 
+  private static final TimeZone SYSTEM_TIMEZONE = TimeZone.getTimeZone(ZoneId.systemDefault());
+
   private final UserService userService;
   private final TimerService timerService;
+  private final TimerMapper timerMapper;
 
   @Autowired
   public TimerController(final UserService userService,
-                         final TimerService timerService) {
+                         final TimerService timerService,
+                         final TimerMapper timerMapper) {
     this.userService = userService;
     this.timerService = timerService;
+    this.timerMapper = timerMapper;
   }
 
   @GetMapping(produces = "application/json")
@@ -38,14 +46,14 @@ public class TimerController {
     final var user = userService.getUser(principal);
     return timerService.findAllByUserId(user.getId())
         .stream()
-        .map(TimerDto::toDto)
+        .map(e -> timerMapper.toDto(e, SYSTEM_TIMEZONE))
         .collect(Collectors.toList());
   }
 
   @PostMapping(consumes = "application/json")
-  public ResponseEntity<Void> save(@RequestBody final TimerDto timer, final Principal principal) {
+  public ResponseEntity<Void> save(@RequestBody final TimerDto dto, final Principal principal) {
     final var user = userService.getUser(principal);
-    timerService.save(TimerDto.toEntity(timer, user));
+    timerService.save(timerMapper.toEntity(dto, SYSTEM_TIMEZONE, user));
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
