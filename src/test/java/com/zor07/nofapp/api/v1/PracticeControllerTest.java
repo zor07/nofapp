@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
 import com.zor07.nofapp.api.v1.dto.PracticeTagDto;
+import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
 import com.zor07.nofapp.entity.Practice;
 import com.zor07.nofapp.repository.PracticeRepository;
 import com.zor07.nofapp.entity.PracticeTag;
@@ -56,6 +57,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     private @Autowired PracticeTagRepository tagRepository;
     private @Autowired UserRepository userRepository;
     private @Autowired RoleRepository roleRepository;
+    private @Autowired PracticeMapper practiceMapper;
 
     private MockMvc mvc;
 
@@ -436,7 +438,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     void updatePracticeWithoutId_isBadRequest() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(false));
-        final var practiceDto = PracticeDto.toDto(practice);
+        final var practiceDto = practiceMapper.toDto(practice);
         practiceDto.id = null;
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
         //when
@@ -452,7 +454,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     void updatePublicPractice_isBadRequestForUserRole() throws Exception {
         // given
         final var practice = practiceRepository.save(createPractice(true));
-        final var practiceDto = PracticeDto.toDto(practice);
+        final var practiceDto = practiceMapper.toDto(practice);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
         //when
         final var resultActions = mvc.perform(put(PRACTICE_ENDPOINT)
@@ -468,7 +470,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     void updateUserPractice_isBadRequestForUserRole_ifUserDontOwnThisPractice() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(false));
-        final var practiceDto = PracticeDto.toDto(practice);
+        final var practiceDto = practiceMapper.toDto(practice);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
         //when
         mvc.perform(put(PRACTICE_ENDPOINT)
@@ -483,7 +485,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     void updatePublicPractice_isAcceptedForAdminRole() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(true));
-        final var practiceDto = PracticeDto.toDto(practice);
+        final var practiceDto = practiceMapper.toDto(practice);
         final var newData = PRACTICE_DATA_JSON;
         practiceDto.data = objectMapper.readTree(newData);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
@@ -505,7 +507,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_1);
-        final var practiceDto = PracticeDto.toDto(practice);
+        final var practiceDto = practiceMapper.toDto(practice);
         final var newData = PRACTICE_DATA_JSON;
         practiceDto.data = objectMapper.readTree(newData);
         final var dtoString = objectMapper.writeValueAsString(practiceDto);
@@ -528,7 +530,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(true));
         addPracticeToUser(practice, USER_1);
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        final var dtoString = objectMapper.writeValueAsString(practiceMapper.toDto(practice));
         //when
         mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
                 .content(dtoString)
@@ -545,7 +547,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_1);
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        final var dtoString = objectMapper.writeValueAsString(practiceMapper.toDto(practice));
         //when
         final var result = mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
                 .content(dtoString)
@@ -560,7 +562,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(true));
         addPracticeToUser(practice, USER_ADMIN);
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        final var dtoString = objectMapper.writeValueAsString(practiceMapper.toDto(practice));
         //when
         mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
                 .content(dtoString)
@@ -580,7 +582,7 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(false));
         addPracticeToUser(practice, USER_1);
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        final var dtoString = objectMapper.writeValueAsString(practiceMapper.toDto(practice));
         //when
         mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
                 .content(dtoString)
@@ -596,7 +598,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     void deleteUserPractice_userRole_shouldNotDeleteUserPracticeIfNotHisPracticeTest() throws Exception {
         //given
         final var practice = practiceRepository.save(createPractice(false));
-        final var dtoString = objectMapper.writeValueAsString(PracticeDto.toDto(practice));
+        final var dtoString = objectMapper.writeValueAsString(practiceMapper.toDto(practice));
         //when
         final var resultActions = mvc.perform(delete(String.format("%s/%s", PRACTICE_ENDPOINT, practice.getId().toString()))
                         .content(dtoString)

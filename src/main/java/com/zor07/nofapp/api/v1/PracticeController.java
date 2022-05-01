@@ -1,6 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
+import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
 import com.zor07.nofapp.service.PracticeService;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,14 @@ public class PracticeController {
 
     private final UserService userService;
     private final PracticeService practiceService;
+    private final PracticeMapper practiceMapper;
     @Autowired
     public PracticeController(final UserService userService,
-                              final PracticeService practiceService) {
+                              final PracticeService practiceService,
+                              final PracticeMapper practiceMapper) {
         this.userService = userService;
         this.practiceService = practiceService;
+        this.practiceMapper = practiceMapper;
     }
 
     @GetMapping
@@ -43,7 +47,7 @@ public class PracticeController {
                 : practiceService.getUserPractices(user.getId());
 
         return practices.stream()
-                .map(PracticeDto::toDto)
+                .map(practiceMapper::toDto)
                 .toList();
     }
 
@@ -51,7 +55,7 @@ public class PracticeController {
     public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId, final Principal principal) {
         final var user = userService.getUser(principal);
         final var practice = practiceService.getPracticeForUser(practiceId, user);
-        return ResponseEntity.ok(PracticeDto.toDto(practice));
+        return ResponseEntity.ok(practiceMapper.toDto(practice));
     }
 
     @PostMapping("/{practiceId}/userPractice")
@@ -71,19 +75,19 @@ public class PracticeController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = userService.getUser(principal);
-        final var practice = practiceService.savePractice(PracticeDto.toEntity(practiceDto), user);
+        final var practice = practiceService.savePractice(practiceMapper.toEntity(practiceDto), user);
         final var uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(String.format("/api/v1/practice/%s", practice.getId()))
                 .toUriString());
-        return ResponseEntity.created(uri).body(PracticeDto.toDto(practice));
+        return ResponseEntity.created(uri).body(practiceMapper.toDto(practice));
     }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<PracticeDto> updatePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
         final var user = userService.getUser(principal);
-        final var practice = practiceService.updatePractice(PracticeDto.toEntity(practiceDto), user);
-        return ResponseEntity.accepted().body(PracticeDto.toDto(practice));
+        final var practice = practiceService.updatePractice(practiceMapper.toEntity(practiceDto), user);
+        return ResponseEntity.accepted().body(practiceMapper.toDto(practice));
     }
 
     @DeleteMapping("/{practiceId}")
