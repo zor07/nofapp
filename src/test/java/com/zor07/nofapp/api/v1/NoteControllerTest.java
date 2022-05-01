@@ -107,12 +107,12 @@ public class NoteControllerTest extends AbstractApiTest {
     //then
     final var notes = objectMapper.readValue(content, new TypeReference<List<NoteDto>>(){});
     assertThat(notes).hasSize(2);
-    assertThat(notes.get(0).id).isNotNull();
-    assertThat(notes.get(0).data.isNull()).isTrue();
-    assertThat(notes.get(0).title).isEqualTo(NOTE_TITLE);
-    assertThat(notes.get(1).id).isNotNull();
-    assertThat(notes.get(1).data.isNull()).isTrue();
-    assertThat(notes.get(1).title).isEqualTo(NOTE_TITLE);
+    assertThat(notes.get(0).id()).isNotNull();
+    assertThat(notes.get(0).data().isNull()).isTrue();
+    assertThat(notes.get(0).title()).isEqualTo(NOTE_TITLE);
+    assertThat(notes.get(1).id()).isNotNull();
+    assertThat(notes.get(1).data().isNull()).isTrue();
+    assertThat(notes.get(1).title()).isEqualTo(NOTE_TITLE);
   }
 
   @Test
@@ -130,9 +130,9 @@ public class NoteControllerTest extends AbstractApiTest {
             .andReturn().getResponse().getContentAsString();
     //then
     final var response = objectMapper.readValue(content, NoteDto.class);
-    assertThat(response.id).isEqualTo(note.getId());
-    assertThat(response.title).isEqualTo(note.getTitle());
-    assertThat(response.data.toString()).isEqualTo(note.getData());
+    assertThat(response.id()).isEqualTo(note.getId());
+    assertThat(response.title()).isEqualTo(note.getTitle());
+    assertThat(response.data().toString()).isEqualTo(note.getData());
   }
 
   @Test
@@ -142,10 +142,7 @@ public class NoteControllerTest extends AbstractApiTest {
     final var notebook = createNotebook(USER_1);
     final var notebookDto = new NotebookDto();
     notebookDto.id = notebook.getId();
-    final var noteRequestDto = new NoteDto();
-    noteRequestDto.notebookDto = notebookDto;
-    noteRequestDto.title = NOTE_TITLE;
-    noteRequestDto.data = objectMapper.readTree(NOTE_DATA);
+    final var noteRequestDto = new NoteDto(null, NOTE_TITLE, notebookDto, objectMapper.readTree(NOTE_DATA));
 
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
 
@@ -158,8 +155,8 @@ public class NoteControllerTest extends AbstractApiTest {
     //then
     resultActions.andExpect(status().isCreated());
     final var noteResponse = noteRepository.findAll().get(0);
-    assertThat(noteResponse.getTitle()).isEqualTo(noteRequestDto.title);
-    assertThat(objectMapper.readTree(noteResponse.getData())).isEqualTo(noteRequestDto.data);
+    assertThat(noteResponse.getTitle()).isEqualTo(noteRequestDto.title());
+    assertThat(objectMapper.readTree(noteResponse.getData())).isEqualTo(noteRequestDto.data());
   }
 
   @Test
@@ -173,11 +170,7 @@ public class NoteControllerTest extends AbstractApiTest {
     final var newData = "{\"data\":\"new Data\"}";
     final var notebookDto = new NotebookDto();
     notebookDto.id = notebook.getId();
-    final var noteRequestDto = new NoteDto();
-    noteRequestDto.id = noteId;
-    noteRequestDto.notebookDto = notebookDto;
-    noteRequestDto.title = newTitle;
-    noteRequestDto.data = objectMapper.readTree(newData);
+    final var noteRequestDto = new NoteDto(noteId, newTitle, notebookDto, objectMapper.readTree(newData));
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
 
     //when

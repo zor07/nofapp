@@ -51,11 +51,7 @@ public class NoteMapperTest {
         notebookDto.id = ID;
         notebookDto.description = NOTEBOOK_DESCRIPTION;
         notebookDto.name = NOTEBOOK_NAME;
-        final var noteDto = new NoteDto();
-        noteDto.id = ID;
-        noteDto.title = NOTE_TITLE;
-        noteDto.notebookDto = notebookDto;
-        noteDto.data = objectMapper.readTree(NOTE_DATA);
+        final var noteDto = new NoteDto(ID, NOTE_TITLE, notebookDto, objectMapper.readTree(NOTE_DATA));
 
         //when
         final var entity = noteMapper.toEntity(noteDto, USER);
@@ -88,12 +84,12 @@ public class NoteMapperTest {
         final var dto = noteMapper.toDto(noteEntity);
 
         //then
-        assertThat(dto.id).isEqualTo(ID);
-        assertThat(dto.title).isEqualTo(NOTE_TITLE);
-        assertThat(dto.data).isEqualTo(objectMapper.readTree(NOTE_DATA));
-        assertThat(dto.notebookDto.id).isEqualTo(ID);
-        assertThat(dto.notebookDto.name).isEqualTo(NOTEBOOK_NAME);
-        assertThat(dto.notebookDto.description).isEqualTo(NOTEBOOK_DESCRIPTION);
+        assertThat(dto.id()).isEqualTo(ID);
+        assertThat(dto.title()).isEqualTo(NOTE_TITLE);
+        assertThat(dto.data()).isEqualTo(objectMapper.readTree(NOTE_DATA));
+        assertThat(dto.notebookDto().id).isEqualTo(ID);
+        assertThat(dto.notebookDto().name).isEqualTo(NOTEBOOK_NAME);
+        assertThat(dto.notebookDto().description).isEqualTo(NOTEBOOK_DESCRIPTION);
     }
 
     @Test
@@ -105,9 +101,9 @@ public class NoteMapperTest {
         final var noteDto = noteMapper.toDto(idAndTitle);
 
         //then
-        assertThat(noteDto.id).isEqualTo(ID);
-        assertThat(noteDto.title).isEqualTo(NOTE_TITLE);
-        assertThat(noteDto.data).isNull();
-        assertThat(noteDto.notebookDto).isNull();
+        assertThat(noteDto.id()).isEqualTo(ID);
+        assertThat(noteDto.title()).isEqualTo(NOTE_TITLE);
+        assertThat(noteDto.data()).isNull();
+        assertThat(noteDto.notebookDto()).isNull();
     }
 }
