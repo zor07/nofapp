@@ -1,34 +1,8 @@
 package com.zor07.nofapp.api.v1.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.entity.Practice;
 
 public class PracticeDto {
-
-    public static PracticeDto toDto(final Practice practice) {
-        try {
-            return new PracticeDto(practice.getId(),
-                    PracticeTagDto.toDto(practice.getPracticeTag()),
-                    practice.getName(),
-                    practice.getDescription(),
-                    new ObjectMapper().readTree(practice.getData()),
-                    practice.isPublic());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Practice toEntity(final PracticeDto practiceDto) {
-        return new Practice(practiceDto.id,
-                PracticeTagDto.toEntity(practiceDto.practiceTag),
-                practiceDto.name,
-                practiceDto.description,
-                practiceDto.data.toString(),
-                practiceDto.isPublic);
-    }
-
 
     public Long id;
     public PracticeTagDto practiceTag;
