@@ -45,11 +45,11 @@ public class TimerMapperTest {
         final var timerDto = timerMapper.toDto(entity, TimeZone.getTimeZone(ZoneId.systemDefault()));
 
         //then
-        assertThat(timerDto.id).isEqualTo(entity.getId());
-        assertThat(timerDto.description).isEqualTo(entity.getDescription());
-        assertThat(timerDto.start).isCloseTo(START_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
-        assertThat(timerDto.stop).isCloseTo(STOP_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
-        assertThat(timerDto.isRunning).isFalse();
+        assertThat(timerDto.id()).isEqualTo(entity.getId());
+        assertThat(timerDto.description()).isEqualTo(entity.getDescription());
+        assertThat(timerDto.start()).isCloseTo(START_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
+        assertThat(timerDto.stop()).isCloseTo(STOP_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
+        assertThat(timerDto.isRunning()).isFalse();
     }
 
     @Test
@@ -65,21 +65,18 @@ public class TimerMapperTest {
         final var timerDto = timerMapper.toDto(entity, TimeZone.getTimeZone(ZoneId.systemDefault()));
 
         //then
-        assertThat(timerDto.id).isEqualTo(entity.getId());
-        assertThat(timerDto.description).isEqualTo(entity.getDescription());
-        assertThat(timerDto.start).isCloseTo(START_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
-        assertThat(timerDto.stop).isNull();
-        assertThat(timerDto.isRunning).isTrue();
+        assertThat(timerDto.id()).isEqualTo(entity.getId());
+        assertThat(timerDto.description()).isEqualTo(entity.getDescription());
+        assertThat(timerDto.start()).isCloseTo(START_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
+        assertThat(timerDto.stop()).isNull();
+        assertThat(timerDto.isRunning()).isTrue();
     }
 
     @Test
     void shouldMapDtoToEntityWhenStopIsNull() {
         //given
-        final var dto = new TimerDto();
-        dto.id = ID;
-        dto.description = DESCRIPTION;
-        dto.start = START_LOCAL_DATE_TIME;
-        dto.isRunning = true;
+        final var isRunning = false;
+        final var dto = new TimerDto(ID, isRunning, START_LOCAL_DATE_TIME, null, DESCRIPTION);
 
         //when
         final var entity = timerMapper.toEntity(dto, TimeZone.getTimeZone(ZoneId.systemDefault()), USER);
@@ -95,12 +92,8 @@ public class TimerMapperTest {
     @Test
     void shouldMapDtoToEntityWhenStopIsNotNull() {
         //given
-        final var dto = new TimerDto();
-        dto.id = ID;
-        dto.description = DESCRIPTION;
-        dto.start = START_LOCAL_DATE_TIME;
-        dto.stop = STOP_LOCAL_DATE_TIME;
-        dto.isRunning = true;
+        final var isRunning = true;
+        final var dto = new TimerDto(ID, isRunning, START_LOCAL_DATE_TIME, STOP_LOCAL_DATE_TIME, DESCRIPTION);
 
         //when
         final var entity = timerMapper.toEntity(dto, TimeZone.getTimeZone(ZoneId.systemDefault()), USER);
