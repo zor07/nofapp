@@ -1,6 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.NotebookDto;
+import com.zor07.nofapp.api.v1.mapper.NotebookMapper;
 import com.zor07.nofapp.service.NotebookService;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +25,14 @@ public class NotebookController {
 
     private final NotebookService notebookService;
     private final UserService userService;
+    private final NotebookMapper notebookMapper;
 
     public NotebookController(final NotebookService notebookService,
-                              final UserService userService) {
+                              final UserService userService,
+                              final NotebookMapper notebookMapper) {
         this.notebookService = notebookService;
         this.userService = userService;
+        this.notebookMapper = notebookMapper;
     }
 
     @GetMapping("/{notebookId}")
@@ -36,7 +40,7 @@ public class NotebookController {
                                    final @PathVariable Long notebookId) {
         final var user = userService.getUser(principal);
         final var notebook = notebookService.getNotebook(notebookId, user.getId());
-        return ResponseEntity.ok().body(NotebookDto.toDto(notebook));
+        return ResponseEntity.ok().body(notebookMapper.toDto(notebook));
     }
 
     @GetMapping
@@ -44,7 +48,7 @@ public class NotebookController {
         final var user = userService.getUser(principal);
         return notebookService.getNotebooks(user.getId())
                 .stream()
-                .map(NotebookDto::toDto)
+                .map(notebookMapper::toDto)
                 .toList();
     }
 
@@ -52,20 +56,20 @@ public class NotebookController {
     public ResponseEntity<NotebookDto> createNotebook(final Principal principal,
                                                       final @RequestBody NotebookDto dto) {
         final var user = userService.getUser(principal);
-        final var saved = notebookService.saveNotebook(NotebookDto.toEntity(dto, user));
+        final var saved = notebookService.saveNotebook(notebookMapper.toEntity(dto, user));
         final var uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(String.format("/api/v1/notebooks/%d", saved.getId()))
                 .toUriString());
-        return ResponseEntity.created(uri).body(NotebookDto.toDto(saved));
+        return ResponseEntity.created(uri).body(notebookMapper.toDto(saved));
     }
 
     @PutMapping("/{notebook}")
     public ResponseEntity<NotebookDto> updateNotebook(final Principal principal,
                                                       final @PathVariable NotebookDto notebook) {
         final var user = userService.getUser(principal);
-        final var updated = notebookService.updateNotebook(NotebookDto.toEntity(notebook, user));
-        return ResponseEntity.accepted().body(NotebookDto.toDto(updated));
+        final var updated = notebookService.updateNotebook(notebookMapper.toEntity(notebook, user));
+        return ResponseEntity.accepted().body(notebookMapper.toDto(updated));
     }
 
     @DeleteMapping("/{notebookId}")
