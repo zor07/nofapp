@@ -1,5 +1,11 @@
 package com.zor07.nofapp.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import com.zor07.nofapp.validation.JsonString;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +17,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "practice", schema = "public")
+@TypeDef(
+        name = "json",
+        typeClass = JsonType.class
+)
 public class Practice {
 
   @Id
@@ -33,6 +43,9 @@ public class Practice {
 
   private String description;
 
+  @Type(type = "json")
+  @Column(columnDefinition = "jsonb")
+  @JsonString
   private String data;
 
   private boolean isPublic;

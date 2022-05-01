@@ -11,6 +11,7 @@ import com.zor07.nofapp.entity.User;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -63,7 +64,7 @@ public class PracticeService {
         }
     }
 
-    public Practice savePractice(final Practice practice, final User user) {
+    public Practice savePractice(final @Valid Practice practice, final User user) {
         Practice saved;
         if (practice.isPublic()) {
             if (!SecurityUtils.isUserAdmin(user)) {
@@ -77,7 +78,7 @@ public class PracticeService {
         return saved;
     }
 
-    public Practice updatePractice(final Practice practice, final User user) {
+    public Practice updatePractice(final @Valid Practice practice, final User user) {
         if (practice.getId() == null) {
             throw new IllegalArgumentException();
         }
