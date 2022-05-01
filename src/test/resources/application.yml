@@ -13,6 +13,9 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+        types:
+          print:
+            banner: false
 
 logging:
   level:

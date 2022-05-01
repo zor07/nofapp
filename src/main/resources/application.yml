@@ -8,6 +8,9 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
+        types:
+          print:
+            banner: false
   datasource:
     driverClassName: org.postgresql.Driver
     username: user
