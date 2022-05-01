@@ -24,14 +24,14 @@ public class PracticeMapperTest {
     void shouldMapDtoToEntity() throws Exception {
         //given
         final var tagDto = new PracticeTagDto(ID, NAME);
-
-        final var practiceDto = new PracticeDto();
-        practiceDto.id = ID;
-        practiceDto.practiceTag = tagDto;
-        practiceDto.name = NAME;
-        practiceDto.description = DESCRIPTION;
-        practiceDto.data = objectMapper.readTree(DATA);
-        practiceDto.isPublic = true;
+        final var practiceDto = new PracticeDto(
+                ID,
+                tagDto,
+                NAME,
+                DESCRIPTION,
+                objectMapper.readTree(DATA),
+                true
+        );
 
         //when
         final var practiceEntity = mapper.toEntity(practiceDto);
@@ -61,13 +61,13 @@ public class PracticeMapperTest {
 
         //when
         final var dto = mapper.toDto(practice);
-        assertThat(dto.id).isEqualTo(ID);
-        assertThat(dto.practiceTag.id()).isEqualTo(ID);
-        assertThat(dto.practiceTag.name()).isEqualTo(NAME);
-        assertThat(dto.name).isEqualTo(NAME);
-        assertThat(dto.description).isEqualTo(DESCRIPTION);
-        assertThat(dto.data).isEqualTo(objectMapper.readTree(DATA));
-        assertThat(dto.isPublic).isFalse();
+        assertThat(dto.id()).isEqualTo(ID);
+        assertThat(dto.practiceTag().id()).isEqualTo(ID);
+        assertThat(dto.practiceTag().name()).isEqualTo(NAME);
+        assertThat(dto.name()).isEqualTo(NAME);
+        assertThat(dto.description()).isEqualTo(DESCRIPTION);
+        assertThat(dto.data()).isEqualTo(objectMapper.readTree(DATA));
+        assertThat(dto.isPublic()).isFalse();
     }
 
 

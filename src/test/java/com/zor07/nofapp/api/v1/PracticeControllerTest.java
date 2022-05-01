@@ -112,11 +112,11 @@ public class PracticeControllerTest extends AbstractApiTest {
         final var practices = objectMapper.readValue(content, new TypeReference<List<PracticeDto>>(){});
         assertThat(practices).hasSize(3);
         assertThat(practices).allMatch(p ->
-                p.isPublic &&
-                p.practiceTag.name().equals(TAG_NAME) &&
-                p.data.toString().equals(PRACTICE_DATA_JSON) &&
-                p.description.equals(PRACTICE_DESC) &&
-                p.name.equals(PRACTICE_NAME));
+                p.isPublic() &&
+                p.practiceTag().name().equals(TAG_NAME) &&
+                p.data().toString().equals(PRACTICE_DATA_JSON) &&
+                p.description().equals(PRACTICE_DESC) &&
+                p.name().equals(PRACTICE_NAME));
 
         final var content2 = mvc.perform(get(PRACTICE_ENDPOINT)
                 .param(IS_PUBLIC_PARAM, String.valueOf(false))
@@ -145,13 +145,13 @@ public class PracticeControllerTest extends AbstractApiTest {
 
         //then
         final var dto = objectMapper.readValue(content, PracticeDto.class);
-        assertThat(dto.id).isNotNull();
-        assertThat(dto.practiceTag.id()).isNotNull();
-        assertThat(dto.practiceTag.name()).isEqualTo(TAG_NAME);
-        assertThat(dto.name).isEqualTo(PRACTICE_NAME);
-        assertThat(dto.description).isEqualTo(PRACTICE_DESC);
-        assertThat(dto.data.toString()).isEqualTo(PRACTICE_DATA_JSON);
-        assertThat(dto.isPublic).isTrue();
+        assertThat(dto.id()).isNotNull();
+        assertThat(dto.practiceTag().id()).isNotNull();
+        assertThat(dto.practiceTag().name()).isEqualTo(TAG_NAME);
+        assertThat(dto.name()).isEqualTo(PRACTICE_NAME);
+        assertThat(dto.description()).isEqualTo(PRACTICE_DESC);
+        assertThat(dto.data().toString()).isEqualTo(PRACTICE_DATA_JSON);
+        assertThat(dto.isPublic()).isTrue();
     }
 
     @Test
@@ -274,13 +274,13 @@ public class PracticeControllerTest extends AbstractApiTest {
 
         //then
         final var dto = objectMapper.readValue(content, PracticeDto.class);
-        assertThat(dto.id).isNotNull();
-        assertThat(dto.practiceTag.id()).isNotNull();
-        assertThat(dto.practiceTag.name()).isEqualTo(TAG_NAME);
-        assertThat(dto.name).isEqualTo(PRACTICE_NAME);
-        assertThat(dto.description).isEqualTo(PRACTICE_DESC);
-        assertThat(dto.data.toString()).isEqualTo(PRACTICE_DATA_JSON);
-        assertThat(dto.isPublic).isFalse();
+        assertThat(dto.id()).isNotNull();
+        assertThat(dto.practiceTag().id()).isNotNull();
+        assertThat(dto.practiceTag().name()).isEqualTo(TAG_NAME);
+        assertThat(dto.name()).isEqualTo(PRACTICE_NAME);
+        assertThat(dto.description()).isEqualTo(PRACTICE_DESC);
+        assertThat(dto.data().toString()).isEqualTo(PRACTICE_DATA_JSON);
+        assertThat(dto.isPublic()).isFalse();
     }
 
     @Test
@@ -439,8 +439,17 @@ public class PracticeControllerTest extends AbstractApiTest {
         //given
         final var practice = practiceRepository.save(createPractice(false));
         final var practiceDto = practiceMapper.toDto(practice);
-        practiceDto.id = null;
-        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+
+        final var dtoWithoutId = new PracticeDto(
+                null,
+                practiceDto.practiceTag(),
+                practiceDto.name(),
+                practiceDto.description(),
+                practiceDto.data(),
+                practiceDto.isPublic()
+        );
+
+        final var dtoString = objectMapper.writeValueAsString(dtoWithoutId);
         //when
         mvc.perform(put(PRACTICE_ENDPOINT)
                 .content(dtoString)
@@ -487,8 +496,16 @@ public class PracticeControllerTest extends AbstractApiTest {
         final var practice = practiceRepository.save(createPractice(true));
         final var practiceDto = practiceMapper.toDto(practice);
         final var newData = PRACTICE_DATA_JSON;
-        practiceDto.data = objectMapper.readTree(newData);
-        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+        final var newDto = new PracticeDto(
+                practiceDto.id(),
+                practiceDto.practiceTag(),
+                practiceDto.name(),
+                practiceDto.description(),
+                objectMapper.readTree(newData),
+                practiceDto.isPublic()
+        );
+
+        final var dtoString = objectMapper.writeValueAsString(newDto);
         //when
         mvc.perform(put(PRACTICE_ENDPOINT)
                 .content(dtoString)
@@ -509,8 +526,15 @@ public class PracticeControllerTest extends AbstractApiTest {
         addPracticeToUser(practice, USER_1);
         final var practiceDto = practiceMapper.toDto(practice);
         final var newData = PRACTICE_DATA_JSON;
-        practiceDto.data = objectMapper.readTree(newData);
-        final var dtoString = objectMapper.writeValueAsString(practiceDto);
+        final var newDto = new PracticeDto(
+                practiceDto.id(),
+                practiceDto.practiceTag(),
+                practiceDto.name(),
+                practiceDto.description(),
+                objectMapper.readTree(newData),
+                practiceDto.isPublic()
+        );
+        final var dtoString = objectMapper.writeValueAsString(newDto);
 
         //when
         mvc.perform(put(PRACTICE_ENDPOINT)
@@ -615,13 +639,12 @@ public class PracticeControllerTest extends AbstractApiTest {
     }
 
     private PracticeDto createPracticeDto(final boolean isPublic) throws JsonProcessingException {
-        final var dto = new PracticeDto();
-        dto.isPublic = isPublic;
-        dto.name = PRACTICE_NAME;
-        dto.data = objectMapper.readTree(PRACTICE_DATA_JSON);
-        dto.description = PRACTICE_DESC;
-        dto.practiceTag = practiceMapper.toPracticeTagDto(tagRepository.findAll().get(0));
-        return dto;
+        return new PracticeDto(null,
+                practiceMapper.toPracticeTagDto(tagRepository.findAll().get(0)),
+                PRACTICE_NAME,
+                PRACTICE_DESC,
+                objectMapper.readTree(PRACTICE_DATA_JSON),
+                isPublic);
     }
 
     private void createPracticeTag() {
