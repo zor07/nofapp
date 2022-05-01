@@ -30,7 +30,10 @@ public interface NoteMapper {
 
     @Mappings({
             @Mapping(target = "notebook", source = "notebookDto"),
-            @Mapping(target = "notebook.user", expression = "java(user)")
+            @Mapping(target = "notebook.user", expression = "java(user)"),
+            @Mapping(target = "data", expression = "java(dto.data().toString())"),
+            @Mapping(target = "id", expression = "java(dto.id())"),
+            @Mapping(target = "title", expression = "java(dto.title())")
     })
     Note toEntity(final NoteDto dto, final @Context User user);
 

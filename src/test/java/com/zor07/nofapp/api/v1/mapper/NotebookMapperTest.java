@@ -25,10 +25,7 @@ public class NotebookMapperTest {
     @Test
     void shouldMapDtoToEntity() {
         //given
-        final var dto = new NotebookDto();
-        dto.id = ID;
-        dto.description = DESCRIPTION;
-        dto.name = NAME;
+        final var dto = new NotebookDto(ID, NAME, DESCRIPTION);
 
         //when
         final var entity = notebookMapper.toEntity(dto, USER);
@@ -53,8 +50,8 @@ public class NotebookMapperTest {
         final var dto = notebookMapper.toDto(entity);
 
         //then
-        assertThat(dto.id).isEqualTo(ID);
-        assertThat(dto.name).isEqualTo(NAME);
-        assertThat(dto.description).isEqualTo(DESCRIPTION);
+        assertThat(dto.id()).isEqualTo(ID);
+        assertThat(dto.name()).isEqualTo(NAME);
+        assertThat(dto.description()).isEqualTo(DESCRIPTION);
     }
 }

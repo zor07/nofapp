@@ -140,8 +140,7 @@ public class NoteControllerTest extends AbstractApiTest {
     //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var notebook = createNotebook(USER_1);
-    final var notebookDto = new NotebookDto();
-    notebookDto.id = notebook.getId();
+    final var notebookDto = new NotebookDto(notebook.getId(), null, null);
     final var noteRequestDto = new NoteDto(null, NOTE_TITLE, notebookDto, objectMapper.readTree(NOTE_DATA));
 
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
@@ -168,8 +167,7 @@ public class NoteControllerTest extends AbstractApiTest {
     final var noteId = noteRepository.findAll().get(0).getId();
     final var newTitle = "new Title";
     final var newData = "{\"data\":\"new Data\"}";
-    final var notebookDto = new NotebookDto();
-    notebookDto.id = notebook.getId();
+    final var notebookDto = new NotebookDto(notebook.getId(), null, null);
     final var noteRequestDto = new NoteDto(noteId, newTitle, notebookDto, objectMapper.readTree(newData));
     final var endpoint = String.format("/api/v1/notebooks/%d/notes", notebook.getId());
 

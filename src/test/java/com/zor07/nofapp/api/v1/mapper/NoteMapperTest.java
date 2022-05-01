@@ -47,10 +47,7 @@ public class NoteMapperTest {
     @Test
     void shouldMapDtoToEntity() throws IOException {
         //given
-        final var notebookDto = new NotebookDto();
-        notebookDto.id = ID;
-        notebookDto.description = NOTEBOOK_DESCRIPTION;
-        notebookDto.name = NOTEBOOK_NAME;
+        final var notebookDto = new NotebookDto(ID, NOTEBOOK_NAME, NOTEBOOK_DESCRIPTION);
         final var noteDto = new NoteDto(ID, NOTE_TITLE, notebookDto, objectMapper.readTree(NOTE_DATA));
 
         //when
@@ -87,9 +84,9 @@ public class NoteMapperTest {
         assertThat(dto.id()).isEqualTo(ID);
         assertThat(dto.title()).isEqualTo(NOTE_TITLE);
         assertThat(dto.data()).isEqualTo(objectMapper.readTree(NOTE_DATA));
-        assertThat(dto.notebookDto().id).isEqualTo(ID);
-        assertThat(dto.notebookDto().name).isEqualTo(NOTEBOOK_NAME);
-        assertThat(dto.notebookDto().description).isEqualTo(NOTEBOOK_DESCRIPTION);
+        assertThat(dto.notebookDto().id()).isEqualTo(ID);
+        assertThat(dto.notebookDto().name()).isEqualTo(NOTEBOOK_NAME);
+        assertThat(dto.notebookDto().description()).isEqualTo(NOTEBOOK_DESCRIPTION);
     }
 
     @Test
