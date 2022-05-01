@@ -5,11 +5,13 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 
-public record TimerDto(Long id,
-                       boolean isRunning,
-                       @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime start,
-                       @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime stop,
-                       String description) {
+public record TimerDto(
+        Long id,
+        boolean isRunning,
+        @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime start,
+        @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime stop,
+        String description
+) {
 
 
 }
