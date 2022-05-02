@@ -43,6 +43,12 @@ On first startup migration scripts will be run. After that two users will be cre
 | admin    |  admin   | 
 | demo     |   demo   | 
 
+## Swagger
+
+After application startup swagger-ui will be available on:
+
+ [http://127.0.0.1:8888/swagger-ui/#/](http://127.0.0.1:8888/swagger-ui/#/)
+
 # Deploying the application to Heroku
 The easiest way to deploy the sample application to Heroku is to push commit to `release` branch. 
 
