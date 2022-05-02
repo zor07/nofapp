@@ -1,14 +1,11 @@
 package com.zor07.nofapp.repository;
 
 import com.zor07.nofapp.entity.Notebook;
-import com.zor07.nofapp.repository.NotebookRepository;
-import com.zor07.nofapp.security.UserRole;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.repository.UserRepository;
+import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
