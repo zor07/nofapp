@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1;
+package com.zor07.nofapp.api.v1.advice;
 
 import com.zor07.nofapp.exception.IllegalAuthorizationHeaderException;
 import com.zor07.nofapp.exception.IllegalResourceAccessException;
