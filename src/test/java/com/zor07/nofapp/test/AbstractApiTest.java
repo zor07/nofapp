@@ -1,16 +1,17 @@
 package com.zor07.nofapp.test;
 
-import java.util.ArrayList;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
+import com.zor07.nofapp.entity.Role;
+import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.security.UserRole;
+import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.service.UserService;
+
+import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -25,9 +26,6 @@ public class AbstractApiTest extends AbstractApplicationTest {
   protected static final String REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/token/refresh";
 
   protected static record LoginPayload(String username, String password) {}
-
-  protected static record TokensDto(String access_token, String refresh_token) {
-  }
 
   protected static Role createRole() {
     return new Role(null, DEFAULT_ROLE);
@@ -53,7 +51,7 @@ public class AbstractApiTest extends AbstractApplicationTest {
           .contentType(MediaType.APPLICATION_JSON))
         .andReturn();
     final var tokens = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), TokensDto.class);
-    return String.format("Bearer %s", tokens.access_token());
+    return String.format("Bearer %s", tokens.accessToken());
   }
 
 }
