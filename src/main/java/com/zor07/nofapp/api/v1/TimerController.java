@@ -29,7 +29,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/timer")
+@RequestMapping("/api/v1/timers")
 @Api(tags = "Timers")
 public class TimerController {
 

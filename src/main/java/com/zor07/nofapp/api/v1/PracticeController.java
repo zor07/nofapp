@@ -28,7 +28,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/practice")
+@RequestMapping("/api/v1/practices")
 @Api(tags = "Practices")
 public class PracticeController {
 

@@ -36,7 +36,7 @@ public class TimerControllerTest extends AbstractApiTest {
   private static final String USER_1 = "user1";
   private static final String USER_2 = "user2";
 
-  private static final String TIMER_ENDPOINT = "/api/v1/timer";
+  private static final String TIMER_ENDPOINT = "/api/v1/timers";
   private static class TimerTestDto {
     public Long id;
     public String start;

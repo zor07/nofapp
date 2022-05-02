@@ -48,7 +48,7 @@ public class PracticeControllerTest extends AbstractApiTest {
     private static final String USER_2 = "user2";
     private static final String USER_ADMIN = "admin";
 
-    private static final String PRACTICE_ENDPOINT = "/api/v1/practice";
+    private static final String PRACTICE_ENDPOINT = "/api/v1/practices";
     private static final String IS_PUBLIC_PARAM = "isPublic";
 
     private @Autowired WebApplicationContext context;
