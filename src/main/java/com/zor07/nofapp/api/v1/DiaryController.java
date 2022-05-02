@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.DiaryDto;
 import com.zor07.nofapp.repository.DiaryRepository;
 import com.zor07.nofapp.service.UserService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/diary")
 @Deprecated //soon will be replaced with Note
+@Api(tags = "Diaries (deprecated)")
 public class DiaryController {
 
   private final UserService userService;

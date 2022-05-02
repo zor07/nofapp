@@ -107,7 +107,7 @@ public class PracticeController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Creates practice")
+    @ApiOperation(value = "Creates practice", response = PracticeDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created practice"),
             @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
@@ -126,7 +126,7 @@ public class PracticeController {
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Updates practice")
+    @ApiOperation(value = "Updates practice", response = PracticeDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "Successfully updated practice"),
             @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
