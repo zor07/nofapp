@@ -27,14 +27,8 @@ public class PracticeService {
         this.userPracticeRepository = userPracticeRepository;
     }
 
-    public List<Practice> getPublicPractices() {
-        return practiceRepository.findByIsPublic(Boolean.TRUE);
-    }
-
-    public List<Practice> getUserPractices(final Long userId) {
-        return userPracticeRepository.findAllByUserId(userId)
-                .stream()
-                .map(UserPractice::getPractice).toList();
+    public List<Practice> getPractices(final boolean isPublic, final Long userId) {
+        return isPublic ? getPublicPractices() : getUserPractices(userId);
     }
 
     public Practice getPracticeForUser(final Long practiceId, final User user) {
@@ -108,6 +102,16 @@ public class PracticeService {
                 throw new IllegalResourceAccessException();
             }
         }
+    }
+
+    private List<Practice> getPublicPractices() {
+        return practiceRepository.findByIsPublic(Boolean.TRUE);
+    }
+
+    private List<Practice> getUserPractices(final Long userId) {
+        return userPracticeRepository.findAllByUserId(userId)
+                .stream()
+                .map(UserPractice::getPractice).toList();
     }
 
     private boolean isUsersPractice(final User user, final Practice practice) {

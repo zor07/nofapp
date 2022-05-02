@@ -55,11 +55,7 @@ public class PracticeController {
     public List<PracticeDto> getPractices(@RequestParam(defaultValue = "false") final boolean isPublic,
                                           final @ApiIgnore Principal principal) {
         final var user = userService.getUser(principal);
-
-        final var practices = isPublic
-                ? practiceService.getPublicPractices()
-                : practiceService.getUserPractices(user.getId());
-
+        final var practices = practiceService.getPractices(isPublic, user.getId());
         return practices.stream()
                 .map(practiceMapper::toDto)
                 .toList();
