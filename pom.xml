@@ -23,6 +23,7 @@
         <org.testng.version>7.5</org.testng.version>
         <org.assertj.version>3.21.0</org.assertj.version>
         <org.testcontainers.version>1.16.0</org.testcontainers.version>
+        <io.springfox.version>3.0.0</io.springfox.version>
     </properties>
     <dependencies>
 
@@ -79,6 +80,11 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${io.springfox.version}</version>
         </dependency>
         <!-- Test dependencies  -->
         <dependency>
