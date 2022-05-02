@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,7 @@ public class NoteController {
         this.noteMapper = noteMapper;
     }
 
-    @GetMapping("/{noteId}")
+    @GetMapping(path = "/{noteId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get note by notebook id and note id", response = NoteDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved note"),
@@ -55,7 +56,7 @@ public class NoteController {
         return ResponseEntity.ok(noteMapper.toDto(noteService.getNote(notebookId, noteId, userId)));
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get notes by notebook id", response = NoteDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved notes"),
@@ -73,7 +74,7 @@ public class NoteController {
         return ResponseEntity.ok(notes);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create new note", response = NoteDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created note"),
@@ -94,7 +95,7 @@ public class NoteController {
         return ResponseEntity.created(uri).body(noteMapper.toDto(note));
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update note", response = NoteDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "Successfully updated note"),

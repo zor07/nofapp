@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,7 @@ public class NotebookController {
         this.notebookMapper = notebookMapper;
     }
 
-    @GetMapping("/{notebookId}")
+    @GetMapping(path = "/{notebookId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get notebook by id", response = NotebookDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved notebook"),
@@ -56,7 +57,7 @@ public class NotebookController {
         return ResponseEntity.ok().body(notebookMapper.toDto(notebook));
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get notebooks of current user", response = NotebookDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved notebooks"),
@@ -72,7 +73,7 @@ public class NotebookController {
                 .toList();
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create new notebook", response = NotebookDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created notebook"),
@@ -91,8 +92,7 @@ public class NotebookController {
         return ResponseEntity.created(uri).body(notebookMapper.toDto(saved));
     }
 
-    @PutMapping("/{notebook}")
-    @PostMapping
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update notebook", response = NotebookDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "Successfully created notebook"),

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +42,7 @@ public class AuthController {
   }
 
 
-  @PostMapping("/login")
+  @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "Authenticates user in application", response = TokensDto.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = "Successfully authenticated note"),
@@ -52,7 +53,7 @@ public class AuthController {
   }
 
 
-  @GetMapping("/me")
+  @GetMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "Retrieves information about current user", response = UserInfoDto.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = "Successfully retrieves information about current user"),
@@ -77,7 +78,7 @@ public class AuthController {
     }
   }
 
-  @GetMapping("/token/refresh")
+  @GetMapping(path = "/token/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "Updates users access token", response = TokensDto.class)
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = "Successfully updated access token"),
