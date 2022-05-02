@@ -4,6 +4,10 @@ import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.api.v1.mapper.NoteMapper;
 import com.zor07.nofapp.service.NoteService;
 import com.zor07.nofapp.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.net.URI;
 import java.security.Principal;
@@ -21,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notebooks/{notebookId}/notes")
+@Api( tags = "Notes" )
 public class NoteController {
 
     private final UserService userService;
@@ -35,7 +41,14 @@ public class NoteController {
     }
 
     @GetMapping("/{noteId}")
-    public ResponseEntity<NoteDto> getNote(final Principal principal,
+    @ApiOperation(value = "Get note by notebook id and note id", response = NoteDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved note"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<NoteDto> getNote(final @ApiIgnore Principal principal,
                                            final @PathVariable Long notebookId,
                                            final @PathVariable Long noteId) {
         final var userId = userService.getUser(principal).getId();
@@ -43,7 +56,14 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NoteDto>> getNotesByBook(final Principal principal,
+    @ApiOperation(value = "Get notes by notebook id", response = NoteDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved notes"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<List<NoteDto>> getNotesByBook(final @ApiIgnore Principal principal,
                                                         final @PathVariable Long notebookId) {
         final var userId = userService.getUser(principal).getId();
         final var notes = noteService.getNotes(notebookId, userId)
@@ -54,7 +74,14 @@ public class NoteController {
     }
 
     @PostMapping
-    public ResponseEntity<NoteDto> createNote(final Principal principal,
+    @ApiOperation(value = "Create new note", response = NoteDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully created note"),
+            @ApiResponse(code = 401, message = "You are not authorized to create the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<NoteDto> createNote(final @ApiIgnore Principal principal,
                                               final @PathVariable Long notebookId,
                                               final @RequestBody NoteDto dto) {
 
@@ -68,7 +95,14 @@ public class NoteController {
     }
 
     @PutMapping
-    public ResponseEntity<NoteDto> updateNote(final Principal principal,
+    @ApiOperation(value = "Update note", response = NoteDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Successfully updated note"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<NoteDto> updateNote(final @ApiIgnore Principal principal,
                                               final @PathVariable Long notebookId,
                                               final @RequestBody NoteDto dto) {
         final var user = userService.getUser(principal);
@@ -77,7 +111,14 @@ public class NoteController {
     }
 
     @DeleteMapping("/{noteId}")
-    public ResponseEntity<Void> deleteNote(final Principal principal,
+    @ApiOperation(value = "Delete note by notebook id and note id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted note"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> deleteNote(final @ApiIgnore Principal principal,
                                            final @PathVariable Long notebookId,
                                            final @PathVariable Long noteId) {
         final var user = userService.getUser(principal);

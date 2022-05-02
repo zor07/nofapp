@@ -109,7 +109,7 @@ public class NotebookController {
     }
 
     @DeleteMapping("/{notebookId}")
-    @ApiOperation(value = "Delete notebook", response = NotebookDto.class)
+    @ApiOperation(value = "Delete notebook")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Successfully deleted notebook"),
             @ApiResponse(code = 401, message = "You are not authorized to delete the resource"),
