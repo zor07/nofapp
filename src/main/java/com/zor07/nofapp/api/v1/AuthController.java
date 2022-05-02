@@ -6,6 +6,11 @@ import com.zor07.nofapp.api.v1.dto.auth.UserInfoDto;
 import com.zor07.nofapp.exception.IllegalAuthorizationHeaderException;
 import com.zor07.nofapp.security.SecurityUtils;
 import com.zor07.nofapp.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Api( tags = "Auth" )
 public class AuthController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
@@ -36,12 +42,24 @@ public class AuthController {
 
 
   @PostMapping("/login")
+  @ApiOperation(value = "Authenticates user in application", response = TokensDto.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successfully authenticated note"),
+          @ApiResponse(code = 403, message = "Authentication failed with given payload")
+  })
   public void  login(@RequestBody AuthenticationDto authenticationDto) {
     // handled via CustomAuthenticationFilter
   }
 
 
   @GetMapping("/me")
+  @ApiOperation(value = "Retrieves information about current user", response = UserInfoDto.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successfully retrieves information about current user"),
+          @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+          @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+          @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
   public ResponseEntity<UserInfoDto> me(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
     final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -60,6 +78,14 @@ public class AuthController {
   }
 
   @GetMapping("/token/refresh")
+  @ApiOperation(value = "Updates users access token", response = TokensDto.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successfully updated access token"),
+          @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+          @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+          @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+  })
+  @ApiImplicitParam(name = "Authorization", value = "Refresh Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer refresh_token")
   public ResponseEntity<TokensDto> refreshToken(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
     final var authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
