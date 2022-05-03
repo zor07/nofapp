@@ -12,7 +12,7 @@ This project is a backend for [nofapp-ui](https://github.com/zor07/nofapp-ui).
 
 ## Requirements
 For building and running the application you need:
-* [JDK 16](https://www.oracle.com/java/technologies/javase/jdk16-archive-downloads.html)
+* [JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 * [Maven 3](https://maven.apache.org/)
 * [Docker](https://www.docker.com/)
 * [docker-compose](https://docs.docker.com/compose/gettingstarted/)
