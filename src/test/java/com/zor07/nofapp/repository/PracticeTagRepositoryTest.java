@@ -3,7 +3,7 @@ package com.zor07.nofapp.repository;
 import com.zor07.nofapp.entity.PracticeTag;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -14,9 +14,13 @@ public class PracticeTagRepositoryTest extends AbstractApplicationTest {
     @Autowired
     private PracticeTagRepository practiceTagRepository;
 
+    @Autowired
+    private PracticeRepository practiceRepository;
+
     @BeforeMethod
-    @AfterMethod
-    private void clearDb() {
+    @AfterClass
+    void clearDb() {
+        practiceRepository.deleteAll();
         practiceTagRepository.deleteAll();
     }
 

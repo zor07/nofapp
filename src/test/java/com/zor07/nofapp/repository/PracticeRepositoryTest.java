@@ -5,6 +5,7 @@ import com.zor07.nofapp.entity.PracticeTag;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -24,13 +25,11 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
     @Autowired
     private PracticeTagRepository tagRepository;
 
+    @AfterClass
     @BeforeMethod
     void cleanUp() {
         practiceRepository.deleteAll();
         tagRepository.deleteAll();
-        createPracticeTag();
-        final var all = practiceRepository.findAll();
-        assertThat(all).isEmpty();
     }
 
     @Test
