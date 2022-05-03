@@ -25,11 +25,20 @@ public class PracticeRepositoryTest extends AbstractApplicationTest {
     @Autowired
     private PracticeTagRepository tagRepository;
 
-    @AfterClass
-    @BeforeMethod
-    void cleanUp() {
+    private void clearUp() {
         practiceRepository.deleteAll();
         tagRepository.deleteAll();
+    }
+
+    @BeforeMethod
+    void setUp() {
+        clearUp();
+        createPracticeTag();
+    }
+
+    @AfterClass
+    void tearDown() {
+        clearUp();
     }
 
     @Test
