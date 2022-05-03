@@ -8,7 +8,7 @@ spring:
     change-log: classpath:db/changelog/changelog.xml
     contexts: test
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
