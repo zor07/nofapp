@@ -6,8 +6,8 @@ import com.zor07.nofapp.exception.IllegalResourceAccessException;
 import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.repository.NotebookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 

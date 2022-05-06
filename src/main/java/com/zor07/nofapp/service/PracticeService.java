@@ -1,16 +1,16 @@
 package com.zor07.nofapp.service;
 
 import com.zor07.nofapp.entity.Practice;
-import com.zor07.nofapp.exception.IllegalResourceAccessException;
+import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.entity.UserPractice;
 import com.zor07.nofapp.entity.UserPracticeKey;
-import com.zor07.nofapp.repository.UserPracticeRepository;
+import com.zor07.nofapp.exception.IllegalResourceAccessException;
 import com.zor07.nofapp.repository.PracticeRepository;
+import com.zor07.nofapp.repository.UserPracticeRepository;
 import com.zor07.nofapp.security.SecurityUtils;
-import com.zor07.nofapp.entity.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 

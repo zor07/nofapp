@@ -3,8 +3,8 @@ package com.zor07.nofapp.service;
 import com.zor07.nofapp.entity.Timer;
 import com.zor07.nofapp.repository.TimerRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 
