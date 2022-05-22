@@ -42,6 +42,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
           filterChain.doFilter(request, response);
         } catch (final Exception e) {
           LOGGER.error("Got exception while authorizing request", e);
+          SecurityUtils.addErrorToResponse(response, e.getMessage());
         }
       } else {
         filterChain.doFilter(request, response);
