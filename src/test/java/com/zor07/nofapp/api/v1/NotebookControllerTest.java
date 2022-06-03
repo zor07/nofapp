@@ -41,8 +41,8 @@ public class NotebookControllerTest extends AbstractApiTest {
 
   private void createNotebook(final String username) {
     final var user = userService.getUser(username);
-    final var diary = new Notebook(null, user, NAME, DESCRIPTION);
-    notebookRepository.save(diary);
+    final var notebook = new Notebook(null, user, NAME, DESCRIPTION);
+    notebookRepository.save(notebook);
   }
 
   @Autowired
@@ -112,11 +112,11 @@ public class NotebookControllerTest extends AbstractApiTest {
     //given
     createNotebook(USER_1);
     final var userId = userRepository.findByUsername(USER_1).getId();
-    final var diaryId = notebookRepository.findAllByUserId(userId).get(0).getId();
+    final var noteId = notebookRepository.findAllByUserId(userId).get(0).getId();
     final var authHeader = getAuthHeader(mvc, USER_1);
 
     //when
-    final var content = mvc.perform(get(ENDPOINT+"/"+diaryId)
+    final var content = mvc.perform(get(ENDPOINT+"/"+noteId)
         .contentType(MediaType.APPLICATION_JSON)
         .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isOk())
@@ -124,7 +124,7 @@ public class NotebookControllerTest extends AbstractApiTest {
 
     //then
     final var notebook = objectMapper.readValue(content, NotebookTestDto.class);
-    assertThat(notebook.id).isEqualTo(diaryId);
+    assertThat(notebook.id).isEqualTo(noteId);
     assertThat(notebook.name).isEqualTo(NAME);
     assertThat(notebook.description).isEqualTo(DESCRIPTION);
   }
