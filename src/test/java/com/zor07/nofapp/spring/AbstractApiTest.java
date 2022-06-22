@@ -1,4 +1,4 @@
-package com.zor07.nofapp.test;
+package com.zor07.nofapp.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
@@ -6,7 +6,6 @@ import com.zor07.nofapp.entity.Role;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.service.UserService;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;

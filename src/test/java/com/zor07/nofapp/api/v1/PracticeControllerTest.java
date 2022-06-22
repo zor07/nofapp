@@ -16,7 +16,7 @@ import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserPracticeRepository;
 import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.security.UserRole;
-import com.zor07.nofapp.test.AbstractApiTest;
+import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

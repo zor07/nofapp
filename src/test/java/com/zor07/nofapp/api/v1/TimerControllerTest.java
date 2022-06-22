@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.test.AbstractApiTest;
+import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.entity.Timer;
 import com.zor07.nofapp.repository.TimerRepository;
 import com.zor07.nofapp.repository.RoleRepository;
