@@ -19,6 +19,13 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
 
+config:
+  s3:
+    endpoint: asd
+    region: asd
+    accessKey: ads
+    secretKey: asd
+
 logging:
   level:
     liquidbase: INFO
