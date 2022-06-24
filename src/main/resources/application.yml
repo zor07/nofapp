@@ -21,10 +21,11 @@ spring:
 
 config:
   s3:
-    endpoint: asd
-    region: asd
-    accessKey: ads
-    secretKey: asd
+    endpoint: http://localhost:9000
+    accessKey: admin
+    secretKey: adminadmin
+    region: us-east-1
+    auto: false
 
 logging:
   level:
