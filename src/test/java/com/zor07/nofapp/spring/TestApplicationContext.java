@@ -1,5 +1,6 @@
 package com.zor07.nofapp.spring;
 
+import com.zor07.nofapp.aws.s3.S3Service;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,5 +16,9 @@ public class TestApplicationContext {
     return new BCryptPasswordEncoder();
   }
 
+  @Bean
+  S3Service s3Service(final ApplicationConfig appConfig) {
+    return new S3Service(appConfig.getS3());
+  }
 
 }
