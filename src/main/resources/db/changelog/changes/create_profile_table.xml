@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
+http://www.liquibase.org/xml/ns/pro
+http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+
+    <changeSet  id="202206250909"  author="zor">
+        <createTable  tableName="profile">
+            <column  name="id"  type="int">
+                <constraints  primaryKey="true"
+                              nullable="false"
+                              foreignKeyName="fk_user_id"
+                              references="user(id)"/>/>
+            </column>
+
+            <column name="timer_start"
+                    type="timestamp"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="avatar_file_id"
+                    type="int">
+                <constraints nullable="true"
+                             foreignKeyName="fk_file_id"
+                             references="file(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet  id="202206250916"  author="zor">
+        <sqlFile path="sql/insertProfiles.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+
+</databaseChangeLog>
