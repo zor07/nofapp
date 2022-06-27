@@ -22,6 +22,6 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
     <include file="changes/create_file_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_profile_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_relapse_log_table.xml" relativeToChangelogFile="true"/>
-    <include file="changes/profile_posts.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create_user_posts_table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
