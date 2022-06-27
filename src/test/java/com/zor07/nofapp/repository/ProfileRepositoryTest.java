@@ -52,12 +52,12 @@ public class ProfileRepositoryTest extends AbstractApplicationTest {
         fileRepository.deleteAll();
     }
 
-    private Long persistUser() {
+    private User persistUser() {
         final var user = new User();
         user.setName(USERNAME);
         user.setUsername(USERNAME);
         user.setPassword(PASSWORD);
-        return userRepository.save(user).getId();
+        return userRepository.save(user);
     }
 
     private File persistFile1() {
@@ -83,7 +83,7 @@ public class ProfileRepositoryTest extends AbstractApplicationTest {
 
     @Test
     void testCrud() {
-        final var userId = persistUser();
+        final var user = persistUser();
         final var file1 = persistFile1();
         final var file2 = persistFile2();
 
@@ -92,7 +92,7 @@ public class ProfileRepositoryTest extends AbstractApplicationTest {
 
         // create-read
         final var profile = new Profile();
-        profile.setId(userId);
+        profile.setUser(user);
         profile.setAvatar(file1);
         profile.setTimerStart(TIMER_START_1);
 
