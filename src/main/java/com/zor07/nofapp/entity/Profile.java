@@ -7,10 +7,19 @@ import java.time.Instant;
 @Table(name = "profile", schema = "public")
 public class Profile {
     @Id
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "profile_id_seq"
+    )
+    @SequenceGenerator(
+            name = "profile_id_seq",
+            sequenceName = "profile_id_seq",
+            allocationSize = 1
+    )
     private Long id;
 
     @OneToOne
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     private Instant timerStart;
