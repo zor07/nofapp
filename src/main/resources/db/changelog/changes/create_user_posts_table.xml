@@ -9,30 +9,26 @@ http://www.liquibase.org/xml/ns/pro
 http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
     <changeSet id="202206250921" author="zor">
-        <createTable tableName="user_posts">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="user_id" type="int">
+        <createTable  tableName="user_posts">
+            <column name="user_id"
+                    type="int">
                 <constraints nullable="false"
                              foreignKeyName="fk_user_id"
                              references="user(id)"/>
             </column>
 
-            <column name="note_id" type="int">
+            <column name="note_id"
+                    type="int">
                 <constraints nullable="false"
                              foreignKeyName="fk_note_id"
                              references="note(id)"/>
             </column>
+
         </createTable>
+
+        <addUniqueConstraint
+                columnNames="user_id, note_id"
+                constraintName="user_note_unique_constraint"
+                tableName="user_posts"/>
     </changeSet>
-
-    <changeSet id="202206250924" author="zor">
-        <addUniqueConstraint columnNames="user_id, note_id"
-                             constraintName="user_note_constraint"
-                             tableName="user_posts"/>
-    </changeSet>
-
-
 </databaseChangeLog>
