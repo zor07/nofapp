@@ -40,9 +40,4 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
         </createTable>
     </changeSet>
 
-    <changeSet  id="202206250916"  author="zor">
-        <sqlFile path="sql/insertProfiles.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-
 </databaseChangeLog>
