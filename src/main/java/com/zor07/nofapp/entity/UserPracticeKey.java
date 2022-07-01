@@ -10,7 +10,7 @@ public class UserPracticeKey implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "parctice_id")
+    @Column(name = "practice_id")
     private Long practiceId;
 
     public UserPracticeKey(Long userId, Long practiceId) {
