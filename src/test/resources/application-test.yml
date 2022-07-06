@@ -22,12 +22,7 @@ logging:
     liquidbase: INFO
 
 config:
-  s3:
-    endpoint: http://localhost:9000
-    accessKey: admin
-    secretKey: adminadmin
-    region: us-east-1
-    auto: false
+  testContainers: true
 
 server:
   port: 7777
