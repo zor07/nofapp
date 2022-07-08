@@ -1,7 +1,6 @@
 package com.zor07.nofapp.api.v1.mapper;
 
 import com.zor07.nofapp.api.v1.dto.ProfileDto;
-import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.Profile;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -20,10 +19,21 @@ public interface ProfileMapper {
         return instant == null ? null : LocalDateTime.ofInstant(instant, timeZone.toZoneId());
     }
 
+    default String getAvatarUri(final Profile profile) {
+        final var avatar = profile.getAvatar();
+        if (avatar == null) {
+            return null;
+        }
+        final var key = avatar.getPrefix() == null
+                ? avatar.getKey()
+                : String.format("%s/%s", avatar.getPrefix(), avatar.getKey());
+        return String.format("%s/%s", avatar.getBucket(), key);
+    }
+
     @Mappings({
-            @Mapping(target = "avatarUrl", expression = "java(p.getAvatar() == null ? null : s3Service.getResourceUrl(p.getAvatar().getBucket(), p.getAvatar().getPrefix(), p.getAvatar().getKey()))"),
-            @Mapping(target = "userId", expression = "java(p.getUser().getId())")
+            @Mapping(target = "avatarUri", expression = "java(getAvatarUri(profile))"),
+            @Mapping(target = "userId", expression = "java(profile.getUser().getId())")
     })
-    ProfileDto toDto(final Profile p, final @Context TimeZone timeZone, final @Context S3Service s3Service);
+    ProfileDto toDto(final Profile profile, final @Context TimeZone timeZone);
 
 }
