@@ -10,4 +10,7 @@ public interface UserPostsRepository extends JpaRepository<UserPost, UserPostKey
 
     List<UserPost> findAllByUserId(Long userId);
 
+    //TODO add test
+    void deleteUserPostByUserIdAndNoteId(Long userId, Long noteId);
+
 }
