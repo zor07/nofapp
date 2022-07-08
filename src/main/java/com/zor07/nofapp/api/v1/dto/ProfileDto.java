@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 public record ProfileDto(
         Long id,
         Long userId,
-        String avatarUrl,
+        String avatarUri,
         @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime timerStart) {}
