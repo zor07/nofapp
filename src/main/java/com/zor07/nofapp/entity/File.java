@@ -20,7 +20,7 @@ public class File {
     private String prefix;
     private String key;
     private String mime;
-    private Integer size;
+    private Long size;
 
     public File() {
     }
@@ -30,7 +30,7 @@ public class File {
                 String prefix,
                 String key,
                 String mime,
-                Integer size) {
+                Long size) {
         this.id = id;
         this.bucket = bucket;
         this.prefix = prefix;
@@ -79,11 +79,11 @@ public class File {
         this.mime = mime;
     }
 
-    public Integer getSize() {
+    public Long getSize() {
         return size;
     }
 
-    public void setSize(Integer size) {
+    public void setSize(Long size) {
         this.size = size;
     }
 }

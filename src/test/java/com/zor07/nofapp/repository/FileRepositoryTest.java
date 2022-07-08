@@ -15,12 +15,12 @@ public class FileRepositoryTest extends AbstractApplicationTest {
     private static final String PREFIX_1 = "prefix_1";
     private static final String KEY_1 = "key_1";
     private static final String MIME_1 = "mime_1";
-    private static final int SIZE_1 = 1;
+    private static final long SIZE_1 = 1L;
     private static final String BUCKET_2 = "bucket_2";
     private static final String PREFIX_2 = "prefix_2";
     private static final String KEY_2 = "key_2";
     private static final String MIME_2 = "mime_2";
-    private static final int SIZE_2 = 2;
+    private static final long SIZE_2 = 2L;
 
 
     @Autowired
