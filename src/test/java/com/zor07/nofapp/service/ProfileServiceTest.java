@@ -7,8 +7,8 @@ import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.repository.*;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.Instant;
@@ -52,18 +52,18 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         return userService.getUser(username);
     }
 
-    private User persistUser() {
-        return userService.saveUser(new User(null, USER, USER, PASS, new ArrayList<>()));
+    private User persistUser(final String name) {
+        return userService.saveUser(new User(null, name, name, PASS, new ArrayList<>()));
     }
 
-    @BeforeClass
+    @BeforeMethod
     private void setUp() {
         if (!s3.containsBucket(BUCKET)) {
             s3.createBucket(BUCKET);
         }
     }
 
-    @AfterClass
+    @AfterMethod
     private void cleanUp() {
         s3.deleteBucket(BUCKET);
         profileRepository.deleteAll();
@@ -74,7 +74,8 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     @Test
     void shouldReturnProfileByUser() {
         // given
-        final var user = persistUser();
+        final var username = "user";
+        final var user = persistUser(username);
         final var avatar = persistAvatar(createAvatar(user));
         final var persisted = persistProfile(createProfile(user, avatar));
 
@@ -84,13 +85,36 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         // then
         assertThat(retrieved).isNotNull();
         assertThat(retrieved.getTimerStart()).isEqualTo(TIMER_START);
-        assertThat(retrieved.getUser().getName()).isEqualTo(USER);
+        assertThat(retrieved.getUser().getName()).isEqualTo(username);
         assertThat(retrieved.getAvatar().getId()).isEqualTo(persisted.getAvatar().getId());
         assertThat(retrieved.getAvatar().getBucket()).isEqualTo(persisted.getAvatar().getBucket());
         assertThat(retrieved.getAvatar().getPrefix()).isEqualTo(persisted.getAvatar().getPrefix());
         assertThat(retrieved.getAvatar().getKey()).isEqualTo(persisted.getAvatar().getKey());
         assertThat(retrieved.getAvatar().getMime()).isEqualTo(persisted.getAvatar().getMime());
         assertThat(retrieved.getAvatar().getSize()).isEqualTo(persisted.getAvatar().getSize());
+    }
+
+    @Test
+    void shouldReturnProfiles() {
+        // given
+        final var username1 = "user1";
+        final var username2 = "user2";
+        final var username3 = "user3";
+        final var user1 = persistUser(username1);
+        final var user2 = persistUser(username2);
+        final var user3 = persistUser(username3);
+        final var avatar1 = persistAvatar(createAvatar(user1));
+        final var avatar2 = persistAvatar(createAvatar(user2));
+        final var avatar3 = persistAvatar(createAvatar(user3));
+        persistProfile(createProfile(user1, avatar1));
+        persistProfile(createProfile(user2, avatar2));
+        persistProfile(createProfile(user3, avatar3));
+
+        // when
+        final var profiles = profileService.getProfiles();
+
+        // then
+        assertThat(profiles).hasSize(3);
     }
 
 
