@@ -4,6 +4,7 @@ import com.zor07.nofapp.api.v1.dto.TimerDto;
 import com.zor07.nofapp.api.v1.mapper.TimerMapper;
 import com.zor07.nofapp.service.TimerService;
 import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.utils.DateUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -23,17 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/timers")
 @Api(tags = "Timers")
 public class TimerController {
-
-  private static final TimeZone SYSTEM_TIMEZONE = TimeZone.getTimeZone(ZoneId.systemDefault());
 
   private final UserService userService;
   private final TimerService timerService;
@@ -60,7 +57,7 @@ public class TimerController {
     final var user = userService.getUser(principal);
     return timerService.findAllByUserId(user.getId())
         .stream()
-        .map(e -> timerMapper.toDto(e, SYSTEM_TIMEZONE))
+        .map(e -> timerMapper.toDto(e, DateUtils.SYSTEM_TIMEZONE))
         .collect(Collectors.toList());
   }
 
@@ -75,7 +72,7 @@ public class TimerController {
   public ResponseEntity<Void> save(@RequestBody final TimerDto dto,
                                    @ApiIgnore final Principal principal) {
     final var user = userService.getUser(principal);
-    timerService.save(timerMapper.toEntity(dto, SYSTEM_TIMEZONE, user));
+    timerService.save(timerMapper.toEntity(dto, DateUtils.SYSTEM_TIMEZONE, user));
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
