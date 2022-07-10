@@ -3,6 +3,8 @@ package com.zor07.nofapp.service;
 import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.*;
 import com.zor07.nofapp.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +16,7 @@ import java.util.List;
 @Service
 public class ProfileService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileService.class);
     private static final String USER_BUCKET = "user";
     private static final String AVATAR_KEY = "avatar";
     private final FileRepository fileRepository;
@@ -46,7 +49,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void saveUserAvatar(final Long userId, final MultipartFile multipartFile) throws IOException {
+    public void saveUserAvatar(final Long userId, final MultipartFile multipartFile) {
         final var profile = profileRepository.getProfileByUserId(userId);
         var avatar = profile.getAvatar();
         if (avatar == null) {
@@ -61,7 +64,7 @@ public class ProfileService {
             avatar.setSize(multipartFile.getSize());
         }
         fileRepository.save(avatar);
-        persistAvatarToS3(userId, multipartFile.getBytes());
+        persistAvatarToS3(userId, multipartFile);
     }
 
     @Transactional
@@ -96,9 +99,16 @@ public class ProfileService {
         userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
     }
 
-    private void persistAvatarToS3(final Long userId, final byte[] file) {
+    private void persistAvatarToS3(final Long userId, final MultipartFile file) {
         final var key = String.format("%s/%s", userId, AVATAR_KEY);
-        s3.persistObject(USER_BUCKET, key, file);
+        final byte[] data;
+        try {
+            data = file.getBytes();
+        } catch (IOException e) {
+            LOGGER.error("Unable to read uploaded file {}", file.getOriginalFilename());
+            throw new RuntimeException(e);
+        }
+        s3.persistObject(USER_BUCKET, key, data);
     }
 
     private void saveRelapseLog(final Instant start) {
