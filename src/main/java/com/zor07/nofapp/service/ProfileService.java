@@ -65,6 +65,19 @@ public class ProfileService {
     }
 
     @Transactional
+    public void deleteUserAvatar(final Long userId) {
+        final var profile = profileRepository.getProfileByUserId(userId);
+        var avatar = profile.getAvatar();
+        if (avatar == null) {
+            return;
+        }
+        profile.setAvatar(null);
+        profileRepository.save(profile);
+        fileRepository.delete(avatar);
+        s3.deleteObject(USER_BUCKET, String.format("%s/%s", userId, AVATAR_KEY));
+    }
+
+    @Transactional
     public void relapsed(final Long userId) {
         final var profile = profileRepository.getProfileByUserId(userId);
         saveRelapseLog(profile.getTimerStart());
