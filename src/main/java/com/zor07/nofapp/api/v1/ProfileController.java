@@ -2,7 +2,6 @@ package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.ProfileDto;
 import com.zor07.nofapp.api.v1.mapper.ProfileMapper;
-import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.service.ProfileService;
 import com.zor07.nofapp.service.UserService;
@@ -23,20 +22,16 @@ import java.util.Objects;
 @Api( tags = "Profile" )
 public class ProfileController {
 
-    private final S3Service s3Service;
     private final UserService userService;
-
     private final ProfileService profileService;
     private final ProfileMapper profileMapper;
 
-    public ProfileController(final S3Service s3Service,
-                             final UserService userService,
-                             final ProfileService profileService,
-                             final ProfileMapper profileMapper) {
-        this.s3Service = s3Service;
-        this.userService = userService;
+    public ProfileController(final ProfileService profileService,
+                             final ProfileMapper profileMapper,
+                             final UserService userService) {
         this.profileService = profileService;
         this.profileMapper = profileMapper;
+        this.userService = userService;
     }
 
     @GetMapping
