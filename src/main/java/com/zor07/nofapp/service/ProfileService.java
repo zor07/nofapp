@@ -44,7 +44,7 @@ public class ProfileService {
         return profileRepository.findAll();
     }
 
-    public Profile getProfile(final Long userId) {
+    public Profile getProfileByUserId(final Long userId) {
         return profileRepository.getProfileByUserId(userId);
     }
 

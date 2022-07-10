@@ -44,7 +44,7 @@ public class ProfileController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<ProfileDto> getProfile(final @PathVariable Long userId) {
-        final var profile = profileService.getProfile(userId);
+        final var profile = profileService.getProfileByUserId(userId);
         return ResponseEntity.ok(mapProfile(profile));
     }
 
