@@ -1,16 +1,22 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.ProfileDto;
+import com.zor07.nofapp.api.v1.mapper.ProfileMapper;
 import com.zor07.nofapp.aws.s3.S3Service;
+import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.service.ProfileService;
 import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.utils.DateUtils;
 import io.swagger.annotations.Api;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/profiles")
@@ -21,49 +27,79 @@ public class ProfileController {
     private final UserService userService;
 
     private final ProfileService profileService;
+    private final ProfileMapper profileMapper;
 
     public ProfileController(final S3Service s3Service,
                              final UserService userService,
-                             final ProfileService profileService) {
+                             final ProfileService profileService,
+                             final ProfileMapper profileMapper) {
         this.s3Service = s3Service;
         this.userService = userService;
         this.profileService = profileService;
+        this.profileMapper = profileMapper;
     }
 
     @GetMapping
     public ResponseEntity<List<ProfileDto>> getProfiles(final Principal principal) {
-        throw new UnsupportedOperationException();
+        final var profiles = profileService.getProfiles().stream()
+                .map(this::mapProfile)
+                .toList();
+        return ResponseEntity.ok(profiles);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ProfileDto> getProfile(final Principal principal,
-                                                 final @PathVariable Long userId) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<ProfileDto> getProfile(final @PathVariable Long userId) {
+        final var profile = profileService.getProfile(userId);
+        return ResponseEntity.ok(mapProfile(profile));
     }
 
     @PostMapping("/{userId}/avatar")
     public ResponseEntity<Void> uploadAvatar(final Principal principal,
                                              final @PathVariable Long userId,
-                                             final @RequestParam("file") MultipartFile file){
-        throw new UnsupportedOperationException();
+                                             final @RequestParam("file") MultipartFile file) throws IOException {
+        final var user = userService.getUser(principal);
+        if (!Objects.equals(userId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        profileService.saveUserAvatar(userId, file);
+        return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/{userId}/avatar")
-    public ResponseEntity<Void> deleteAvatar(final Principal principal) {
-        throw new UnsupportedOperationException();
+    public ResponseEntity<Void> deleteAvatar(final Principal principal,
+                                             final @PathVariable Long userId) {
+        final var user = userService.getUser(principal);
+        if (!Objects.equals(userId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        profileService.deleteUserAvatar(userId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{userId}/relapsed")
     public ResponseEntity<ProfileDto> relapsed(final Principal principal,
                                                final @PathVariable Long userId) {
-
-        throw new UnsupportedOperationException();
+        final var user = userService.getUser(principal);
+        if (!Objects.equals(userId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        profileService.relapsed(userId);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/{userId}/posts/{noteId}")
     public ResponseEntity<ProfileDto> addPostToProfile(final Principal principal,
-                                                       final @PathVariable Long userId) {
-        throw new UnsupportedOperationException();
+                                                       final @PathVariable Long userId,
+                                                       final @PathVariable Long noteId) {
+        final var user = userService.getUser(principal);
+        if (!Objects.equals(userId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        profileService.addPostToProfile(user, noteId);
+        return ResponseEntity.accepted().build();
     }
 
+    private ProfileDto mapProfile(final Profile profile) {
+        return profileMapper.toDto(profile, DateUtils.SYSTEM_TIMEZONE);
+    }
 }
