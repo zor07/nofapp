@@ -1,22 +1,25 @@
 package com.zor07.nofapp.service;
 
 import com.zor07.nofapp.aws.s3.S3Service;
-import com.zor07.nofapp.entity.*;
-import com.zor07.nofapp.repository.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.Profile;
+import com.zor07.nofapp.entity.RelapseLog;
+import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.UserPost;
+import com.zor07.nofapp.repository.FileRepository;
+import com.zor07.nofapp.repository.NoteRepository;
+import com.zor07.nofapp.repository.ProfileRepository;
+import com.zor07.nofapp.repository.RelapseLogRepository;
+import com.zor07.nofapp.repository.UserPostsRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
 @Service
 public class ProfileService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileService.class);
     private static final String USER_BUCKET = "user";
     private static final String AVATAR_KEY = "avatar";
     private final FileRepository fileRepository;
@@ -49,22 +52,25 @@ public class ProfileService {
     }
 
     @Transactional
-    public void saveUserAvatar(final Long userId, final MultipartFile multipartFile) {
+    public void saveUserAvatar(final Long userId,
+                               final byte[] data,
+                               final String contentType,
+                               final long size) {
         final var profile = profileRepository.getProfileByUserId(userId);
         var avatar = profile.getAvatar();
         if (avatar == null) {
             avatar = new File();
             avatar.setBucket(USER_BUCKET);
-            avatar.setMime(multipartFile.getContentType());
+            avatar.setMime(contentType);
             avatar.setPrefix(String.valueOf(userId));
             avatar.setKey(AVATAR_KEY);
-            avatar.setSize(multipartFile.getSize());
+            avatar.setSize(size);
         } else {
-            avatar.setMime(multipartFile.getContentType());
-            avatar.setSize(multipartFile.getSize());
+            avatar.setMime(contentType);
+            avatar.setSize(size);
         }
         fileRepository.save(avatar);
-        persistAvatarToS3(userId, multipartFile);
+        persistAvatarToS3(userId, data);
     }
 
     @Transactional
@@ -99,15 +105,8 @@ public class ProfileService {
         userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
     }
 
-    private void persistAvatarToS3(final Long userId, final MultipartFile file) {
+    private void persistAvatarToS3(final Long userId, final byte[] data) {
         final var key = String.format("%s/%s", userId, AVATAR_KEY);
-        final byte[] data;
-        try {
-            data = file.getBytes();
-        } catch (IOException e) {
-            LOGGER.error("Unable to read uploaded file {}", file.getOriginalFilename());
-            throw new RuntimeException(e);
-        }
         s3.persistObject(USER_BUCKET, key, data);
     }
 
