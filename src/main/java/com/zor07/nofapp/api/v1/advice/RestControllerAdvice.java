@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 
 @ControllerAdvice
 public class RestControllerAdvice {
@@ -27,6 +28,12 @@ public class RestControllerAdvice {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(IllegalAuthorizationHeaderException.class)
     public void handleForbidden() {
+        // Nothing to do
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(IOException.class)
+    public void handleServerError() {
         // Nothing to do
     }
 }
