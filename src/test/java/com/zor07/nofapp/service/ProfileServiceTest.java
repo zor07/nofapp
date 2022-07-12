@@ -4,13 +4,20 @@ import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.File;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.repository.*;
+import com.zor07.nofapp.repository.FileRepository;
+import com.zor07.nofapp.repository.NoteRepository;
+import com.zor07.nofapp.repository.ProfileRepository;
+import com.zor07.nofapp.repository.RelapseLogRepository;
+import com.zor07.nofapp.repository.UserPostsRepository;
+import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 
@@ -65,7 +72,7 @@ public class ProfileServiceTest extends AbstractApplicationTest {
 
     @AfterMethod
     private void cleanUp() {
-        s3.deleteBucket(BUCKET);
+        s3.truncateBucket(BUCKET);
         profileRepository.deleteAll();
         fileRepository.deleteAll();
         userRepository.deleteAll();
@@ -117,7 +124,34 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         assertThat(profiles).hasSize(3);
     }
 
+    @Test
+    void shouldSaveAvatar() throws IOException {
+        // given
+        final var username = "user";
+        final var user = persistUser(username);
+        final var userId = user.getId();
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+        final var contentType = "application/xml";
+        persistProfile(createProfile(user, null));
 
+        // when
+        profileService.saveUserAvatar(userId, data, contentType, data.length);
+
+        // then
+        final var file = fileRepository.findAll().get(0);
+        assertThat(file.getBucket()).isEqualTo(BUCKET);
+        assertThat(file.getPrefix()).isEqualTo(String.valueOf(userId));
+        assertThat(file.getKey()).isEqualTo(KEY);
+        assertThat(file.getMime()).isEqualTo(contentType);
+        assertThat(file.getSize()).isEqualTo(data.length);
+
+        final var tempFile = java.io.File.createTempFile("temp", "file");
+        s3.copyObject(BUCKET, String.format("%s/%s", userId, KEY), tempFile);
+
+        final var bytes = Files.toByteArray(tempFile);
+        assertThat(bytes).containsExactly(data);
+    }
 
     private File createAvatar(final User user) {
         final var file = new File();
@@ -136,7 +170,6 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     private Profile persistProfile(final Profile profile) {
         return profileRepository.save(profile);
     }
-
 
     private Profile createProfile(final User user, final File avatar) {
         final var p = new Profile();
