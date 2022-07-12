@@ -56,7 +56,10 @@ public class ProfileController {
         if (!Objects.equals(userId, user.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        profileService.saveUserAvatar(userId, file);
+        final var data = file.getBytes();
+        final var contentType = file.getContentType();
+        final var size = file.getSize();
+        profileService.saveUserAvatar(userId, data, contentType, size);
         return ResponseEntity.accepted().build();
     }
 
