@@ -6,6 +6,7 @@ import com.zor07.nofapp.entity.Note;
 import com.zor07.nofapp.entity.Notebook;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.UserPost;
 import com.zor07.nofapp.repository.FileRepository;
 import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.repository.NotebookRepository;
@@ -32,23 +33,16 @@ import static org.assertj.core.api.Assertions.within;
 public class ProfileServiceTest extends AbstractApplicationTest {
 
     private static final Instant TIMER_START = Instant.parse("2022-05-01T15:26:00Z");
-    private static final Instant TIMER_STOP = Instant.parse("2022-05-01T15:27:00Z");
-
-
     private static final String BUCKET = "user";
     private static final String KEY = "avatar";
     private static final String MIME = "MIME";
     private static final long SIZE = 1L;
-
     private static final String USERNAME = "user";
     private static final String PASS = "PASS";
-
     private static final String NOTEBOOK_NAME = "notebook name";
     private static final String NOTEBOOK_DESCRIPTION = "notebook desc";
-
     private static final String NOTE_DATA = "{\"data\":\"value\"}";
     private static final String NOTE_TITLE = "note title";
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -71,30 +65,6 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     private UserRepository userRepository;
     @Autowired
     private S3Service s3;
-
-    private User persistUser(final String name) {
-        return userService.saveUser(new User(null, name, name, PASS, new ArrayList<>()));
-    }
-
-    @BeforeMethod
-    private void setUp() {
-        if (!s3.containsBucket(BUCKET)) {
-            s3.createBucket(BUCKET);
-        }
-    }
-
-    @AfterMethod
-    private void cleanUp() {
-        s3.truncateBucket(BUCKET);
-        profileRepository.deleteAll();
-        relapseLogRepository.deleteAll();
-        userPostsRepository.deleteAll();
-        fileRepository.deleteAll();
-        noteRepository.deleteAll();
-        notebookRepository.deleteAll();
-        userRepository.deleteAll();
-    }
-
     @Test
     void shouldReturnProfileByUser() {
         // given
@@ -226,17 +196,42 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         assertThat(post.getUser().getId()).isEqualTo(user.getId());
     }
 
+    @Test
+    void shouldRemovePostFromProfile() {
+        // given
+        final var user = persistUser(USERNAME);
+        final var notebook = persistNotebook(createNotebook(user));
+        final var note = persistNote(createNote(notebook));
+        final var userPost = new UserPost(user, note);
+        userPostsRepository.save(userPost);
 
-//    public void addPostToProfile(final User user, final Long noteId) {
-//        final var post = new UserPost();
-//        post.setUser(user);
-//        post.setNote(noteRepository.getById(noteId));
-//        userPostsRepository.save(post);
-//    }
-//
-//    public void removePostFromProfile(final Long userId, final Long noteId){
-//        userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
-//    }
+        // when
+        profileService.removePostFromProfile(user.getId(), note.getId());
+
+        // then
+        assertThat(userPostsRepository.findAll()).isEmpty();
+    }
+    @BeforeMethod
+    private void setUp() {
+        if (!s3.containsBucket(BUCKET)) {
+            s3.createBucket(BUCKET);
+        }
+    }
+    @AfterMethod
+    private void cleanUp() {
+        s3.truncateBucket(BUCKET);
+        profileRepository.deleteAll();
+        relapseLogRepository.deleteAll();
+        userPostsRepository.deleteAll();
+        fileRepository.deleteAll();
+        noteRepository.deleteAll();
+        notebookRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    private User persistUser(final String name) {
+        return userService.saveUser(new User(null, name, name, PASS, new ArrayList<>()));
+    }
 
     private Note createNote(final Notebook notebook) {
         final var note = new Note();
