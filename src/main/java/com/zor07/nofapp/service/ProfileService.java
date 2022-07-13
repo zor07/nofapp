@@ -5,12 +5,9 @@ import com.zor07.nofapp.entity.File;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.RelapseLog;
 import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.entity.UserPost;
 import com.zor07.nofapp.repository.FileRepository;
-import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.repository.ProfileRepository;
 import com.zor07.nofapp.repository.RelapseLogRepository;
-import com.zor07.nofapp.repository.UserPostsRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,21 +21,15 @@ public class ProfileService {
     private static final String AVATAR_KEY = "avatar";
     private final FileRepository fileRepository;
     private final ProfileRepository profileRepository;
-    private final NoteRepository noteRepository;
-    private final UserPostsRepository userPostsRepository;
     private final RelapseLogRepository relapseLogRepository;
     private final S3Service s3;
 
     public ProfileService(FileRepository fileRepository,
                           ProfileRepository profileRepository,
-                          NoteRepository noteRepository,
-                          UserPostsRepository userPostsRepository,
                           RelapseLogRepository relapseLogRepository,
                           S3Service s3) {
         this.fileRepository = fileRepository;
         this.profileRepository = profileRepository;
-        this.noteRepository = noteRepository;
-        this.userPostsRepository = userPostsRepository;
         this.relapseLogRepository = relapseLogRepository;
         this.s3 = s3;
     }
@@ -92,18 +83,6 @@ public class ProfileService {
         saveRelapseLog(profile.getTimerStart(), user);
         profile.setTimerStart(Instant.now());
         profileRepository.save(profile);
-    }
-
-    public void addPostToProfile(final User user, final Long noteId) {
-        final var post = new UserPost();
-        post.setUser(user);
-        post.setNote(noteRepository.getById(noteId));
-        userPostsRepository.save(post);
-    }
-
-    @Transactional
-    public void removePostFromProfile(final Long userId, final Long noteId){
-        userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
     }
 
     private void persistAvatarToS3(final Long userId, final byte[] data) {
