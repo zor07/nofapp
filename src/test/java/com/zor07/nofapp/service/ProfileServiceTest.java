@@ -2,16 +2,20 @@ package com.zor07.nofapp.service;
 
 import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.Note;
+import com.zor07.nofapp.entity.Notebook;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.repository.FileRepository;
 import com.zor07.nofapp.repository.NoteRepository;
+import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.repository.ProfileRepository;
 import com.zor07.nofapp.repository.RelapseLogRepository;
 import com.zor07.nofapp.repository.UserPostsRepository;
 import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -30,13 +34,22 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     private static final Instant TIMER_START = Instant.parse("2022-05-01T15:26:00Z");
     private static final Instant TIMER_STOP = Instant.parse("2022-05-01T15:27:00Z");
 
+
     private static final String BUCKET = "user";
     private static final String KEY = "avatar";
     private static final String MIME = "MIME";
     private static final long SIZE = 1L;
 
-    private static final String USER = "USER";
+    private static final String USERNAME = "user";
     private static final String PASS = "PASS";
+
+    private static final String NOTEBOOK_NAME = "notebook name";
+    private static final String NOTEBOOK_DESCRIPTION = "notebook desc";
+
+    private static final String NOTE_DATA = "{\"data\":\"value\"}";
+    private static final String NOTE_TITLE = "note title";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private ProfileService profileService;
@@ -44,6 +57,8 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     private FileRepository fileRepository;
     @Autowired
     private ProfileRepository profileRepository;
+    @Autowired
+    private NotebookRepository notebookRepository;
     @Autowired
     private NoteRepository noteRepository;
     @Autowired
@@ -56,10 +71,6 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     private UserRepository userRepository;
     @Autowired
     private S3Service s3;
-
-    private User getUser(final String username) {
-        return userService.getUser(username);
-    }
 
     private User persistUser(final String name) {
         return userService.saveUser(new User(null, name, name, PASS, new ArrayList<>()));
@@ -77,15 +88,17 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         s3.truncateBucket(BUCKET);
         profileRepository.deleteAll();
         relapseLogRepository.deleteAll();
+        userPostsRepository.deleteAll();
         fileRepository.deleteAll();
+        noteRepository.deleteAll();
+        notebookRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
     void shouldReturnProfileByUser() {
         // given
-        final var username = "user";
-        final var user = persistUser(username);
+        final var user = persistUser(USERNAME);
         final var avatar = persistAvatar(createAvatar(user));
         final var persisted = persistProfile(createProfile(user, avatar));
 
@@ -95,7 +108,7 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         // then
         assertThat(retrieved).isNotNull();
         assertThat(retrieved.getTimerStart()).isEqualTo(TIMER_START);
-        assertThat(retrieved.getUser().getName()).isEqualTo(username);
+        assertThat(retrieved.getUser().getName()).isEqualTo(USERNAME);
         assertThat(retrieved.getAvatar().getId()).isEqualTo(persisted.getAvatar().getId());
         assertThat(retrieved.getAvatar().getBucket()).isEqualTo(persisted.getAvatar().getBucket());
         assertThat(retrieved.getAvatar().getPrefix()).isEqualTo(persisted.getAvatar().getPrefix());
@@ -130,8 +143,7 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     @Test
     void shouldSaveAvatar() throws IOException {
         // given
-        final var username = "user";
-        final var user = persistUser(username);
+        final var user = persistUser(USERNAME);
         final var userId = user.getId();
         final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
         final var data = Files.toByteArray(srcFile);
@@ -159,8 +171,7 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     @Test
     void shouldDeleteAvatar() throws IOException {
         // given
-        final var username = "user";
-        final var user = persistUser(username);
+        final var user = persistUser(USERNAME);
         final var userId = user.getId();
         final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
         final var data = Files.toByteArray(srcFile);
@@ -180,8 +191,7 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     @Test
     void shouldSaveRelapseLog() {
         // given
-        final var username = "user";
-        final var user = persistUser(username);
+        final var user = persistUser(USERNAME);
         persistProfile(createProfile(user,  null));
 
         // when
@@ -196,6 +206,26 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         assertThat(relapseLog.getStop()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
     }
 
+    @Test
+    void shouldAddPostToProfile() throws IOException {
+        // given
+        final var user = persistUser(USERNAME);
+        final var notebook = persistNotebook(createNotebook(user));
+        final var note = persistNote(createNote(notebook));
+
+        // when
+        profileService.addPostToProfile(user, note.getId());
+
+        // then
+        final var posts = userPostsRepository.findAllByUserId(user.getId());
+        final var post = posts.get(0);
+        assertThat(posts).hasSize(1);
+        assertThat(post.getNote().getId()).isEqualTo(note.getId());
+        assertThat(post.getNote().getTitle()).isEqualTo(NOTE_TITLE);
+        assertThat(objectMapper.readTree(post.getNote().getData())).isEqualTo(objectMapper.readTree(NOTE_DATA));
+        assertThat(post.getUser().getId()).isEqualTo(user.getId());
+    }
+
 
 //    public void addPostToProfile(final User user, final Long noteId) {
 //        final var post = new UserPost();
@@ -207,6 +237,30 @@ public class ProfileServiceTest extends AbstractApplicationTest {
 //    public void removePostFromProfile(final Long userId, final Long noteId){
 //        userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
 //    }
+
+    private Note createNote(final Notebook notebook) {
+        final var note = new Note();
+        note.setTitle(NOTE_TITLE);
+        note.setData(NOTE_DATA);
+        note.setNotebook(notebook);
+        return note;
+    }
+
+    private Notebook createNotebook(final User user) {
+        final var notebook = new Notebook();
+        notebook.setUser(user);
+        notebook.setName(NOTEBOOK_NAME);
+        notebook.setDescription(NOTEBOOK_DESCRIPTION);
+        return notebookRepository.save(notebook);
+    }
+
+    private Note persistNote(final Note note) {
+        return noteRepository.save(note);
+    }
+
+    private Notebook persistNotebook(final Notebook notebook) {
+        return notebookRepository.save(notebook);
+    }
 
     private File createAvatar(final User user) {
         final var file = new File();
