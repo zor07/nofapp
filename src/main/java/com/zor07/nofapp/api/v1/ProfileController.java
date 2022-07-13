@@ -81,7 +81,7 @@ public class ProfileController {
         if (!Objects.equals(userId, user.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        profileService.relapsed(userId);
+        profileService.relapsed(user);
         return ResponseEntity.accepted().build();
     }
 

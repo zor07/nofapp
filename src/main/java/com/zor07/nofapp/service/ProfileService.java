@@ -87,9 +87,9 @@ public class ProfileService {
     }
 
     @Transactional
-    public void relapsed(final Long userId) {
-        final var profile = profileRepository.getProfileByUserId(userId);
-        saveRelapseLog(profile.getTimerStart());
+    public void relapsed(final User user) {
+        final var profile = profileRepository.getProfileByUserId(user.getId());
+        saveRelapseLog(profile.getTimerStart(), user);
         profile.setTimerStart(Instant.now());
         profileRepository.save(profile);
     }
@@ -110,8 +110,9 @@ public class ProfileService {
         s3.persistObject(USER_BUCKET, key, data);
     }
 
-    private void saveRelapseLog(final Instant start) {
+    private void saveRelapseLog(final Instant start, final User user) {
         final var relapseLog = new RelapseLog();
+        relapseLog.setUser(user);
         relapseLog.setStart(start);
         relapseLog.setStop(Instant.now());
         relapseLogRepository.save(relapseLog);
