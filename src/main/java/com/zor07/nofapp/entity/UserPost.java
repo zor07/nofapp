@@ -7,14 +7,14 @@ import javax.persistence.*;
 public class UserPost {
 
     @EmbeddedId
-    private UserPostKey userPostKey;
+    private UserPostKey userPostKey = new UserPostKey();
 
     @OneToOne
     @MapsId("userId")
     private User user;
 
     @OneToOne
-    @MapsId("userId")
+    @MapsId("noteId")
     private Note note;
 
     public UserPost() {
