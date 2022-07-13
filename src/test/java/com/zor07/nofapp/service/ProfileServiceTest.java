@@ -19,9 +19,11 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class ProfileServiceTest extends AbstractApplicationTest {
 
@@ -74,6 +76,7 @@ public class ProfileServiceTest extends AbstractApplicationTest {
     private void cleanUp() {
         s3.truncateBucket(BUCKET);
         profileRepository.deleteAll();
+        relapseLogRepository.deleteAll();
         fileRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -174,14 +177,26 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         assertThat(profileRepository.findAll().get(0).getAvatar()).isNull();
     }
 
-//    @Transactional
-//    public void relapsed(final Long userId) {
-//        final var profile = profileRepository.getProfileByUserId(userId);
-//        saveRelapseLog(profile.getTimerStart());
-//        profile.setTimerStart(Instant.now());
-//        profileRepository.save(profile);
-//    }
-//
+    @Test
+    void shouldSaveRelapseLog() {
+        // given
+        final var username = "user";
+        final var user = persistUser(username);
+        persistProfile(createProfile(user,  null));
+
+        // when
+        profileService.relapsed(user);
+
+        // then
+        final var relapseLog = relapseLogRepository.findAll().get(0);
+        final var profile = profileRepository.findAll().get(0);
+
+        assertThat(profile.getTimerStart()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+        assertThat(relapseLog.getStart()).isEqualTo(TIMER_START);
+        assertThat(relapseLog.getStop()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+    }
+
+
 //    public void addPostToProfile(final User user, final Long noteId) {
 //        final var post = new UserPost();
 //        post.setUser(user);
