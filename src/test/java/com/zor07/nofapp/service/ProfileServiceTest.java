@@ -153,6 +153,46 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         assertThat(bytes).containsExactly(data);
     }
 
+    @Test
+    void shouldDeleteAvatar() throws IOException {
+        // given
+        final var username = "user";
+        final var user = persistUser(username);
+        final var userId = user.getId();
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+        final var avatar = persistAvatar(createAvatar(user));
+        persistProfile(createProfile(user, avatar));
+        s3.persistObject(BUCKET, String.format("%s/%s", userId, KEY), data);
+
+        // when
+        profileService.deleteUserAvatar(userId);
+
+        // then
+        assertThat(s3.containsObject(BUCKET, String.format("%s/%s", userId, KEY))).isFalse();
+        assertThat(fileRepository.findAll()).isEmpty();
+        assertThat(profileRepository.findAll().get(0).getAvatar()).isNull();
+    }
+
+//    @Transactional
+//    public void relapsed(final Long userId) {
+//        final var profile = profileRepository.getProfileByUserId(userId);
+//        saveRelapseLog(profile.getTimerStart());
+//        profile.setTimerStart(Instant.now());
+//        profileRepository.save(profile);
+//    }
+//
+//    public void addPostToProfile(final User user, final Long noteId) {
+//        final var post = new UserPost();
+//        post.setUser(user);
+//        post.setNote(noteRepository.getById(noteId));
+//        userPostsRepository.save(post);
+//    }
+//
+//    public void removePostFromProfile(final Long userId, final Long noteId){
+//        userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
+//    }
+
     private File createAvatar(final User user) {
         final var file = new File();
         file.setBucket(BUCKET);
