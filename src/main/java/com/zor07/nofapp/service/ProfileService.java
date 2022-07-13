@@ -101,6 +101,7 @@ public class ProfileService {
         userPostsRepository.save(post);
     }
 
+    @Transactional
     public void removePostFromProfile(final Long userId, final Long noteId){
         userPostsRepository.deleteUserPostByUserIdAndNoteId(userId, noteId);
     }
