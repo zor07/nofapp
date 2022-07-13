@@ -85,31 +85,6 @@ public class ProfileController {
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/{userId}/posts/{noteId}")
-    public ResponseEntity<ProfileDto> addPostToProfile(final Principal principal,
-                                                       final @PathVariable Long userId,
-                                                       final @PathVariable Long noteId) {
-        final var user = userService.getUser(principal);
-        if (!Objects.equals(userId, user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        profileService.addPostToProfile(user, noteId);
-        return ResponseEntity.accepted().build();
-    }
-
-    @DeleteMapping("/{userId}/posts/{noteId}")
-    public ResponseEntity<ProfileDto> removePostFromProfile(final Principal principal,
-                                                            final @PathVariable Long userId,
-                                                            final @PathVariable Long noteId) {
-        final var user = userService.getUser(principal);
-        if (!Objects.equals(userId, user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        profileService.removePostFromProfile(userId, noteId);
-        return ResponseEntity.noContent().build();
-    }
-
-
     private ProfileDto mapProfile(final Profile profile) {
         return profileMapper.toDto(profile, DateUtils.SYSTEM_TIMEZONE);
     }
