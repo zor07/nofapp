@@ -62,6 +62,29 @@ public class UserPostServiceTest extends AbstractApplicationTest {
     }
 
     @Test
+    void shouldReturnUserPosts() throws IOException {
+        // given
+        final var user = persistUser(USERNAME);
+        final var notebook = persistNotebook(createNotebook(user));
+        final var note1 = persistNote(createNote(notebook));
+        final var note2 = persistNote(createNote(notebook));
+        final var note3 = persistNote(createNote(notebook));
+        userPostsRepository.save(new UserPost(user, note1));
+        userPostsRepository.save(new UserPost(user, note2));
+        userPostsRepository.save(new UserPost(user, note3));
+
+        // when
+        final var userPosts = userPostService.getUserPosts(user.getId());
+
+        assertThat(userPosts).hasSize(3);
+        final var post = userPosts.get(0);
+        assertThat(objectMapper.readTree(post.getData())).isEqualTo(objectMapper.readTree(NOTE_DATA));
+        assertThat(post.getTitle()).isEqualTo(NOTE_TITLE);
+
+    }
+
+
+    @Test
     void shouldRemovePostFromProfile() {
         // given
         final var user = persistUser(USERNAME);
