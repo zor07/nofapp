@@ -32,6 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -149,17 +150,31 @@ public class ProfileControllerTest extends AbstractApiTest {
         assertThat(bytes).containsExactly(data);
     }
 
+    @Test
+    void shouldDeleteAvatar() throws Exception {
+        // given
+        final var user = persistUser(DEFAULT_USERNAME);
+        final var userId = user.getId();
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+        final var avatar = persistAvatar(createAvatar(user));
+        persistProfile(createProfile(user, avatar));
+        s3.persistObject(BUCKET, String.format("%s/%s", userId, KEY), data);
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
-//    @DeleteMapping("/{userId}/avatar")
-//    public ResponseEntity<Void> deleteAvatar(final Principal principal,
-//                                             final @PathVariable Long userId) {
-//        final var user = userService.getUser(principal);
-//        if (!Objects.equals(userId, user.getId())) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        profileService.deleteUserAvatar(userId);
-//        return ResponseEntity.noContent().build();
-//    }
+        // when
+        mvc.perform(delete(PROFILE_ENDPOINT + "/{userId}/avatar", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isNoContent())
+                .andReturn().getResponse().getContentAsString();
+
+        // then
+        assertThat(s3.containsObject(BUCKET, String.format("%s/%s", userId, KEY))).isFalse();
+        assertThat(fileRepository.findAll()).isEmpty();
+        assertThat(profileRepository.findAll().get(0).getAvatar()).isNull();
+    }
+
 //
 //    @PostMapping("/{userId}/relapsed")
 //    public ResponseEntity<ProfileDto> relapsed(final Principal principal,
