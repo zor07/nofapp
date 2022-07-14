@@ -42,6 +42,9 @@ public class AbstractApiTest extends AbstractApplicationTest {
   protected UserService userService;
 
   protected final ObjectMapper objectMapper = new ObjectMapper();
+  {
+    objectMapper.findAndRegisterModules();
+  }
 
   protected String getAuthHeader(MockMvc mvc, String username) throws Exception {
     final var loginPayload = objectMapper.writeValueAsString(new LoginPayload(username, DEFAULT_PASSWORD));
