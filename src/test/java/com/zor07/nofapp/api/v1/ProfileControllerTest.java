@@ -58,12 +58,13 @@ public class ProfileControllerTest extends AbstractApiTest {
     @Test
     void shouldReturnProfiles() throws Exception {
         // given
+        final var roleName = persistRole();
         final var username1 = "user1";
         final var username2 = "user2";
         final var username3 = "user3";
-        final var user1 = persistUser(username1);
-        final var user2 = persistUser(username2);
-        final var user3 = persistUser(username3);
+        final var user1 = persistUser(username1, roleName);
+        final var user2 = persistUser(username2, roleName);
+        final var user3 = persistUser(username3, roleName);
         final var avatar1 = persistAvatar(createAvatar(user1));
         final var avatar2 = persistAvatar(createAvatar(user2));
         final var avatar3 = persistAvatar(createAvatar(user3));
@@ -93,13 +94,14 @@ public class ProfileControllerTest extends AbstractApiTest {
     @Test
     void shouldReturnProfileByUser() throws Exception {
         // given
-        final var user = persistUser(DEFAULT_USERNAME);
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
         final var avatar = persistAvatar(createAvatar(user));
         persistProfile(createProfile(user, avatar));
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         // when
-        final var content = mvc.perform(get(PROFILE_ENDPOINT + "/" + user.getId())
+        final var content = mvc.perform(get(PROFILE_ENDPOINT + "/{userId}", user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
                 .andExpect(status().isOk())
@@ -116,7 +118,8 @@ public class ProfileControllerTest extends AbstractApiTest {
     @Test
     void shouldSaveAvatar() throws Exception {
         // given
-        final var user = persistUser(DEFAULT_USERNAME);
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
         final var userId = user.getId();
         final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
         final var data = Files.toByteArray(srcFile);
@@ -127,7 +130,7 @@ public class ProfileControllerTest extends AbstractApiTest {
         // when
         try (FileInputStream fis = new FileInputStream(srcFile)) {
             MockMultipartFile requestFile = new MockMultipartFile("file", srcFile.getName(), contentType, fis);
-            mvc.perform(multipart(PROFILE_ENDPOINT + "/" + user.getId() + "/avatar")
+            mvc.perform(multipart(PROFILE_ENDPOINT + "/{userId}/avatar", userId)
                             .file(requestFile)
                             .contentType(MediaType.APPLICATION_JSON)
                             .header(HttpHeaders.AUTHORIZATION, authHeader))
@@ -153,7 +156,8 @@ public class ProfileControllerTest extends AbstractApiTest {
     @Test
     void shouldDeleteAvatar() throws Exception {
         // given
-        final var user = persistUser(DEFAULT_USERNAME);
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
         final var userId = user.getId();
         final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
         final var data = Files.toByteArray(srcFile);
@@ -190,7 +194,8 @@ public class ProfileControllerTest extends AbstractApiTest {
 
     @BeforeClass
     private void setup() {
-        createRole();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
         if (!s3.containsBucket(BUCKET)) {
             s3.createBucket(BUCKET);
         }
@@ -210,11 +215,17 @@ public class ProfileControllerTest extends AbstractApiTest {
         roleRepository.deleteAll();
     }
 
-    private User persistUser(final String name) {
+    private User persistUser(final String name, final String roleName) {
         final var user = createUser(name);
         userService.saveUser(user);
-        userService.addRoleToUser(user.getUsername(), DEFAULT_ROLE);
+        userService.addRoleToUser(user.getUsername(), roleName);
         return user;
+    }
+
+    private String persistRole() {
+        final var role = createRole();
+        roleRepository.save(role);
+        return role.getName();
     }
 
     private File createAvatar(final User user) {
