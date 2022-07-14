@@ -11,19 +11,21 @@ import com.zor07.nofapp.repository.ProfileRepository;
 import com.zor07.nofapp.repository.RelapseLogRepository;
 import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserRepository;
-import com.zor07.nofapp.service.ProfileService;
 import com.zor07.nofapp.service.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.FileInputStream;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ProfileControllerTest extends AbstractApiTest {
@@ -41,8 +44,6 @@ public class ProfileControllerTest extends AbstractApiTest {
     private static final String KEY = "avatar";
     private static final String MIME = "MIME";
     private static final long SIZE = 1L;
-
-    private @Autowired ProfileService profileService;
     private @Autowired FileRepository fileRepository;
     private @Autowired ProfileRepository profileRepository;
     private @Autowired RelapseLogRepository relapseLogRepository;
@@ -111,21 +112,44 @@ public class ProfileControllerTest extends AbstractApiTest {
         assertThat(profile.avatarUri()).isEqualTo(String.format("%s/%s/%s", BUCKET, user.getId(), KEY));
     }
 
-//    @PostMapping("/{userId}/avatar")
-//    public ResponseEntity<Void> uploadAvatar(final Principal principal,
-//                                             final @PathVariable Long userId,
-//                                             final @RequestParam("file") MultipartFile file) throws IOException {
-//        final var user = userService.getUser(principal);
-//        if (!Objects.equals(userId, user.getId())) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        final var data = file.getBytes();
-//        final var contentType = file.getContentType();
-//        final var size = file.getSize();
-//        profileService.saveUserAvatar(userId, data, contentType, size);
-//        return ResponseEntity.accepted().build();
-//    }
-//
+    @Test
+    void shouldSaveAvatar() throws Exception {
+        // given
+        final var user = persistUser(DEFAULT_USERNAME);
+        final var userId = user.getId();
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+        final var contentType = "application/xml";
+        persistProfile(createProfile(user, null));
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+
+        // when
+        try (FileInputStream fis = new FileInputStream(srcFile)) {
+            MockMultipartFile requestFile = new MockMultipartFile("file", srcFile.getName(), contentType, fis);
+            mvc.perform(multipart(PROFILE_ENDPOINT + "/" + user.getId() + "/avatar")
+                            .file(requestFile)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(HttpHeaders.AUTHORIZATION, authHeader))
+                    .andExpect(status().isAccepted())
+                    .andReturn().getResponse().getContentAsString();
+        }
+
+        // then
+        final var file = fileRepository.findAll().get(0);
+        assertThat(file.getBucket()).isEqualTo(BUCKET);
+        assertThat(file.getPrefix()).isEqualTo(String.valueOf(userId));
+        assertThat(file.getKey()).isEqualTo(KEY);
+        assertThat(file.getMime()).isEqualTo(contentType);
+        assertThat(file.getSize()).isEqualTo(data.length);
+
+        final var tempFile = java.io.File.createTempFile("temp", "file");
+        s3.copyObject(BUCKET, String.format("%s/%s", userId, KEY), tempFile);
+
+        final var bytes = Files.toByteArray(tempFile);
+        assertThat(bytes).containsExactly(data);
+    }
+
+
 //    @DeleteMapping("/{userId}/avatar")
 //    public ResponseEntity<Void> deleteAvatar(final Principal principal,
 //                                             final @PathVariable Long userId) {
