@@ -28,13 +28,16 @@ import org.testng.annotations.Test;
 import java.io.FileInputStream;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ProfileControllerTest extends AbstractApiTest {
@@ -179,18 +182,29 @@ public class ProfileControllerTest extends AbstractApiTest {
         assertThat(profileRepository.findAll().get(0).getAvatar()).isNull();
     }
 
-//
-//    @PostMapping("/{userId}/relapsed")
-//    public ResponseEntity<ProfileDto> relapsed(final Principal principal,
-//                                               final @PathVariable Long userId) {
-//        final var user = userService.getUser(principal);
-//        if (!Objects.equals(userId, user.getId())) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        profileService.relapsed(user);
-//        return ResponseEntity.accepted().build();
-//    }
+    @Test
+    void shouldSaveRelapseLog() throws Exception {
+        // given
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
+        persistProfile(createProfile(user,  null));
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
+        // when
+        mvc.perform(post(PROFILE_ENDPOINT + "/{userId}/relapsed", user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        // then
+        final var relapseLog = relapseLogRepository.findAll().get(0);
+        final var profile = profileRepository.findAll().get(0);
+
+        assertThat(profile.getTimerStart()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+        assertThat(relapseLog.getStart()).isEqualTo(TIMER_START);
+        assertThat(relapseLog.getStop()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+    }
 
     @BeforeClass
     private void setup() {
