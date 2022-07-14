@@ -35,7 +35,7 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProfileDto>> getProfiles(final Principal principal) {
+    public ResponseEntity<List<ProfileDto>> getProfiles() {
         final var profiles = profileService.getProfiles().stream()
                 .map(this::mapProfile)
                 .toList();
