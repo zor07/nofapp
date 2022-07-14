@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,12 +87,30 @@ public class ProfileControllerTest extends AbstractApiTest {
             profile.userId() != null
         );
     }
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<ProfileDto> getProfile(final @PathVariable Long userId) {
-//        final var profile = profileService.getProfileByUserId(userId);
-//        return ResponseEntity.ok(mapProfile(profile));
-//    }
-//
+
+    @Test
+    void shouldReturnProfileByUser() throws Exception {
+        // given
+        final var user = persistUser(DEFAULT_USERNAME);
+        final var avatar = persistAvatar(createAvatar(user));
+        persistProfile(createProfile(user, avatar));
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+
+        // when
+        final var content = mvc.perform(get(PROFILE_ENDPOINT + "/" + user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        // then
+        final var profile = objectMapper.readValue(content, ProfileDto.class);
+        assertThat(profile).isNotNull();
+        assertThat(profile.timerStart().atZone(ZoneId.systemDefault()).toInstant()).isEqualTo(TIMER_START);
+        assertThat(profile.userId()).isEqualTo(user.getId());
+        assertThat(profile.avatarUri()).isEqualTo(String.format("%s/%s/%s", BUCKET, user.getId(), KEY));
+    }
+
 //    @PostMapping("/{userId}/avatar")
 //    public ResponseEntity<Void> uploadAvatar(final Principal principal,
 //                                             final @PathVariable Long userId,
