@@ -11,7 +11,6 @@ import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserPostsRepository;
 import com.zor07.nofapp.repository.UserRepository;
-import com.zor07.nofapp.service.UserPostService;
 import com.zor07.nofapp.service.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,8 +52,6 @@ public class UserPostsControllerTest extends AbstractApiTest {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private UserPostService userPostService;
 
     private @Autowired WebApplicationContext context;
 
@@ -125,23 +123,15 @@ public class UserPostsControllerTest extends AbstractApiTest {
         userPostsRepository.save(userPost);
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
         // when
-        userPostService.removePostFromUser(user.getId(), note.getId());
+        mvc.perform(delete(USER_POSTS_ENDPOINT + "/{noteId}", user.getId(), note.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isNoContent())
+                .andReturn().getResponse().getContentAsString();
 
         // then
         assertThat(userPostsRepository.findAll()).isEmpty();
     }
-
-//    @DeleteMapping("/{noteId}")
-//    public ResponseEntity<ProfileDto> removePostFromProfile(final Principal principal,
-//                                                            final @PathVariable Long userId,
-//                                                            final @PathVariable Long noteId) {
-//        final var user = userService.getUser(principal);
-//        if (!Objects.equals(userId, user.getId())) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//        userPostService.removePostFromUser(userId, noteId);
-//        return ResponseEntity.noContent().build();
-//    }
 
     @BeforeClass
     private void setup() {
