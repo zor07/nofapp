@@ -1,5 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.entity.Note;
 import com.zor07.nofapp.entity.Notebook;
 import com.zor07.nofapp.entity.User;
@@ -18,13 +20,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,12 +36,10 @@ public class UserPostsControllerTest extends AbstractApiTest {
 
     private static final String USER_POSTS_ENDPOINT = "/api/v1/profiles/{userId}/posts";
     private static final String USERNAME = "user";
-    private static final String PASS = "PASS";
     private static final String NOTEBOOK_NAME = "notebook name";
     private static final String NOTEBOOK_DESCRIPTION = "notebook desc";
     private static final String NOTE_DATA = "{\"data\":\"value\"}";
     private static final String NOTE_TITLE = "note title";
-    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private NotebookRepository notebookRepository;
     @Autowired
@@ -97,29 +99,20 @@ public class UserPostsControllerTest extends AbstractApiTest {
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         // when
-        final var userPosts = userPostService.getUserPosts(user.getId());
+        final var content = mvc.perform(get(USER_POSTS_ENDPOINT, user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        final var userPosts = objectMapper.readValue(content, new TypeReference<List<NoteDto>>() {});
 
         assertThat(userPosts).hasSize(3);
         final var post = userPosts.get(0);
-        assertThat(objectMapper.readTree(post.getData())).isEqualTo(objectMapper.readTree(NOTE_DATA));
-        assertThat(post.getTitle()).isEqualTo(NOTE_TITLE);
+        assertThat(post.data()).isEqualTo(objectMapper.readTree(NOTE_DATA));
+        assertThat(post.title()).isEqualTo(NOTE_TITLE);
 
     }
-
-
-//    @GetMapping
-//    public ResponseEntity<List<NoteDto>> getUserPosts(final @PathVariable Long userId) {
-//        final var notes = userPostService.getUserPosts(userId)
-//                .stream()
-//                .map(noteMapper::toDto)
-//                .toList();
-//
-//        return ResponseEntity.ok(notes);
-//    }
-
-
-
-
 
     @Test
     void shouldRemovePostFromProfile() throws Exception {
