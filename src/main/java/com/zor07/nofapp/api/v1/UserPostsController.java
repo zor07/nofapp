@@ -1,7 +1,6 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.NoteDto;
-import com.zor07.nofapp.api.v1.dto.ProfileDto;
 import com.zor07.nofapp.api.v1.mapper.NoteMapper;
 import com.zor07.nofapp.service.UserPostService;
 import com.zor07.nofapp.service.UserService;
@@ -50,7 +49,7 @@ public class UserPostsController {
 
 
     @PostMapping("/{noteId}")
-    public ResponseEntity<ProfileDto> addPostToProfile(final Principal principal,
+    public ResponseEntity<Void> addPostToProfile(final Principal principal,
                                                        final @PathVariable Long userId,
                                                        final @PathVariable Long noteId) {
         final var user = userService.getUser(principal);
@@ -62,7 +61,7 @@ public class UserPostsController {
     }
 
     @DeleteMapping("/{noteId}")
-    public ResponseEntity<ProfileDto> removePostFromProfile(final Principal principal,
+    public ResponseEntity<Void> removePostFromProfile(final Principal principal,
                                                             final @PathVariable Long userId,
                                                             final @PathVariable Long noteId) {
         final var user = userService.getUser(principal);
