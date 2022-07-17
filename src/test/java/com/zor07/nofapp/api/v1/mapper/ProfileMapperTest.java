@@ -47,6 +47,9 @@ public class ProfileMapperTest {
 
         //then
         assertThat(profileDto.id()).isEqualTo(entity.getId());
+        assertThat(profileDto.user().id()).isEqualTo(String.valueOf(entity.getUser().getId()));
+        assertThat(profileDto.user().name()).isEqualTo(entity.getUser().getName());
+        assertThat(profileDto.user().username()).isEqualTo(entity.getUser().getUsername());
         assertThat(profileDto.timerStart()).isCloseTo(START_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
         assertThat(profileDto.avatarUri()).isEqualTo(String.format("%s/%s/%s", BUCKET, PREFIX, KEY));
     }
@@ -63,6 +66,9 @@ public class ProfileMapperTest {
 
         //then
         assertThat(profileDto.id()).isEqualTo(entity.getId());
+        assertThat(profileDto.user().id()).isEqualTo(String.valueOf(entity.getUser().getId()));
+        assertThat(profileDto.user().name()).isEqualTo(entity.getUser().getName());
+        assertThat(profileDto.user().username()).isEqualTo(entity.getUser().getUsername());
         assertThat(profileDto.timerStart()).isCloseTo(START_LOCAL_DATE_TIME, within(1, ChronoUnit.SECONDS));
         assertThat(profileDto.avatarUri()).isEqualTo(String.format("%s/%s", BUCKET, KEY));
     }

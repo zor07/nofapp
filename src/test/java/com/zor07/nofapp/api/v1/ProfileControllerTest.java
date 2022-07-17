@@ -90,7 +90,8 @@ public class ProfileControllerTest extends AbstractApiTest {
             profile.id() != null &&
             profile.avatarUri() != null &&
             profile.timerStart() != null &&
-            profile.userId() != null
+            profile.user().name().startsWith("user") &&
+            profile.user().id() != null
         );
     }
 
@@ -114,7 +115,9 @@ public class ProfileControllerTest extends AbstractApiTest {
         final var profile = objectMapper.readValue(content, ProfileDto.class);
         assertThat(profile).isNotNull();
         assertThat(profile.timerStart().atZone(ZoneId.systemDefault()).toInstant()).isEqualTo(TIMER_START);
-        assertThat(profile.userId()).isEqualTo(user.getId());
+        assertThat(profile.user().id()).isEqualTo(String.valueOf(user.getId()));
+        assertThat(profile.user().name()).isEqualTo(String.valueOf(user.getName()));
+        assertThat(profile.user().username()).isEqualTo(String.valueOf(user.getUsername()));
         assertThat(profile.avatarUri()).isEqualTo(String.format("%s/%s/%s", BUCKET, user.getId(), KEY));
     }
 
