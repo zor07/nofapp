@@ -62,6 +62,8 @@ public class ProfileService {
         }
         fileRepository.save(avatar);
         persistAvatarToS3(userId, data);
+        profile.setAvatar(avatar);
+        profileRepository.save(profile);
     }
 
     @Transactional
