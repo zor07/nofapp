@@ -109,16 +109,54 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         final var file = fileRepository.findAll().get(0);
         assertThat(file.getBucket()).isEqualTo(BUCKET);
         assertThat(file.getPrefix()).isEqualTo(String.valueOf(userId));
-        assertThat(file.getKey()).isEqualTo(KEY);
+        assertThat(file.getKey()).startsWith(String.format("%s/%s", userId, KEY));
         assertThat(file.getMime()).isEqualTo(contentType);
         assertThat(file.getSize()).isEqualTo(data.length);
 
         final var tempFile = java.io.File.createTempFile("temp", "file");
-        s3.copyObject(BUCKET, String.format("%s/%s", userId, KEY), tempFile);
+        final var objectRef = s3.findObjects(BUCKET, userId.toString())
+                .findFirst()
+                .get();
+        s3.copyObject(objectRef, tempFile);
 
         final var bytes = Files.toByteArray(tempFile);
         assertThat(bytes).containsExactly(data);
     }
+
+    @Test
+    void shouldUpdateAvatar() throws IOException {
+        // given
+        final var user = persistUser(USERNAME);
+        final var userId = user.getId();
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+        final var contentType = "application/xml";
+        persistProfile(createProfile(user, null));
+        profileService.saveUserAvatar(userId, data, contentType, data.length);
+
+        final var srcFile2 = new java.io.File("src/test/resources/logback-test-2.xml");
+        final var data2 = Files.toByteArray(srcFile2);
+
+        // when
+        profileService.saveUserAvatar(userId, data2, contentType, data2.length);
+
+        // then
+        final var file = fileRepository.findAll().get(0);
+        assertThat(file.getBucket()).isEqualTo(BUCKET);
+        assertThat(file.getPrefix()).isEqualTo(String.valueOf(userId));
+        assertThat(file.getKey()).startsWith(String.format("%s/%s", userId, KEY));
+        assertThat(file.getMime()).isEqualTo(contentType);
+        assertThat(file.getSize()).isEqualTo(data2.length);
+
+        final var tempFile = java.io.File.createTempFile("temp", "file");
+        final var objectRefs = s3.findObjects(BUCKET, userId.toString()).toList();
+        assertThat(objectRefs).hasSize(1);
+        s3.copyObject(objectRefs.get(0), tempFile);
+
+        final var bytes = Files.toByteArray(tempFile);
+        assertThat(bytes).containsExactly(data2);
+    }
+
 
     @Test
     void shouldDeleteAvatar() throws IOException {
