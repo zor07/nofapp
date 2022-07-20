@@ -30,10 +30,7 @@ public interface ProfileMapper {
         if (avatar == null) {
             return null;
         }
-        final var key = avatar.getPrefix() == null
-                ? avatar.getKey()
-                : String.format("%s/%s", avatar.getPrefix(), avatar.getKey());
-        return String.format("%s/%s", avatar.getBucket(), key);
+        return String.format("%s/%s", avatar.getBucket(), avatar.getKey());
     }
 
     @Mappings({
