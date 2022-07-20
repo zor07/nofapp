@@ -8,14 +8,21 @@ import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.repository.FileRepository;
 import com.zor07.nofapp.repository.ProfileRepository;
 import com.zor07.nofapp.repository.RelapseLogRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.List;
 
 @Service
 public class ProfileService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileService.class);
 
     private static final String USER_BUCKET = "user";
     private static final String AVATAR_KEY = "avatar";
@@ -48,20 +55,23 @@ public class ProfileService {
                                final String contentType,
                                final long size) {
         final var profile = profileRepository.getProfileByUserId(userId);
+        final var key = getAvatarKey(userId, data);
         var avatar = profile.getAvatar();
         if (avatar == null) {
             avatar = new File();
             avatar.setBucket(USER_BUCKET);
             avatar.setMime(contentType);
             avatar.setPrefix(String.valueOf(userId));
-            avatar.setKey(AVATAR_KEY);
+            avatar.setKey(key);
             avatar.setSize(size);
         } else {
+            s3.deleteObject(USER_BUCKET, avatar.getKey());
+            avatar.setKey(key);
             avatar.setMime(contentType);
             avatar.setSize(size);
         }
         fileRepository.save(avatar);
-        persistAvatarToS3(userId, data);
+        s3.persistObject(USER_BUCKET, key, data);
         profile.setAvatar(avatar);
         profileRepository.save(profile);
     }
@@ -87,9 +97,22 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
-    private void persistAvatarToS3(final Long userId, final byte[] data) {
-        final var key = String.format("%s/%s", userId, AVATAR_KEY);
-        s3.persistObject(USER_BUCKET, key, data);
+    private String getAvatarKey(final Long userId, final byte[] data) {
+        final var hash = getMD5(data);
+        return String.format("%s/%s_%s", userId, AVATAR_KEY, hash);
+    }
+
+    public static String getMD5(byte[] input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input);
+            BigInteger number = new BigInteger(1, messageDigest);
+
+            return number.toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.warn("Failed to calculate MD5 sum: {0}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     private void saveRelapseLog(final Instant start, final User user) {
