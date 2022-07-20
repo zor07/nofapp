@@ -148,12 +148,15 @@ public class ProfileControllerTest extends AbstractApiTest {
         final var file = fileRepository.findAll().get(0);
         assertThat(file.getBucket()).isEqualTo(BUCKET);
         assertThat(file.getPrefix()).isEqualTo(String.valueOf(userId));
-        assertThat(file.getKey()).isEqualTo(KEY);
+        assertThat(file.getKey()).startsWith(String.format("%s/%s", userId, KEY));
         assertThat(file.getMime()).isEqualTo(contentType);
         assertThat(file.getSize()).isEqualTo(data.length);
 
         final var tempFile = java.io.File.createTempFile("temp", "file");
-        s3.copyObject(BUCKET, String.format("%s/%s", userId, KEY), tempFile);
+        final var objectRef = s3.findObjects(BUCKET, userId.toString())
+                .findFirst()
+                .get();
+        s3.copyObject(objectRef, tempFile);
 
         final var bytes = Files.toByteArray(tempFile);
         assertThat(bytes).containsExactly(data);
