@@ -46,6 +46,24 @@ public class RelapseLogServiceTest extends AbstractApplicationTest {
     }
 
     @Test
+    void saveTest() {
+        // given
+        final var user = persistUser();
+        assertThat(relapseLogRepository.findAll()).isEmpty();
+        final var relapseLog = createRelapseLog(user);
+
+        // when
+        relapseLogService.save(relapseLog);
+
+        // then
+        final var logs = relapseLogRepository.findAll();
+        assertThat(logs).hasSize(1);
+        assertThat(logs.get(0).getUser().getId()).isEqualTo(user.getId());
+        assertThat(logs.get(0).getStart()).isEqualTo(START_1);
+        assertThat(logs.get(0).getStop()).isEqualTo(STOP_1);
+    }
+
+    @Test
     void findAllByUserIdTest() {
         // given
         final var user = persistUser();

@@ -15,6 +15,10 @@ public class RelapseLogService {
         this.relapseLogRepository = relapseLogRepository;
     }
 
+    public void save(final RelapseLog relapseLog) {
+        relapseLogRepository.save(relapseLog);
+    }
+
     public List<RelapseLog> getRelapseLogEntriesByUserId(final Long userId) {
         return relapseLogRepository.findAllByUserId(userId);
     }

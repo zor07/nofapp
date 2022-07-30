@@ -7,7 +7,6 @@ import com.zor07.nofapp.entity.RelapseLog;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.repository.FileRepository;
 import com.zor07.nofapp.repository.ProfileRepository;
-import com.zor07.nofapp.repository.RelapseLogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,16 +27,16 @@ public class ProfileService {
     private static final String AVATAR_KEY = "avatar";
     private final FileRepository fileRepository;
     private final ProfileRepository profileRepository;
-    private final RelapseLogRepository relapseLogRepository;
+    private final RelapseLogService relapseLogService;
     private final S3Service s3;
 
     public ProfileService(FileRepository fileRepository,
                           ProfileRepository profileRepository,
-                          RelapseLogRepository relapseLogRepository,
+                          RelapseLogService relapseLogService,
                           S3Service s3) {
         this.fileRepository = fileRepository;
         this.profileRepository = profileRepository;
-        this.relapseLogRepository = relapseLogRepository;
+        this.relapseLogService = relapseLogService;
         this.s3 = s3;
     }
 
@@ -121,7 +120,7 @@ public class ProfileService {
         relapseLog.setUser(user);
         relapseLog.setStart(start);
         relapseLog.setStop(Instant.now());
-        relapseLogRepository.save(relapseLog);
+        relapseLogService.save(relapseLog);
     }
 
 }
