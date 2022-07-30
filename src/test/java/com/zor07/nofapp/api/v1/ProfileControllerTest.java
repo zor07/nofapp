@@ -118,7 +118,7 @@ public class ProfileControllerTest extends AbstractApiTest {
         assertThat(profile.user().id()).isEqualTo(String.valueOf(user.getId()));
         assertThat(profile.user().name()).isEqualTo(String.valueOf(user.getName()));
         assertThat(profile.user().username()).isEqualTo(String.valueOf(user.getUsername()));
-        assertThat(profile.avatarUri()).isEqualTo(String.format("%s/%s/%s", BUCKET, user.getId(), KEY));
+        assertThat(profile.avatarUri()).isEqualTo(String.format("%s/%s", BUCKET, KEY));
     }
 
     @Test
@@ -172,7 +172,7 @@ public class ProfileControllerTest extends AbstractApiTest {
         final var data = Files.toByteArray(srcFile);
         final var avatar = persistAvatar(createAvatar(user));
         persistProfile(createProfile(user, avatar));
-        s3.persistObject(BUCKET, String.format("%s/%s", userId, KEY), data);
+        s3.persistObject(BUCKET, KEY, data);
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         // when
@@ -183,7 +183,7 @@ public class ProfileControllerTest extends AbstractApiTest {
                 .andReturn().getResponse().getContentAsString();
 
         // then
-        assertThat(s3.containsObject(BUCKET, String.format("%s/%s", userId, KEY))).isFalse();
+        assertThat(s3.findObjects(BUCKET, "")).isEmpty();
         assertThat(fileRepository.findAll()).isEmpty();
         assertThat(profileRepository.findAll().get(0).getAvatar()).isNull();
     }

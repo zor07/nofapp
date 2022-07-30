@@ -167,13 +167,13 @@ public class ProfileServiceTest extends AbstractApplicationTest {
         final var data = Files.toByteArray(srcFile);
         final var avatar = persistAvatar(createAvatar(user));
         persistProfile(createProfile(user, avatar));
-        s3.persistObject(BUCKET, String.format("%s/%s", userId, KEY), data);
+        s3.persistObject(BUCKET, KEY, data);
 
         // when
         profileService.deleteUserAvatar(userId);
 
         // then
-        assertThat(s3.containsObject(BUCKET, String.format("%s/%s", userId, KEY))).isFalse();
+        assertThat(s3.findObjects(BUCKET, "")).isEmpty();
         assertThat(fileRepository.findAll()).isEmpty();
         assertThat(profileRepository.findAll().get(0).getAvatar()).isNull();
     }
