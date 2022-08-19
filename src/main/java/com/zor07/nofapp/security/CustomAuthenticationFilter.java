@@ -1,11 +1,8 @@
 package com.zor07.nofapp.security;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zor07.nofapp.api.v1.dto.auth.AuthenticationDto;
+import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -15,8 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.api.v1.dto.AuthenticationDto;
+
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.stream.Collectors;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -47,9 +48,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     final var user = (User) authentication.getPrincipal();
     final var accessToken = SecurityUtils.createAccessToken(user, request.getRequestURL().toString());
     final var refreshToken = SecurityUtils.createRefreshToken(user, request.getRequestURL().toString());
-    final var tokens = new HashMap<String, String>();
-    tokens.put("access_token", accessToken);
-    tokens.put("refresh_token", refreshToken);
+    final var tokens = new TokensDto(accessToken, refreshToken);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);
   }

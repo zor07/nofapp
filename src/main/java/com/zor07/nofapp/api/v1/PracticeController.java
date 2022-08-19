@@ -1,16 +1,15 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.PracticeDto;
-import com.zor07.nofapp.practice.Practice;
-import com.zor07.nofapp.practice.PracticeRepository;
-import com.zor07.nofapp.practice.UserPractice;
-import com.zor07.nofapp.practice.UserPracticeKey;
-import com.zor07.nofapp.practice.UserPracticeRepository;
-import com.zor07.nofapp.security.SecurityUtils;
-import com.zor07.nofapp.user.User;
-import com.zor07.nofapp.user.UserService;
+import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
+import com.zor07.nofapp.service.PracticeService;
+import com.zor07.nofapp.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,169 +20,138 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import springfox.documentation.annotations.ApiIgnore;
 
-import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
+import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/practice")
-// TODO create service and exception handler
+@RequestMapping("/api/v1/practices")
+@Api(tags = "Practices")
 public class PracticeController {
 
     private final UserService userService;
-    private final PracticeRepository practiceRepository;
-    private final UserPracticeRepository userPracticeRepository;
-
+    private final PracticeService practiceService;
+    private final PracticeMapper practiceMapper;
     @Autowired
     public PracticeController(final UserService userService,
-                              final PracticeRepository practiceRepository,
-                              final UserPracticeRepository userPracticeRepository) {
+                              final PracticeService practiceService,
+                              final PracticeMapper practiceMapper) {
         this.userService = userService;
-        this.practiceRepository = practiceRepository;
-        this.userPracticeRepository = userPracticeRepository;
+        this.practiceService = practiceService;
+        this.practiceMapper = practiceMapper;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Retrieves list of practices", response = PracticeDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list of practices"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
     public List<PracticeDto> getPractices(@RequestParam(defaultValue = "false") final boolean isPublic,
-                                          final Principal principal) throws Exception{
-        final var user = getUser(principal);
-
-        final var practices = isPublic
-                ? practiceRepository.findByIsPublic(true)
-                : userPracticeRepository.findAllByUserId(user.getId()).stream()
-                                        .map(UserPractice::getPractice)
-                                        .collect(Collectors.toList());
-
+                                          final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        final var practices = practiceService.getPractices(isPublic, user.getId());
         return practices.stream()
-                .map(practice -> PracticeDto.toDto(practice))
+                .map(practiceMapper::toDto)
                 .toList();
     }
 
-    @GetMapping("/{practiceId}")
-    public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId, final Principal principal) {
-        try {
-            final var practice = practiceRepository.getById(practiceId);
-            if (practice.isPublic()) {
-                return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
-            } else {
-                final var user = getUser(principal);
-                if (userPracticeRepository.findByUserAndPractice(user, practice) != null) {
-                    return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.OK);
-                }
-            }
-        } catch (final EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping(path = "/{practiceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Retrieves practice by id", response = PracticeDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved practice"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<PracticeDto> getPractice(@PathVariable final Long practiceId,
+                                                   final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        final var practice = practiceService.getPracticeForUser(practiceId, user);
+        return ResponseEntity.ok(practiceMapper.toDto(practice));
     }
 
-    @PutMapping("/{practiceId}")
-    public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId, final Principal principal) {
-        try {
-            final var practice = practiceRepository.getById(practiceId);
-            if (practice.isPublic()) {
-                final var user = getUser(principal);
-                if (userPracticeRepository.findByUserAndPractice(user, practice) == null) {
-                    userPracticeRepository.save(
-                            new UserPractice(new UserPracticeKey(user.getId(), practiceId), user, practice));
-                    return new ResponseEntity<>(HttpStatus.ACCEPTED);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (final EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PostMapping("/{practiceId}/userPractice")
+    @ApiOperation(value = "Adds practice to current user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Successfully added practice to user"),
+            @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> addPracticeToUser(@PathVariable final Long practiceId,
+                                                  final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        practiceService.addPracticeToUser(practiceId, user);
+        return ResponseEntity.accepted().build();
     }
 
-
-    @PostMapping(consumes = "application/json")
-    @Transactional
-    public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
-        final var user = getUser(principal);
-        Practice practice;
-        if (practiceDto.isPublic) {
-            if (!SecurityUtils.isUserAdmin(user)) {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-            }
-            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
-        } else {
-            practice = practiceRepository.save(PracticeDto.toEntity(practiceDto));
-            userPracticeRepository.save(new UserPractice(new UserPracticeKey(user.getId(), practice.getId()), user, practice));
-        }
-        return new ResponseEntity<>(PracticeDto.toDto(practice), HttpStatus.CREATED);
+    @DeleteMapping("/{practiceId}/userPractice")
+    @ApiOperation(value = "Removes practice from user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully removed practice from user"),
+            @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> removePracticeFromUser(@PathVariable final Long practiceId,
+                                                       final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        practiceService.removePracticeFromUser(practiceId, user);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(consumes = "application/json")
-    @Transactional
-    public ResponseEntity<Void> updatePractice(@RequestBody final PracticeDto practiceDto, final Principal principal) {
-        final var user = getUser(principal);
-        if (practiceDto.id == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        if (practiceDto.isPublic && !SecurityUtils.isUserAdmin(user)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-        if (!practiceDto.isPublic && userPracticeRepository.findAllByUserId(user.getId())
-                .stream()
-                .noneMatch(userPractice -> userPractice.getPractice().getId().equals(practiceDto.id))){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        practiceRepository.save(PracticeDto.toEntity(practiceDto));
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Creates practice", response = PracticeDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully created practice"),
+            @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<PracticeDto> savePractice(@RequestBody final PracticeDto practiceDto,
+                                                    final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        final var practice = practiceService.savePractice(practiceMapper.toEntity(practiceDto), user);
+        final var uri = URI.create(ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(String.format("/api/v1/practice/%s", practice.getId()))
+                .toUriString());
+        return ResponseEntity.created(uri).body(practiceMapper.toDto(practice));
+    }
+
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Updates practice", response = PracticeDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Successfully updated practice"),
+            @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<PracticeDto> updatePractice(@RequestBody final PracticeDto practiceDto,
+                                                      final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        final var practice = practiceService.updatePractice(practiceMapper.toEntity(practiceDto), user);
+        return ResponseEntity.accepted().body(practiceMapper.toDto(practice));
     }
 
     @DeleteMapping("/{practiceId}")
-    @Transactional
-    public ResponseEntity<Void> deletePractice(@PathVariable final Long practiceId, final Principal principal) {
-        final var user = getUser(principal);
-        try {
-            final var practice = practiceRepository.getById(practiceId);
-            if (SecurityUtils.isUserAdmin(user)) {
-                if (practice.isPublic()) {
-                    if (isUsersPractice(user, practice)) {
-                        userPracticeRepository.deleteByUserAndPractice(user, practice);
-                    } else {
-                        userPracticeRepository.deleteAllByPractice(practice);
-                        practiceRepository.delete(practice);
-                    }
-                } else {
-                    if (isUsersPractice(user, practice)) {
-                        userPracticeRepository.deleteByUserAndPractice(user, practice);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                    }
-                }
-            } else {
-                if (practice.isPublic()) {
-                    userPracticeRepository.deleteByUserAndPractice(user, practice);
-                } else {
-                    if (isUsersPractice(user, practice)) {
-                        userPracticeRepository.deleteByUserAndPractice(user, practice);
-                        practiceRepository.delete(practice);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-                    }
-                }
-            }
-        } catch (final EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @ApiOperation(value = "Deletes practice")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted practice"),
+            @ApiResponse(code = 401, message = "You are not authorized to access the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> deletePractice(@PathVariable final Long practiceId,
+                                               final @ApiIgnore Principal principal) {
+        final var user = userService.getUser(principal);
+        practiceService.deletePractice(practiceId, user);
+        return ResponseEntity.noContent().build();
     }
-
-    private boolean isUsersPractice(final User user, final Practice practice) {
-        return userPracticeRepository.findByUserAndPractice(user, practice) != null;
-    }
-
-    private User getUser(final Principal principal) {
-        final var username = principal.getName();
-        return userService.getUser(username);
-    }
-
 }

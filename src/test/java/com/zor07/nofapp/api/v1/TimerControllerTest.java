@@ -1,9 +1,11 @@
 package com.zor07.nofapp.api.v1;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zor07.nofapp.spring.AbstractApiTest;
+import com.zor07.nofapp.entity.Timer;
+import com.zor07.nofapp.repository.TimerRepository;
+import com.zor07.nofapp.repository.RoleRepository;
+import com.zor07.nofapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,12 +15,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.test.AbstractApiTest;
-import com.zor07.nofapp.timer.Timer;
-import com.zor07.nofapp.timer.TimerRepository;
-import com.zor07.nofapp.user.RoleRepository;
-import com.zor07.nofapp.user.UserRepository;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -36,7 +36,7 @@ public class TimerControllerTest extends AbstractApiTest {
   private static final String USER_1 = "user1";
   private static final String USER_2 = "user2";
 
-  private static final String TIMER_ENDPOINT = "/api/v1/timer";
+  private static final String TIMER_ENDPOINT = "/api/v1/timers";
   private static class TimerTestDto {
     public Long id;
     public String start;
@@ -89,63 +89,135 @@ public class TimerControllerTest extends AbstractApiTest {
   }
 
   @Test
-  void getTimersTest() throws Exception {
+  void getTimers_should_return_2_timers_Test() throws Exception {
+    // given
     createTimer(USER_1);
     createTimer(USER_1);
     createTimer(USER_2);
     final var authHeader = getAuthHeader(mvc, USER_1);
 
+    // when
     final var content = mvc.perform(get(TIMER_ENDPOINT)
               .contentType(MediaType.APPLICATION_JSON)
               .header(HttpHeaders.AUTHORIZATION, authHeader))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
+
+    // then
     final var timers = objectMapper.readValue(content, new TypeReference<List<TimerTestDto>>(){});
     assertThat(timers).hasSize(2);
-
     assertThat(timers.get(0).start).isEqualTo(DATETIME);
   }
 
   @Test
-  void postTimerTest() throws Exception {
+  void getTimers_should_return_0_timers_Test() throws Exception {
+    // given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    // when
+    final var content = mvc.perform(get(TIMER_ENDPOINT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, authHeader))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+    // then
+    final var timers = objectMapper.readValue(content, new TypeReference<List<TimerTestDto>>(){});
+    assertThat(timers).isEmpty();
+  }
+
+
+  @Test
+  void saveTimerTest() throws Exception {
+    // given
     final var authHeader = getAuthHeader(mvc, USER_1);
     final var userId = userService.getUser(USER_1).getId();
     final var timerTestDto = new TimerTestDto();
     final var description = "test description";
     timerTestDto.description = description;
     timerTestDto.start = DATETIME;
-    mvc.perform(post(TIMER_ENDPOINT)
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(timerTestDto))
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isCreated());
+    //when
+    final var perform = mvc.perform(post(TIMER_ENDPOINT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(timerTestDto))
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    perform.andExpect(status().isCreated());
     final var timer = timerRepository.findAll().get(0);
     assertThat(timer.getDescription()).isEqualTo(description);
     assertThat(timer.getUser().getId()).isEqualTo(userId);
   }
 
   @Test
-  void deleteTimerTest() throws Exception {
+  void deleteTimer_shouldDelete_test() throws Exception {
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     createTimer(USER_1);
     final var timer = timerRepository.findAll().get(0);
-    mvc.perform(delete(TIMER_ENDPOINT+"/"+timer.getId())
-              .contentType(MediaType.APPLICATION_JSON)
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isNoContent());
+    //when
+    final var result = mvc.perform(delete(TIMER_ENDPOINT + "/" + timer.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isNoContent());
     assertThat(timerRepository.findAll()).isEmpty();
   }
 
   @Test
-  void stopTimerTest() throws Exception{
+  void deleteTimer_shouldNotDeleteAnotherUsersTimer_test() throws Exception {
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    createTimer(USER_2);
+    final var timer = timerRepository.findAll().get(0);
+    //when
+    final var result = mvc.perform(delete(TIMER_ENDPOINT + "/" + timer.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isNoContent());
+    assertThat(timerRepository.findAll()).hasSize(1);
+  }
+
+  @Test
+  void deleteTimer_notExistingTimer_test() throws Exception {
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    createTimer(USER_1);
+    //when
+    final var result = mvc.perform(delete(TIMER_ENDPOINT + "/77777")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    //then
+    result.andExpect(status().isNoContent());
+    assertThat(timerRepository.findAll()).hasSize(1);
+  }
+
+
+
+  @Test
+  void stopExistingTimerTest() throws Exception{
+    //given
     final var authHeader = getAuthHeader(mvc, USER_1);
     createTimer(USER_1);
     final var timer = timerRepository.findAll().get(0);
-    mvc.perform(put(TIMER_ENDPOINT+"/"+timer.getId()+"/stop")
-              .contentType(MediaType.APPLICATION_JSON)
-              .header(HttpHeaders.AUTHORIZATION, authHeader))
-        .andExpect(status().isAccepted());
+    //when
+    final var result = mvc.perform(put(TIMER_ENDPOINT + "/" + timer.getId() + "/stop")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    // then
+    result.andExpect(status().isAccepted());
     final var stoppedTimer = timerRepository.findAll().get(0);
     assertThat(stoppedTimer.getStop()).isNotNull();
+  }
+
+  @Test
+  void stopNotExistingTimerTest() throws Exception{
+    //given
+    final var authHeader = getAuthHeader(mvc, USER_1);
+    //when
+    final var result = mvc.perform(put(TIMER_ENDPOINT + "/7777" + "/stop")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, authHeader));
+    // then
+    result.andExpect(status().isAccepted());
+    assertThat(timerRepository.findAll()).isEmpty();
   }
 }
