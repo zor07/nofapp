@@ -56,9 +56,9 @@ public class RelapseLogController {
     }
 
     @DeleteMapping("/{relapseLogId}")
-    @ApiOperation(value = "Removes user post")
+    @ApiOperation(value = "Removes relapse log entry")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Successfully removed user post"),
+            @ApiResponse(code = 204, message = "Successfully removed log entry"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
