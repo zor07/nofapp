@@ -1,7 +1,7 @@
 # nofapp
 
 ## Description
-This project is a backend for [nofapp-ui](https://github.com/zor07/nofapp-ui). 
+This project is a backend for [nofapp-ui](https://github.com/zor07/nofapp-ui)
 
 ## Technologies
 * This is a spring-boot project with PostgreSQL database
