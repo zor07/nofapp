@@ -9,7 +9,7 @@ http://www.liquibase.org/xml/ns/pro
 http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
     <changeSet  id="202212051719"  author="zor">
-        <createTable  tableName="profile">
+        <createTable  tableName="level">
             <column  name="id"
                      type="int"
                      autoIncrement="true">
