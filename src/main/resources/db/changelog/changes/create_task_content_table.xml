@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
+http://www.liquibase.org/xml/ns/pro
+http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
+
+    <changeSet  id="202212051727"  author="zor">
+        <createTable  tableName="task_content">
+            <column  name="id"
+                     type="int"
+                     autoIncrement="true">
+                <constraints  primaryKey="true"
+                              nullable="false"/>
+            </column>
+
+            <column name="note_id"
+                    type="int">
+                <constraints foreignKeyName="fk_note_id"
+                             references="note(id)"/>
+            </column>
+
+            <column name="file_id"
+                    type="int">
+                <constraints foreignKeyName="fk_file_id"
+                             references="file(id)"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
