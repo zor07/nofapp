@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NofappApplication {
+public class NFApp {
 
   public static void main(String[] args) {
-    SpringApplication.run(NofappApplication.class, args);
+    SpringApplication.run(NFApp.class, args);
   }
 
 }
