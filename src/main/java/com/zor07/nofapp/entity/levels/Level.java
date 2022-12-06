@@ -20,8 +20,12 @@ public class Level {
 
     private String name;
 
-    public Level(Long id, String name) {
+    @Column(name="\"order\"")
+    private Integer order;
+
+    public Level(Long id, Integer order, String name) {
         this.id = id;
+        this.order = order;
         this.name = name;
     }
 
@@ -34,6 +38,14 @@ public class Level {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
     public String getName() {
