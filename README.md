@@ -28,7 +28,7 @@ docker-compose up -d
 Run application.
 
 There are several ways to run a Spring Boot application on your local machine. 
-One way is to execute the main method in the `com.zor07.nofapp.NofappApplication` class from your IDE.
+One way is to execute the main method in the `com.zor07.nofapp.NFApp` class from your IDE.
 
 Alternatively you can use the Spring Boot Maven plugin like so:
 
