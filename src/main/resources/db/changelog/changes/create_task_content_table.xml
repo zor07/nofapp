@@ -17,16 +17,18 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
                               nullable="false"/>
             </column>
 
-            <column name="note_id"
-                    type="int">
-                <constraints foreignKeyName="fk_note_id"
-                             references="note(id)"/>
-            </column>
-
             <column name="file_id"
                     type="int">
                 <constraints foreignKeyName="fk_file_id"
                              references="file(id)"/>
+            </column>
+
+            <column  name="title"  type="varchar">
+                <constraints  nullable="false"/>
+            </column>
+
+            <column  name="data"  type="jsonb">
+                <constraints  nullable="false"/>
             </column>
 
         </createTable>
