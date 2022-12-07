@@ -1,7 +1,5 @@
 package com.zor07.nofapp.service;
 
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
@@ -13,21 +11,10 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 
+import static com.zor07.nofapp.test.UserTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserServiceTest extends AbstractApplicationTest {
-
-  private static final String DEFAULT_PASSWORD = "pass";
-
-  private static final String DEFAULT_ROLE = "role";
-
-  protected static Role createRole() {
-    return new Role(null, DEFAULT_ROLE);
-  }
-
-  protected static User createUser(final String name) {
-    return new User(null, name, name, DEFAULT_PASSWORD, new ArrayList<>());
-  }
 
   @Autowired
   private UserRepository userRepository;
@@ -55,15 +42,15 @@ public class UserServiceTest extends AbstractApplicationTest {
 
   @Test
   void saveUserTest() {
-    userService.saveUser(createUser("user"));
-    final var user = userRepository.findByUsername("user");
-    assertThat(user.getName()).isEqualTo("user");
+    userService.saveUser(createUser());
+    final var user = userRepository.findByUsername(DEFAULT_USERNAME);
+    assertThat(user.getName()).isEqualTo(DEFAULT_USERNAME);
   }
 
   @Test(expectedExceptions = DataIntegrityViolationException.class)
   void saveUserTest_failsWhenSavingUsersWithSameUsername() {
-    userService.saveUser(createUser("user"));
-    userService.saveUser(createUser("user"));
+    userService.saveUser(createUser());
+    userService.saveUser(createUser());
   }
 
   @Test
@@ -81,13 +68,13 @@ public class UserServiceTest extends AbstractApplicationTest {
 
   @Test
   void addRoleToUserTest() {
-    userService.saveUser(createUser("user"));
+    userService.saveUser(createUser());
     userService.saveRole(createRole());
-    userService.addRoleToUser("user", "role");
-    final var user = userRepository.findByUsername("user");
+    userService.addRoleToUser(DEFAULT_USERNAME, DEFAULT_ROLE);
+    final var user = userRepository.findByUsername(DEFAULT_USERNAME);
     final var roles = new ArrayList<>(user.getRoles());
     assertThat(roles).hasSize(1);
-    assertThat(roles.get(0).getName()).isEqualTo("role");
+    assertThat(roles.get(0).getName()).isEqualTo(DEFAULT_ROLE);
   }
 
   @Test

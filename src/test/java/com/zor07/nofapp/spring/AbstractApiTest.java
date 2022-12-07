@@ -2,15 +2,10 @@ package com.zor07.nofapp.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -24,19 +19,7 @@ public class AbstractApiTest extends AbstractApplicationTest {
 
   protected static final String REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/token/refresh";
 
-  protected static record LoginPayload(String username, String password) {}
-
-  protected static Role createRole() {
-    return new Role(null, DEFAULT_ROLE);
-  }
-
-  protected static Role createAdminRole() {
-    return new Role(null, UserRole.ROLE_ADMIN.getRoleName());
-  }
-
-  protected static User createUser(final String name) {
-    return new User(null, name, name, DEFAULT_PASSWORD, new ArrayList<>());
-  }
+  private record LoginPayload(String username, String password) {}
 
   @Autowired
   protected UserService userService;

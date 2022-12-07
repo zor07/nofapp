@@ -23,6 +23,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static com.zor07.nofapp.test.UserTestUtils.createRole;
+import static com.zor07.nofapp.test.UserTestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -33,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RelapseLogControllerTest extends AbstractApiTest {
 
     private static final String RELAPSE_LOG_ENDPOINT = "/api/v1/profiles/{userId}/relapses";
-    private static final String USERNAME = "user";
     private static final Instant START_1 = Instant.parse("2022-05-01T15:26:00Z");
     private static final Instant STOP_1 = Instant.parse("2022-05-01T15:27:00Z");
 
@@ -65,8 +66,8 @@ public class RelapseLogControllerTest extends AbstractApiTest {
         roleRepository.save(role);
         return role.getName();
     }
-    private User persistUser(final String name, final String roleName) {
-        final var user = createUser(name);
+    private User persistUser(final String roleName) {
+        final var user = createUser();
         userService.saveUser(user);
         userService.addRoleToUser(user.getUsername(), roleName);
         return user;
@@ -76,7 +77,7 @@ public class RelapseLogControllerTest extends AbstractApiTest {
     void findAllByUserIdTest() throws Exception {
         // given
         final var roleName = persistRole();
-        final var user = persistUser(USERNAME, roleName);
+        final var user = persistUser(roleName);
         final var all = relapseLogRepository.findAll();
         assertThat(all).isEmpty();
         persistRelapseLog(createRelapseLog(user));
@@ -107,7 +108,7 @@ public class RelapseLogControllerTest extends AbstractApiTest {
         // given
         assertThat(relapseLogRepository.findAll()).isEmpty();
         final var roleName = persistRole();
-        final var user = persistUser(USERNAME, roleName);
+        final var user = persistUser(roleName);
         persistRelapseLog(createRelapseLog(user));
         final var id = relapseLogRepository.findAll().get(0).getId();
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
