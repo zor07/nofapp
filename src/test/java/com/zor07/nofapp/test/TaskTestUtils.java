@@ -27,10 +27,11 @@ public class TaskTestUtils {
         return task;
     }
 
-    public static void updateEntity(final Task task) {
+    public static Task updateEntity(final Task task) {
         task.setOrder(NEW_ORDER);
         task.setName(NEW_NAME);
         task.setDescription(NEW_DESCRIPTION);
+        return task;
     }
 
     public static void checkUpdated(final Task task) {
