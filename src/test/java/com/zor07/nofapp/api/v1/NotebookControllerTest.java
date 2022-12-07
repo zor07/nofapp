@@ -18,8 +18,7 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.zor07.nofapp.test.UserTestUtils.createRole;
-import static com.zor07.nofapp.test.UserTestUtils.createUser;
+import static com.zor07.nofapp.test.UserTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

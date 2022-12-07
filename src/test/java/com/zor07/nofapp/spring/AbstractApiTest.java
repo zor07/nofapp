@@ -7,13 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_PASSWORD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public class AbstractApiTest extends AbstractApplicationTest {
-
-  protected static final String DEFAULT_ROLE = "ROLE_USER";
-  protected static final String DEFAULT_USERNAME = "user";
-  protected static final String DEFAULT_PASSWORD = "pass";
 
   protected static final String LOGIN_ENDPOINT = "/api/v1/auth/login";
 
