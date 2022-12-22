@@ -1,4 +1,4 @@
-package com.zor07.nofapp.notes.entity;
+package com.zor07.nofapp.model.notes;
 
 public interface NoteIdAndTitleEntity {
 

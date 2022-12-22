@@ -1,4 +1,4 @@
-package com.zor07.nofapp.file.entity;
+package com.zor07.nofapp.model.file;
 
 import javax.persistence.*;
 

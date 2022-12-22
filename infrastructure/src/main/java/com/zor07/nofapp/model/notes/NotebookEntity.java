@@ -1,6 +1,6 @@
-package com.zor07.nofapp.notes.entity;
+package com.zor07.nofapp.model.notes;
 
-import com.zor07.nofapp.user.entity.UserEntity;
+import com.zor07.nofapp.model.user.UserEntity;
 
 import javax.persistence.*;
 

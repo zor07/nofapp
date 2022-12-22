@@ -1,4 +1,4 @@
-package com.zor07.nofapp.user.entity;
+package com.zor07.nofapp.model.user;
 
 import javax.persistence.*;
 

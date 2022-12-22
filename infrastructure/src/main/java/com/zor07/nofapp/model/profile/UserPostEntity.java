@@ -1,7 +1,7 @@
-package com.zor07.nofapp.profile.entity;
+package com.zor07.nofapp.model.profile;
 
-import com.zor07.nofapp.notes.entity.NoteEntity;
-import com.zor07.nofapp.user.entity.UserEntity;
+import com.zor07.nofapp.model.notes.NoteEntity;
+import com.zor07.nofapp.model.user.UserEntity;
 
 import javax.persistence.*;
 

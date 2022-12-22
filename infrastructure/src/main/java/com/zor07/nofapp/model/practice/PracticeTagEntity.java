@@ -1,4 +1,4 @@
-package com.zor07.nofapp.practice.entity;
+package com.zor07.nofapp.model.practice;
 
 import javax.persistence.*;
 

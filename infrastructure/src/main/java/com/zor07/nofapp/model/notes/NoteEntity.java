@@ -1,4 +1,4 @@
-package com.zor07.nofapp.notes.entity;
+package com.zor07.nofapp.model.notes;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import com.zor07.nofapp.validation.JsonString;

@@ -1,4 +1,4 @@
-package com.zor07.nofapp.profile.entity;
+package com.zor07.nofapp.model.profile;
 
 
 import javax.persistence.Column;

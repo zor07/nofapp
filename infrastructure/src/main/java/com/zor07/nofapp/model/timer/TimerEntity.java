@@ -1,6 +1,6 @@
-package com.zor07.nofapp.timer.entity;
+package com.zor07.nofapp.model.timer;
 
-import com.zor07.nofapp.user.entity.UserEntity;
+import com.zor07.nofapp.model.user.UserEntity;
 
 import javax.persistence.*;
 import java.time.Instant;

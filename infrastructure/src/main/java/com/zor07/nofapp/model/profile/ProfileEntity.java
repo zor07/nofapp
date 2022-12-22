@@ -1,7 +1,7 @@
-package com.zor07.nofapp.profile.entity;
+package com.zor07.nofapp.model.profile;
 
-import com.zor07.nofapp.file.entity.FileEntity;
-import com.zor07.nofapp.user.entity.UserEntity;
+import com.zor07.nofapp.model.file.FileEntity;
+import com.zor07.nofapp.model.user.UserEntity;
 
 import javax.persistence.*;
 import java.time.Instant;
