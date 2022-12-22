@@ -1,6 +1,6 @@
-package com.zor07.nofapp.levels.repository;
+package com.zor07.nofapp.repository.levels;
 
-import com.zor07.nofapp.levels.entity.TaskContentEntity;
+import com.zor07.nofapp.model.levels.TaskContentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TaskContentRepository extends JpaRepository<TaskContentEntity, Long> {

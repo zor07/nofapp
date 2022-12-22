@@ -1,6 +1,6 @@
-package com.zor07.nofapp.notes.repository;
+package com.zor07.nofapp.repository.notes;
 
-import com.zor07.nofapp.notes.entity.NotebookEntity;
+import com.zor07.nofapp.model.notes.NotebookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

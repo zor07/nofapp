@@ -1,6 +1,6 @@
-package com.zor07.nofapp.timer.repository;
+package com.zor07.nofapp.repository.timer;
 
-import com.zor07.nofapp.timer.entity.TimerEntity;
+import com.zor07.nofapp.model.timer.TimerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

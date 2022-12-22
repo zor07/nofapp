@@ -1,6 +1,6 @@
-package com.zor07.nofapp.practice.repository;
+package com.zor07.nofapp.repository.practice;
 
-import com.zor07.nofapp.practice.entity.PracticeTagEntity;
+import com.zor07.nofapp.model.practice.PracticeTagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PracticeTagRepository extends JpaRepository<PracticeTagEntity, Long> {

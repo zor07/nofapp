@@ -1,9 +1,9 @@
-package com.zor07.nofapp.practice.repository;
+package com.zor07.nofapp.repository.practice;
 
-import com.zor07.nofapp.practice.entity.PracticeEntity;
-import com.zor07.nofapp.practice.entity.UserPracticeEntity;
-import com.zor07.nofapp.practice.entity.UserPracticeKeyEntity;
-import com.zor07.nofapp.user.entity.UserEntity;
+import com.zor07.nofapp.model.practice.PracticeEntity;
+import com.zor07.nofapp.model.practice.UserPracticeEntity;
+import com.zor07.nofapp.model.practice.UserPracticeKeyEntity;
+import com.zor07.nofapp.model.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

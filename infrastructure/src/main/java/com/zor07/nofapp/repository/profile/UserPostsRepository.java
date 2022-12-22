@@ -1,7 +1,7 @@
-package com.zor07.nofapp.profile.repository;
+package com.zor07.nofapp.repository.profile;
 
-import com.zor07.nofapp.profile.entity.UserPostEntity;
-import com.zor07.nofapp.profile.entity.UserPostKeyEntity;
+import com.zor07.nofapp.model.profile.UserPostEntity;
+import com.zor07.nofapp.model.profile.UserPostKeyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
