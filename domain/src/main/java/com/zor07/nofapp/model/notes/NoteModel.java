@@ -1,6 +1,6 @@
-package com.zor07.nofapp.domain.model.notes;
+package com.zor07.nofapp.model.notes;
 
-import com.zor07.nofapp.domain.validation.JsonString;
+import com.zor07.nofapp.validation.JsonString;
 
 
 public record NoteModel(

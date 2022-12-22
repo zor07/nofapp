@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.validation;
+package com.zor07.nofapp.validation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

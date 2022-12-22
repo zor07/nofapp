@@ -1,7 +1,7 @@
-package com.zor07.nofapp.domain.model.practice;
+package com.zor07.nofapp.model.practice;
 
 
-import com.zor07.nofapp.domain.validation.JsonString;
+import com.zor07.nofapp.validation.JsonString;
 
 public record PracticeModel(
         Long id,

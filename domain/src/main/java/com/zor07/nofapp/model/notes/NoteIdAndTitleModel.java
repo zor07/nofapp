@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.model.notes;
+package com.zor07.nofapp.model.notes;
 
 public record NoteIdAndTitleModel(
         Long id,

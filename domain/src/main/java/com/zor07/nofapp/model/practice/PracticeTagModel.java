@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.model.practice;
+package com.zor07.nofapp.model.practice;
 
 public record PracticeTagModel(
         Long id,

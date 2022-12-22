@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.validation;
+package com.zor07.nofapp.validation;
 
 
 import javax.validation.Constraint;

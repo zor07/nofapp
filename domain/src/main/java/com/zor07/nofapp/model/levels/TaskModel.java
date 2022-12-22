@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.model.levels;
+package com.zor07.nofapp.model.levels;
 
 
 public record TaskModel(

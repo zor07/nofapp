@@ -1,6 +1,6 @@
-package com.zor07.nofapp.domain.model.profile;
+package com.zor07.nofapp.model.profile;
 
-import com.zor07.nofapp.domain.model.user.UserModel;
+import com.zor07.nofapp.model.user.UserModel;
 
 import java.time.Instant;
 

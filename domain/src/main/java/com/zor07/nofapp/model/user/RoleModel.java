@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.model.user;
+package com.zor07.nofapp.model.user;
 
 public record RoleModel(
         Long id,

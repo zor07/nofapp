@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.model.file;
+package com.zor07.nofapp.model.file;
 
 public record FileModel(
         Long id,

@@ -1,4 +1,4 @@
-package com.zor07.nofapp.domain.model.profile;
+package com.zor07.nofapp.model.profile;
 
 
 public record UserPostKeyModel(

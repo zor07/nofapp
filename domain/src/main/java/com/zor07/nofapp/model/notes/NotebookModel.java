@@ -1,6 +1,6 @@
-package com.zor07.nofapp.domain.model.notes;
+package com.zor07.nofapp.model.notes;
 
-import com.zor07.nofapp.domain.model.user.UserModel;
+import com.zor07.nofapp.model.user.UserModel;
 
 
 public record NotebookModel(
