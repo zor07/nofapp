@@ -1,6 +1,6 @@
 package com.zor07.nofapp.domain.model.notes;
 
-public record NoteIdAndTitle(
+public record NoteIdAndTitleModel(
         Long id,
         String title
 ) {

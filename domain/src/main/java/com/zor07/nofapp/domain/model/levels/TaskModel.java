@@ -1,10 +1,10 @@
 package com.zor07.nofapp.domain.model.levels;
 
 
-public record Task(
+public record TaskModel(
         Long id,
-        Level level,
-        TaskContent taskContent,
+        LevelModel level,
+        TaskContentModel taskContent,
         Integer order,
         String name,
         String description

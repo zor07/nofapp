@@ -1,12 +1,12 @@
 package com.zor07.nofapp.domain.model.timer;
 
-import com.zor07.nofapp.domain.model.user.User;
+import com.zor07.nofapp.domain.model.user.UserModel;
 
 import java.time.Instant;
 
-public record Timer(
+public record TimerModel(
         Long id,
-        User user,
+        UserModel user,
         Instant start,
         Instant stop,
         String description

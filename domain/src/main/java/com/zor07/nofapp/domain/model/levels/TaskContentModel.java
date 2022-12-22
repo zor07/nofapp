@@ -1,11 +1,11 @@
 package com.zor07.nofapp.domain.model.levels;
 
-import com.zor07.nofapp.domain.model.file.File;
+import com.zor07.nofapp.domain.model.file.FileModel;
 import com.zor07.nofapp.domain.validation.JsonString;
 
-public record TaskContent(
+public record TaskContentModel(
         Long id,
-        File file,
+        FileModel file,
         String title,
         @JsonString String data
 ) {

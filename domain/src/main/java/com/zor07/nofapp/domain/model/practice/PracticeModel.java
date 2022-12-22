@@ -3,9 +3,9 @@ package com.zor07.nofapp.domain.model.practice;
 
 import com.zor07.nofapp.domain.validation.JsonString;
 
-public record Practice(
+public record PracticeModel(
         Long id,
-        PracticeTag practiceTag,
+        PracticeTagModel practiceTag,
         String name,
         String description,
         @JsonString String data,

@@ -1,6 +1,6 @@
 package com.zor07.nofapp.domain.model.practice;
 
-public record UserPracticeKey(
+public record UserPracticeKeyModel(
         Long userId,
         Long practiceId
 ) {

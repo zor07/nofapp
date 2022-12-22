@@ -1,11 +1,11 @@
 package com.zor07.nofapp.domain.model.notes;
 
-import com.zor07.nofapp.domain.model.user.User;
+import com.zor07.nofapp.domain.model.user.UserModel;
 
 
-public record Notebook(
+public record NotebookModel(
         Long id,
-        User user,
+        UserModel user,
         String name,
         String description
 ) {

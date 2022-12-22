@@ -3,9 +3,9 @@ package com.zor07.nofapp.domain.model.notes;
 import com.zor07.nofapp.domain.validation.JsonString;
 
 
-public record Note(
+public record NoteModel(
         Long id,
-        Notebook notebook,
+        NotebookModel notebook,
         String title,
         @JsonString String data
 ) {
