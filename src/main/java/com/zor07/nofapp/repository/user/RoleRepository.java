@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.user;
 
 import com.zor07.nofapp.entity.user.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

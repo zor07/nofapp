@@ -3,8 +3,8 @@ package com.zor07.nofapp.service;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.NoteIdAndTitle;
 import com.zor07.nofapp.exception.IllegalResourceAccessException;
-import com.zor07.nofapp.repository.NoteRepository;
-import com.zor07.nofapp.repository.NotebookRepository;
+import com.zor07.nofapp.repository.notes.NoteRepository;
+import com.zor07.nofapp.repository.notes.NotebookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

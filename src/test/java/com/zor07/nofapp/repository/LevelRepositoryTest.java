@@ -1,5 +1,6 @@
 package com.zor07.nofapp.repository;
 
+import com.zor07.nofapp.repository.levels.LevelRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.LevelTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;

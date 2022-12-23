@@ -1,5 +1,7 @@
 package com.zor07.nofapp.repository;
 
+import com.zor07.nofapp.repository.file.FileRepository;
+import com.zor07.nofapp.repository.levels.TaskContentRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;

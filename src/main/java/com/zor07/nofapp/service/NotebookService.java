@@ -1,7 +1,7 @@
 package com.zor07.nofapp.service;
 
 import com.zor07.nofapp.entity.notes.Notebook;
-import com.zor07.nofapp.repository.NotebookRepository;
+import com.zor07.nofapp.repository.notes.NotebookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

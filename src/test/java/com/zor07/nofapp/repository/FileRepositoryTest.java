@@ -1,6 +1,7 @@
 package com.zor07.nofapp.repository;
 
 import com.zor07.nofapp.entity.file.File;
+import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterClass;

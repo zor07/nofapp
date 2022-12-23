@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.file;
 
 import com.zor07.nofapp.entity.file.File;
 import org.springframework.data.jpa.repository.JpaRepository;
