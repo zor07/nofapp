@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1.mapper;
+package com.zor07.nofapp.api.v1.dto.timer.mapper;
 
 import com.zor07.nofapp.api.v1.dto.timer.TimerDto;
 import com.zor07.nofapp.api.v1.dto.timer.mapper.TimerMapper;

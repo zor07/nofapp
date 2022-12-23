@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1.mapper;
+package com.zor07.nofapp.api.v1.dto.practice.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.practice.PracticeDto;

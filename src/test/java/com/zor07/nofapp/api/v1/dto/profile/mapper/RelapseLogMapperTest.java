@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1.mapper;
+package com.zor07.nofapp.api.v1.dto.profile.mapper;
 
 import com.zor07.nofapp.api.v1.dto.profile.mapper.RelapseLogMapper;
 import com.zor07.nofapp.entity.profile.RelapseLog;

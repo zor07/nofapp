@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1.mapper;
+package com.zor07.nofapp.api.v1.dto.notes.mapper;
 
 import com.zor07.nofapp.api.v1.dto.notes.NotebookDto;
 import com.zor07.nofapp.api.v1.dto.notes.mapper.NotebookMapper;
