@@ -1,7 +1,7 @@
 package com.zor07.nofapp.service;
 
 import com.zor07.nofapp.entity.profile.RelapseLog;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.RelapseLogRepository;
 import com.zor07.nofapp.repository.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;

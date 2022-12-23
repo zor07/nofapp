@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.profile.UserPost;
 import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.repository.NotebookRepository;

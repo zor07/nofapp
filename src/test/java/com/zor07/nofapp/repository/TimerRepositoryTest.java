@@ -1,8 +1,8 @@
 package com.zor07.nofapp.repository;
 
-import com.zor07.nofapp.entity.Role;
+import com.zor07.nofapp.entity.user.Role;
 import com.zor07.nofapp.entity.Timer;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.service.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.zor07.nofapp.entity.profile;
 
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.levels.Task;
 
 import javax.persistence.*;

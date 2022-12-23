@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1.mapper;
 
 import com.zor07.nofapp.entity.profile.RelapseLog;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import org.mapstruct.factory.Mappers;
 import org.testng.annotations.Test;
 

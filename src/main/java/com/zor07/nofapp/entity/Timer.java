@@ -1,5 +1,7 @@
 package com.zor07.nofapp.entity;
 
+import com.zor07.nofapp.entity.user.User;
+
 import java.time.Instant;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

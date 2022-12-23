@@ -1,6 +1,4 @@
-package com.zor07.nofapp.entity;
-
-import com.zor07.nofapp.entity.Role;
+package com.zor07.nofapp.entity.user;
 
 import java.util.ArrayList;
 import java.util.Collection;

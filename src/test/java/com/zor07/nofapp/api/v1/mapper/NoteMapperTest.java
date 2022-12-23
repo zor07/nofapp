@@ -7,7 +7,7 @@ import com.zor07.nofapp.api.v1.dto.NotebookDto;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.NoteIdAndTitle;
 import com.zor07.nofapp.entity.notes.Notebook;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import org.mapstruct.factory.Mappers;
 import org.testng.annotations.Test;
 

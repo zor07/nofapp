@@ -1,13 +1,10 @@
 package com.zor07.nofapp.test;
 
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.entity.levels.Task;
+import com.zor07.nofapp.entity.user.Role;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.security.UserRole;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

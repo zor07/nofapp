@@ -3,7 +3,7 @@ package com.zor07.nofapp.repository;
 import com.zor07.nofapp.entity.practice.Practice;
 import com.zor07.nofapp.entity.practice.UserPractice;
 import com.zor07.nofapp.entity.practice.UserPracticeKey;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

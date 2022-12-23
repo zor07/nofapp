@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.NoteDto;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.NoteIdAndTitle;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,7 +1,7 @@
 package com.zor07.nofapp.service;
 
-import com.zor07.nofapp.entity.Role;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.Role;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

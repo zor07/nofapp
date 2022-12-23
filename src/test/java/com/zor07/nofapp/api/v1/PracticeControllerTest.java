@@ -7,7 +7,7 @@ import com.zor07.nofapp.api.v1.dto.PracticeDto;
 import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
 import com.zor07.nofapp.entity.practice.Practice;
 import com.zor07.nofapp.entity.practice.PracticeTag;
-import com.zor07.nofapp.entity.User;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.practice.UserPractice;
 import com.zor07.nofapp.entity.practice.UserPracticeKey;
 import com.zor07.nofapp.repository.PracticeRepository;
