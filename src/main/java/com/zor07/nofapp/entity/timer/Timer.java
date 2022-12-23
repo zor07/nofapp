@@ -1,4 +1,4 @@
-package com.zor07.nofapp.entity;
+package com.zor07.nofapp.entity.timer;
 
 import com.zor07.nofapp.entity.user.User;
 

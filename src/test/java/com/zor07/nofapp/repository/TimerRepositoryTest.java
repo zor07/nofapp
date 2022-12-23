@@ -1,7 +1,7 @@
 package com.zor07.nofapp.repository;
 
 import com.zor07.nofapp.entity.user.Role;
-import com.zor07.nofapp.entity.Timer;
+import com.zor07.nofapp.entity.timer.Timer;
 import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.service.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
