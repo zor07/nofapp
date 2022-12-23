@@ -1,6 +1,6 @@
 package com.zor07.nofapp.repository;
 
-import com.zor07.nofapp.entity.RelapseLog;
+import com.zor07.nofapp.entity.profile.RelapseLog;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;

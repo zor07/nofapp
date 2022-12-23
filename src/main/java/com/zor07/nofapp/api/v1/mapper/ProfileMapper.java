@@ -2,7 +2,7 @@ package com.zor07.nofapp.api.v1.mapper;
 
 import com.zor07.nofapp.api.v1.dto.ProfileDto;
 import com.zor07.nofapp.api.v1.dto.auth.UserInfoDto;
-import com.zor07.nofapp.entity.Profile;
+import com.zor07.nofapp.entity.profile.Profile;
 import com.zor07.nofapp.entity.User;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

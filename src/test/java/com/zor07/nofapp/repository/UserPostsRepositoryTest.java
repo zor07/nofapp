@@ -3,6 +3,7 @@ package com.zor07.nofapp.repository;
 import com.zor07.nofapp.entity.*;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;
+import com.zor07.nofapp.entity.profile.UserPost;
 import com.zor07.nofapp.service.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
