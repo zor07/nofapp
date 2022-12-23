@@ -1,4 +1,4 @@
-package com.zor07.nofapp.entity;
+package com.zor07.nofapp.entity.practice;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

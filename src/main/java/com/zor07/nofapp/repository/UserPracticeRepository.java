@@ -1,8 +1,8 @@
 package com.zor07.nofapp.repository;
 
-import com.zor07.nofapp.entity.Practice;
-import com.zor07.nofapp.entity.UserPractice;
-import com.zor07.nofapp.entity.UserPracticeKey;
+import com.zor07.nofapp.entity.practice.Practice;
+import com.zor07.nofapp.entity.practice.UserPractice;
+import com.zor07.nofapp.entity.practice.UserPracticeKey;
 import com.zor07.nofapp.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

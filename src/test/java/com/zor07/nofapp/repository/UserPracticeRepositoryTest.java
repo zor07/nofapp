@@ -1,11 +1,11 @@
 package com.zor07.nofapp.repository;
 
-import com.zor07.nofapp.entity.Practice;
-import com.zor07.nofapp.entity.PracticeTag;
+import com.zor07.nofapp.entity.practice.Practice;
+import com.zor07.nofapp.entity.practice.PracticeTag;
 import com.zor07.nofapp.entity.Role;
 import com.zor07.nofapp.entity.User;
-import com.zor07.nofapp.entity.UserPractice;
-import com.zor07.nofapp.entity.UserPracticeKey;
+import com.zor07.nofapp.entity.practice.UserPractice;
+import com.zor07.nofapp.entity.practice.UserPracticeKey;
 import com.zor07.nofapp.service.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
