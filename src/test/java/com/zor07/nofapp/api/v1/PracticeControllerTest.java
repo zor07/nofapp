@@ -3,7 +3,7 @@ package com.zor07.nofapp.api.v1;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.zor07.nofapp.api.v1.dto.PracticeDto;
+import com.zor07.nofapp.api.v1.dto.practice.PracticeDto;
 import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
 import com.zor07.nofapp.entity.practice.Practice;
 import com.zor07.nofapp.entity.practice.PracticeTag;

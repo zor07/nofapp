@@ -1,17 +1,14 @@
-package com.zor07.nofapp.api.v1.dto;
+package com.zor07.nofapp.api.v1.dto.profile;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 
-public record TimerDto(
+public record RelapseLogDto(
         Long id,
-        boolean isRunning,
         @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime start,
-        @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime stop,
-        String description
+        @JsonSerialize(using = LocalDateTimeSerializer.class) LocalDateTime stop
 ) {
-
 
 }

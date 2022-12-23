@@ -1,6 +1,6 @@
 package com.zor07.nofapp.api.v1.mapper;
 
-import com.zor07.nofapp.api.v1.dto.TimerDto;
+import com.zor07.nofapp.api.v1.dto.timer.TimerDto;
 import com.zor07.nofapp.entity.timer.Timer;
 import com.zor07.nofapp.entity.user.User;
 import org.mapstruct.factory.Mappers;

@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.api.v1.dto.NoteDto;
+import com.zor07.nofapp.api.v1.dto.notes.NoteDto;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;
 import com.zor07.nofapp.entity.user.User;

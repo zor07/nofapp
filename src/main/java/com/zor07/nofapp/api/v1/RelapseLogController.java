@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
-import com.zor07.nofapp.api.v1.dto.ProfileDto;
-import com.zor07.nofapp.api.v1.dto.RelapseLogDto;
+import com.zor07.nofapp.api.v1.dto.profile.ProfileDto;
+import com.zor07.nofapp.api.v1.dto.profile.RelapseLogDto;
 import com.zor07.nofapp.api.v1.mapper.RelapseLogMapper;
 import com.zor07.nofapp.service.profile.RelapseLogService;
 import com.zor07.nofapp.service.user.UserService;

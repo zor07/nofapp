@@ -1,6 +1,6 @@
 package com.zor07.nofapp.api.v1;
 
-import com.zor07.nofapp.api.v1.dto.TimerDto;
+import com.zor07.nofapp.api.v1.dto.timer.TimerDto;
 import com.zor07.nofapp.api.v1.mapper.TimerMapper;
 import com.zor07.nofapp.service.timer.TimerService;
 import com.zor07.nofapp.service.user.UserService;

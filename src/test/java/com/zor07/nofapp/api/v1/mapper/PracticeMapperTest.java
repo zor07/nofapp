@@ -1,8 +1,8 @@
 package com.zor07.nofapp.api.v1.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zor07.nofapp.api.v1.dto.PracticeDto;
-import com.zor07.nofapp.api.v1.dto.PracticeTagDto;
+import com.zor07.nofapp.api.v1.dto.practice.PracticeDto;
+import com.zor07.nofapp.api.v1.dto.practice.PracticeTagDto;
 import com.zor07.nofapp.entity.practice.Practice;
 import com.zor07.nofapp.entity.practice.PracticeTag;
 import org.mapstruct.factory.Mappers;

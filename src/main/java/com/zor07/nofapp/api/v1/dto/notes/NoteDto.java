@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1.dto;
+package com.zor07.nofapp.api.v1.dto.notes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

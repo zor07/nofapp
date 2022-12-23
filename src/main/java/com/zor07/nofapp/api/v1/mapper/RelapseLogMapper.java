@@ -1,6 +1,6 @@
 package com.zor07.nofapp.api.v1.mapper;
 
-import com.zor07.nofapp.api.v1.dto.RelapseLogDto;
+import com.zor07.nofapp.api.v1.dto.profile.RelapseLogDto;
 import com.zor07.nofapp.entity.profile.RelapseLog;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

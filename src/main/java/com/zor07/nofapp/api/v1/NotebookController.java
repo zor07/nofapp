@@ -1,6 +1,6 @@
 package com.zor07.nofapp.api.v1;
 
-import com.zor07.nofapp.api.v1.dto.NotebookDto;
+import com.zor07.nofapp.api.v1.dto.notes.NotebookDto;
 import com.zor07.nofapp.api.v1.mapper.NotebookMapper;
 import com.zor07.nofapp.service.notes.NotebookService;
 import com.zor07.nofapp.service.user.UserService;

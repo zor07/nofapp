@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.api.v1.dto.RelapseLogDto;
+import com.zor07.nofapp.api.v1.dto.profile.RelapseLogDto;
 import com.zor07.nofapp.entity.profile.RelapseLog;
 import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.profile.RelapseLogRepository;
