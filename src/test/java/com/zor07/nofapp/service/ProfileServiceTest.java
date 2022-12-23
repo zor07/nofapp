@@ -8,6 +8,8 @@ import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.profile.ProfileRepository;
 import com.zor07.nofapp.repository.profile.RelapseLogRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
+import com.zor07.nofapp.service.profile.ProfileService;
+import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.shaded.com.google.common.io.Files;

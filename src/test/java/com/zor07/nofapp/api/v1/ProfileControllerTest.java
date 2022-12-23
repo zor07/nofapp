@@ -11,7 +11,7 @@ import com.zor07.nofapp.repository.profile.ProfileRepository;
 import com.zor07.nofapp.repository.profile.RelapseLogRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
-import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

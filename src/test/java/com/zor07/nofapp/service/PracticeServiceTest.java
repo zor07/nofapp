@@ -12,6 +12,8 @@ import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.practice.UserPracticeRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.security.UserRole;
+import com.zor07.nofapp.service.practice.PracticeService;
+import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;

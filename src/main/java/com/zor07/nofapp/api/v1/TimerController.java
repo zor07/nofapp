@@ -2,8 +2,8 @@ package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.TimerDto;
 import com.zor07.nofapp.api.v1.mapper.TimerMapper;
-import com.zor07.nofapp.service.TimerService;
-import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.service.timer.TimerService;
+import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.utils.DateUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -1,4 +1,4 @@
-package com.zor07.nofapp.service;
+package com.zor07.nofapp.service.user;
 
 import com.zor07.nofapp.entity.user.Role;
 import com.zor07.nofapp.entity.user.User;

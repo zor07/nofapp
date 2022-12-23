@@ -1,4 +1,4 @@
-package com.zor07.nofapp.service;
+package com.zor07.nofapp.service.timer;
 
 import com.zor07.nofapp.entity.timer.Timer;
 import com.zor07.nofapp.repository.timer.TimerRepository;

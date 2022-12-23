@@ -5,7 +5,7 @@ import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
 import com.zor07.nofapp.api.v1.dto.auth.UserInfoDto;
 import com.zor07.nofapp.exception.IllegalAuthorizationHeaderException;
 import com.zor07.nofapp.security.SecurityUtils;
-import com.zor07.nofapp.service.UserService;
+import com.zor07.nofapp.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
