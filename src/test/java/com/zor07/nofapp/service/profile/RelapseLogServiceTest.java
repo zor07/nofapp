@@ -1,4 +1,4 @@
-package com.zor07.nofapp.service;
+package com.zor07.nofapp.service.profile;
 
 import com.zor07.nofapp.entity.profile.RelapseLog;
 import com.zor07.nofapp.entity.user.User;

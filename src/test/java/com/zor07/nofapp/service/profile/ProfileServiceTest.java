@@ -1,4 +1,4 @@
-package com.zor07.nofapp.service;
+package com.zor07.nofapp.service.profile;
 
 import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.file.File;
