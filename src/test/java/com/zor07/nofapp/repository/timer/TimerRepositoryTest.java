@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.timer;
 
 import com.zor07.nofapp.entity.user.Role;
 import com.zor07.nofapp.entity.timer.Timer;

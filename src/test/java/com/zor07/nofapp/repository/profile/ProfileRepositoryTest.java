@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.profile;
 
 import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.profile.Profile;

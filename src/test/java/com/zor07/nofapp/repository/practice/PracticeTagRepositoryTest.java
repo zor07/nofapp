@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.practice;
 
 import com.zor07.nofapp.entity.practice.PracticeTag;
 import com.zor07.nofapp.repository.practice.PracticeRepository;

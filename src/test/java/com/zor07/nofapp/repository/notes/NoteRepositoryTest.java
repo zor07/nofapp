@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.notes;
 
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;

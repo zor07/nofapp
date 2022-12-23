@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository;
+package com.zor07.nofapp.repository.levels;
 
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.levels.TaskContentRepository;
