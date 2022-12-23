@@ -1,6 +1,6 @@
 package com.zor07.nofapp.entity.levels;
 
-import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.validation.JsonString;
 import org.hibernate.annotations.Type;
 

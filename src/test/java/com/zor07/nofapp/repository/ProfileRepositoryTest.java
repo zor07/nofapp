@@ -1,6 +1,6 @@
 package com.zor07.nofapp.repository;
 
-import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.spring.AbstractApplicationTest;

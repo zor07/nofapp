@@ -1,7 +1,7 @@
 package com.zor07.nofapp.service;
 
 import com.zor07.nofapp.aws.s3.S3Service;
-import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.RelapseLog;
 import com.zor07.nofapp.entity.User;

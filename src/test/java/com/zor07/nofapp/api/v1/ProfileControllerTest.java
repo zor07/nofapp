@@ -3,7 +3,7 @@ package com.zor07.nofapp.api.v1;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.ProfileDto;
 import com.zor07.nofapp.aws.s3.S3Service;
-import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.repository.FileRepository;

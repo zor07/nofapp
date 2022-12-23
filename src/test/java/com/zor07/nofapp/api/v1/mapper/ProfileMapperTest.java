@@ -1,6 +1,6 @@
 package com.zor07.nofapp.api.v1.mapper;
 
-import com.zor07.nofapp.entity.File;
+import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.Profile;
 import com.zor07.nofapp.entity.User;
 import org.mapstruct.factory.Mappers;
@@ -28,7 +28,7 @@ public class ProfileMapperTest {
     private static final String PREFIX = "prefix";
     private static final String KEY = "Key";
 
-    private static final com.zor07.nofapp.entity.File FILE = new com.zor07.nofapp.entity.File(null,
+    private static final File FILE = new File(null,
             BUCKET,
             null,
             KEY,
