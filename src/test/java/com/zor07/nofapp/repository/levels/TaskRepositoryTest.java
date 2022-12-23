@@ -11,6 +11,7 @@ import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -28,7 +29,7 @@ public class TaskRepositoryTest extends AbstractApplicationTest {
     private FileRepository fileRepository;
 
     @BeforeClass
-    @AfterClass
+    @AfterTest
     void clearDb() {
         taskRepository.deleteAll();
         taskContentRepository.deleteAll();

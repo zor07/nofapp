@@ -1,12 +1,12 @@
 package com.zor07.nofapp.repository.levels;
 
 import com.zor07.nofapp.repository.file.FileRepository;
-import com.zor07.nofapp.repository.levels.TaskContentRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -21,10 +21,10 @@ public class TaskContentRepositoryTest extends AbstractApplicationTest {
     private FileRepository fileRepository;
 
     @BeforeClass
-    @AfterClass
+    @AfterTest
     void clearDb() {
-        fileRepository.deleteAll();
         taskContentRepository.deleteAll();
+        fileRepository.deleteAll();
     }
 
     @Test
