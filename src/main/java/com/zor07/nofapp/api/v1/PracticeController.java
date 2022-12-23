@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.practice.PracticeDto;
-import com.zor07.nofapp.api.v1.mapper.PracticeMapper;
+import com.zor07.nofapp.api.v1.dto.practice.mapper.PracticeMapper;
 import com.zor07.nofapp.service.practice.PracticeService;
 import com.zor07.nofapp.service.user.UserService;
 import io.swagger.annotations.Api;

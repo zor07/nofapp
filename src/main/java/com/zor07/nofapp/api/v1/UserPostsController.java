@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.zor07.nofapp.api.v1.dto.notes.NoteDto;
-import com.zor07.nofapp.api.v1.mapper.NoteMapper;
+import com.zor07.nofapp.api.v1.dto.notes.mapper.NoteMapper;
 import com.zor07.nofapp.service.profile.UserPostService;
 import com.zor07.nofapp.service.user.UserService;
 import io.swagger.annotations.Api;
