@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.notes.NoteDto;
 import com.zor07.nofapp.api.v1.dto.notes.NotebookDto;
-import com.zor07.nofapp.api.v1.dto.notes.mapper.NoteMapper;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.NoteIdAndTitle;
 import com.zor07.nofapp.entity.notes.Notebook;

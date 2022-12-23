@@ -1,6 +1,5 @@
 package com.zor07.nofapp.api.v1.dto.profile.mapper;
 
-import com.zor07.nofapp.api.v1.dto.profile.mapper.ProfileMapper;
 import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.profile.Profile;
 import com.zor07.nofapp.entity.user.User;
@@ -29,12 +28,6 @@ public class ProfileMapperTest {
     private static final String PREFIX = "prefix";
     private static final String KEY = "Key";
 
-    private static final File FILE = new File(null,
-            BUCKET,
-            null,
-            KEY,
-            "mime",
-            null);
     private final ProfileMapper profileMapper = Mappers.getMapper(ProfileMapper.class);
     @Test
     void shouldMapEntityToDtoWhenPrefixIsNotNull() {
