@@ -1,7 +1,7 @@
 package com.zor07.nofapp.api.v1;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.entity.Notebook;
+import com.zor07.nofapp.entity.notes.Notebook;
 import com.zor07.nofapp.repository.NotebookRepository;
 import com.zor07.nofapp.repository.RoleRepository;
 import com.zor07.nofapp.repository.UserRepository;

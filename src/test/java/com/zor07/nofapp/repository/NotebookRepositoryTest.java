@@ -1,6 +1,6 @@
 package com.zor07.nofapp.repository;
 
-import com.zor07.nofapp.entity.Notebook;
+import com.zor07.nofapp.entity.notes.Notebook;
 import com.zor07.nofapp.entity.Role;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.security.UserRole;

@@ -1,5 +1,7 @@
 package com.zor07.nofapp.entity;
 
+import com.zor07.nofapp.entity.notes.Note;
+
 import javax.persistence.*;
 
 @Entity

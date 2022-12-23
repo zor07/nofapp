@@ -1,7 +1,7 @@
 package com.zor07.nofapp.service;
 
-import com.zor07.nofapp.entity.Note;
-import com.zor07.nofapp.entity.Notebook;
+import com.zor07.nofapp.entity.notes.Note;
+import com.zor07.nofapp.entity.notes.Notebook;
 import com.zor07.nofapp.entity.User;
 import com.zor07.nofapp.entity.UserPost;
 import com.zor07.nofapp.repository.NoteRepository;

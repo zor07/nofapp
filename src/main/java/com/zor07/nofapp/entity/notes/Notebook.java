@@ -1,4 +1,6 @@
-package com.zor07.nofapp.entity;
+package com.zor07.nofapp.entity.notes;
+
+import com.zor07.nofapp.entity.User;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

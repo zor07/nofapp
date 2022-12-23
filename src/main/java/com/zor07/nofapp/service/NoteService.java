@@ -1,7 +1,7 @@
 package com.zor07.nofapp.service;
 
-import com.zor07.nofapp.entity.Note;
-import com.zor07.nofapp.entity.NoteIdAndTitle;
+import com.zor07.nofapp.entity.notes.Note;
+import com.zor07.nofapp.entity.notes.NoteIdAndTitle;
 import com.zor07.nofapp.exception.IllegalResourceAccessException;
 import com.zor07.nofapp.repository.NoteRepository;
 import com.zor07.nofapp.repository.NotebookRepository;
