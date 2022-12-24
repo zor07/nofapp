@@ -1,7 +1,7 @@
 package com.zor07.nofapp.test;
 
 import com.zor07.nofapp.entity.file.File;
-import com.zor07.nofapp.entity.levels.TaskContent;
+import com.zor07.nofapp.entity.level.TaskContent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

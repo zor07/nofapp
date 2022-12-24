@@ -2,7 +2,7 @@ package com.zor07.nofapp.test;
 
 import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.profile.UserProgress;
-import com.zor07.nofapp.entity.levels.Task;
+import com.zor07.nofapp.entity.level.Task;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

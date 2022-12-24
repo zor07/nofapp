@@ -1,6 +1,6 @@
 package com.zor07.nofapp.repository.profile;
 
-import com.zor07.nofapp.entity.levels.Task;
+import com.zor07.nofapp.entity.level.Task;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;

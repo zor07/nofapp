@@ -1,4 +1,4 @@
-package com.zor07.nofapp.entity.levels;
+package com.zor07.nofapp.entity.level;
 
 
 import javax.persistence.*;

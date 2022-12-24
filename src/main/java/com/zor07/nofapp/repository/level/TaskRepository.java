@@ -1,6 +1,6 @@
 package com.zor07.nofapp.repository.level;
 
-import com.zor07.nofapp.entity.levels.Task;
+import com.zor07.nofapp.entity.level.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

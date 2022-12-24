@@ -1,6 +1,6 @@
 package com.zor07.nofapp.test;
 
-import com.zor07.nofapp.entity.levels.Level;
+import com.zor07.nofapp.entity.level.Level;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
