@@ -1,5 +1,6 @@
 package com.zor07.nofapp.test;
 
+import com.zor07.nofapp.api.v1.dto.level.LevelDto;
 import com.zor07.nofapp.entity.level.Level;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,10 +14,19 @@ public class LevelTestUtils {
     public static final String NEW_NAME = "new name";
 
     public static Level getBlankEntity() {
+        return getBlankEntity(null);
+    }
+
+    public static Level getBlankEntity(final Long id) {
         final var level = new Level();
+        level.setId(id);
         level.setOrder(ORDER);
         level.setName(NAME);
         return level;
+    }
+
+    public static LevelDto getBlankDto(final Long id) {
+        return new LevelDto(id, NAME, ORDER);
     }
 
     public static void updateEntity(final Level level) {
