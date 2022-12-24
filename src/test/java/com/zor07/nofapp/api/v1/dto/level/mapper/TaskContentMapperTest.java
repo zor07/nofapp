@@ -2,6 +2,8 @@ package com.zor07.nofapp.api.v1.dto.level.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
+import com.zor07.nofapp.entity.level.TaskContent;
 import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import org.mapstruct.factory.Mappers;
@@ -14,8 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TaskContentMapperTest {
 
     private final TaskContentMapper mapper = Mappers.getMapper(TaskContentMapper.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Long ID = 1L;
+
+    static void checkDto(final TaskContentDto  dto, final TaskContent entity) throws JsonProcessingException {
+        assertThat(dto.id()).isEqualTo(entity.getId());
+        assertThat(dto.title()).isEqualTo(entity.getTitle());
+        assertThat(dto.fileUri()).isEqualTo(String.format("%s/%s", entity.getFile().getBucket(), entity.getFile().getKey()));
+        assertThat(dto.data()).isEqualTo(OBJECT_MAPPER.readTree(entity.getData()));
+    }
 
     @Test
     void toDtoTest() throws JsonProcessingException {
@@ -24,10 +33,7 @@ public class TaskContentMapperTest {
 
         final var dto = mapper.toDto(entity);
 
-        assertThat(dto.id()).isEqualTo(entity.getId());
-        assertThat(dto.title()).isEqualTo(entity.getTitle());
-        assertThat(dto.fileUri()).isEqualTo(String.format("%s/%s", entity.getFile().getBucket(), entity.getFile().getKey()));
-        assertThat(dto.data()).isEqualTo(objectMapper.readTree(entity.getData()));
+        checkDto(dto, entity);
     }
 
     @Test
