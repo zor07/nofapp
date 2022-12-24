@@ -38,7 +38,7 @@ public interface TaskContentMapper {
     @Mappings({
             @Mapping(target = "id", expression = "java(dto.id())"),
             @Mapping(target = "title", expression = "java(dto.title())"),
-            @Mapping(target = "data", expression = "java(dto.data().toString())"),
+            @Mapping(target = "data", ignore = true),
             @Mapping(target = "file", ignore = true),
     })
     TaskContent toEntity(final TaskContentDto dto);
