@@ -7,6 +7,8 @@ import com.zor07.nofapp.test.TaskContentTestUtils;
 import org.mapstruct.factory.Mappers;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskContentMapperTest {
@@ -26,6 +28,17 @@ public class TaskContentMapperTest {
         assertThat(dto.title()).isEqualTo(entity.getTitle());
         assertThat(dto.fileUri()).isEqualTo(String.format("%s/%s", entity.getFile().getBucket(), entity.getFile().getKey()));
         assertThat(dto.data()).isEqualTo(objectMapper.readTree(entity.getData()));
+    }
+
+    @Test
+    void toEntityTest() throws IOException {
+        final var dto = TaskContentTestUtils.getBlankDto(ID);
+        final var entity = mapper.toEntity(dto);
+
+        assertThat(entity.getId()).isEqualTo(dto.id());
+        assertThat(entity.getTitle()).isEqualTo(dto.title());
+        assertThat(objectMapper.readTree(entity.getData())).isEqualTo(dto.data());
+        assertThat(entity.getFile()).isNull();
     }
 
 }
