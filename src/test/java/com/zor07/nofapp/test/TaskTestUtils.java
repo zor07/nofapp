@@ -16,9 +16,16 @@ public class TaskTestUtils {
     public static final String NEW_NAME = "new name";
     public static final String NEW_DESCRIPTION = "new description";
 
-
     public static Task getBlankEntity(final TaskContent content, final Level level) {
+        return getBlankEntity(null, content, level);
+    }
+
+    public static Task getBlankEntity(
+            final Long id,
+            final TaskContent content,
+            final Level level) {
         final var task = new Task();
+        task.setId(id);
         task.setName(NAME);
         task.setDescription(DESCRIPTION);
         task.setOrder(ORDER);
