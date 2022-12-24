@@ -1,7 +1,11 @@
 package com.zor07.nofapp.test;
 
+import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.level.TaskContent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,6 +16,12 @@ public class TaskContentTestUtils {
 
     public static final String NEW_TITLE = "title";
     public static final String NEW_DATA = "{\"data\": \"new value\"}";
+
+    private static final String FILE_URI = "asdasd/asdads";
+
+    public static TaskContentDto getBlankDto(final Long id) throws IOException {
+        return new TaskContentDto(id, TITLE, FILE_URI, new ObjectMapper().readTree(DATA));
+    }
 
     public static TaskContent getBlankEntity(final File file) {
         return getBlankEntity(null, file);
