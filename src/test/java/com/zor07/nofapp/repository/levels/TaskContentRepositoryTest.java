@@ -5,7 +5,6 @@ import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
