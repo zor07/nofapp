@@ -1,4 +1,4 @@
-package com.zor07.nofapp.repository.levels;
+package com.zor07.nofapp.repository.level;
 
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;

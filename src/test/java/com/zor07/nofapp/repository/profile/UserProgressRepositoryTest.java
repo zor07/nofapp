@@ -2,10 +2,9 @@ package com.zor07.nofapp.repository.profile;
 
 import com.zor07.nofapp.entity.levels.Task;
 import com.zor07.nofapp.repository.file.FileRepository;
-import com.zor07.nofapp.repository.levels.LevelRepository;
-import com.zor07.nofapp.repository.levels.TaskContentRepository;
-import com.zor07.nofapp.repository.levels.TaskRepository;
-import com.zor07.nofapp.repository.profile.UserProgressRepository;
+import com.zor07.nofapp.repository.level.LevelRepository;
+import com.zor07.nofapp.repository.level.TaskContentRepository;
+import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
