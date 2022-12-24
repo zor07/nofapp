@@ -1,5 +1,8 @@
 package com.zor07.nofapp.test;
 
+import com.zor07.nofapp.api.v1.dto.level.LevelDto;
+import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
+import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.entity.level.TaskContent;
 import com.zor07.nofapp.entity.level.Task;
@@ -20,10 +23,19 @@ public class TaskTestUtils {
         return getBlankEntity(null, content, level);
     }
 
+    public static TaskDto getBlankDto(
+            final Long id,
+            final TaskContentDto content,
+            final LevelDto level
+    ) {
+        return new TaskDto(id, NAME, DESCRIPTION, ORDER, level, content);
+    }
+
     public static Task getBlankEntity(
             final Long id,
             final TaskContent content,
-            final Level level) {
+            final Level level
+    ) {
         final var task = new Task();
         task.setId(id);
         task.setName(NAME);
