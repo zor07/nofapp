@@ -1,16 +1,12 @@
 package com.zor07.nofapp.repository.levels;
 
 import com.zor07.nofapp.repository.file.FileRepository;
-import com.zor07.nofapp.repository.levels.LevelRepository;
-import com.zor07.nofapp.repository.levels.TaskContentRepository;
-import com.zor07.nofapp.repository.levels.TaskRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -59,5 +55,20 @@ public class TaskRepositoryTest extends AbstractApplicationTest {
         taskRepository.delete(updated);
 
         assertThat(taskRepository.findById(id)).isEmpty();
+    }
+
+    @Test
+    void findAllByLevelIdTest() {
+        final var level1 = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var level2 = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level2));
+
+        assertThat(taskRepository.findAllByLevelId(level1.getId())).hasSize(3);
+        assertThat(taskRepository.findAllByLevelId(level2.getId())).hasSize(1);
     }
 }
