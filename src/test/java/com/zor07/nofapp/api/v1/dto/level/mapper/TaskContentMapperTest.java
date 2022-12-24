@@ -37,7 +37,7 @@ public class TaskContentMapperTest {
 
         assertThat(entity.getId()).isEqualTo(dto.id());
         assertThat(entity.getTitle()).isEqualTo(dto.title());
-        assertThat(objectMapper.readTree(entity.getData())).isEqualTo(dto.data());
+        assertThat(entity.getData()).isNull();
         assertThat(entity.getFile()).isNull();
     }
 
