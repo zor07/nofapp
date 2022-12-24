@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.entity.level.Task;
+import com.zor07.nofapp.entity.level.TaskContent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -22,6 +23,15 @@ public interface TaskMapper {
         return string == null ? null : OBJECT_MAPPER.readTree(string);
     }
 
+    default String getFileUri(final TaskContent taskContent) {
+        final var avatar = taskContent.getFile();
+        if (avatar == null) {
+            return null;
+        }
+        return String.format("%s/%s", avatar.getBucket(), avatar.getKey());
+    }
+
+    @Mapping(target = "taskContent.fileUri", expression = "java(getFileUri(taskContent))")
     TaskDto toDto(final Task entity);
 
     @Mappings({
