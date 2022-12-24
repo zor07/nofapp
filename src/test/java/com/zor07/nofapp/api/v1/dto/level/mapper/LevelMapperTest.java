@@ -14,6 +14,12 @@ public class LevelMapperTest {
 
     private static final Long ID = 1L;
 
+    static void check(final Level entity, final LevelDto dto) {
+        assertThat(dto.id()).isEqualTo(entity.getId());
+        assertThat(dto.name()).isEqualTo(entity.getName());
+        assertThat(dto.order()).isEqualTo(entity.getOrder());
+    }
+
     @Test
     void toDtoTest() {
         final var entity = LevelTestUtils.getBlankEntity(ID);
@@ -28,9 +34,5 @@ public class LevelMapperTest {
         check(entity, dto);
     }
 
-    private void check(final Level entity, final LevelDto dto) {
-        assertThat(dto.id()).isEqualTo(entity.getId());
-        assertThat(dto.name()).isEqualTo(entity.getName());
-        assertThat(dto.order()).isEqualTo(entity.getOrder());
-    }
+
 }
