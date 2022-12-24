@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1;
+package com.zor07.nofapp.api.v1.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.entity.notes.Notebook;
