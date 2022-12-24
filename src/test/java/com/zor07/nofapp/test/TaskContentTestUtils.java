@@ -14,7 +14,12 @@ public class TaskContentTestUtils {
     public static final String NEW_DATA = "{\"data\": \"new value\"}";
 
     public static TaskContent getBlankEntity(final File file) {
+        return getBlankEntity(null, file);
+    }
+
+    public static TaskContent getBlankEntity(final Long id, final File file) {
         final var taskContent = new TaskContent();
+        taskContent.setId(id);
         taskContent.setTitle(TITLE);
         taskContent.setData(DATA);
         taskContent.setFile(file);
