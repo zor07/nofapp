@@ -16,15 +16,15 @@ public class LevelMapperTest {
 
     @Test
     void toDtoTest() {
-        var entity = LevelTestUtils.getBlankEntity(ID);
-        var dto = mapper.toDto(entity);
+        final var entity = LevelTestUtils.getBlankEntity(ID);
+        final var dto = mapper.toDto(entity);
         check(entity, dto);
     }
 
     @Test
     void toEntityTest() {
-        var dto = LevelTestUtils.getBlankDto(ID);
-        var entity = mapper.toEntity(dto);
+        final var dto = LevelTestUtils.getBlankDto(ID);
+        final var entity = mapper.toEntity(dto);
         check(entity, dto);
     }
 
