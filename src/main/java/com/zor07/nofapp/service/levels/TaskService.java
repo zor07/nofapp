@@ -29,8 +29,8 @@ public class TaskService {
         return taskRepository.findAllByLevelId(levelId);
     }
 
-    public Task save(Task task) {
-        return null;
+    public Task saveTask(Task task) {
+        return taskRepository.save(task);
     }
 
     public void delete(Long id) {
