@@ -20,10 +20,12 @@ public class LevelService {
     public Level save(final Level level) {
         return levelRepository.save(level);
     }
+
     public List<Level> getAll() {
         return levelRepository.findAll();
     }
-    public void delete(final Long id) {
 
+    public void delete(final Long id) {
+        levelRepository.deleteById(id);
     }
 }
