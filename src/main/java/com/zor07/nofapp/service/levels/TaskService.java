@@ -33,16 +33,16 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public Task saveTaskContent(TaskContent content) {
+        return null;
+    }
+
     public void delete(Long id) {
 
     }
 
     public void deleteTaskContent(Long taskContentId) {
 
-    }
-
-    public Task createTaskContent(TaskContent content) {
-        return null;
     }
 
     public Task addVideoToTask(Long taskId, File file) {
