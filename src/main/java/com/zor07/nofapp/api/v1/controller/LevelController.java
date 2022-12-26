@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1.controller;
 
+import com.zor07.nofapp.service.levels.LevelService;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LevelController {
 
 
+    private final LevelService levelService;
 
+    public LevelController(LevelService levelService) {
+        this.levelService = levelService;
+    }
 
 
 
