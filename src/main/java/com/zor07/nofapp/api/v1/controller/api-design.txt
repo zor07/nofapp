@@ -34,5 +34,16 @@ Task
         data: json
     }
 }
-GET /api/v1/levels/{levelId}/tasks List<TaskDto>
+GET    /api/v1/levels/{levelId}/tasks List<TaskDto>
+POST   /api/vi/levels/{levelId}/tasks TaskDto - create task
+PUT    /api/vi/levels/{levelId}/tasks/{taskId} TaskDto - update task
+DELETE /api/vi/levels/{levelId}/tasks/{taskId} - delete task
+
+TaskService
+getAllByLevelId(Long levelId)
+save(Task task)
+delete(Long id)
+===============================================================================
+
+
 
