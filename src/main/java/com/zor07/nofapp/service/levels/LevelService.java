@@ -19,7 +19,7 @@ public class LevelService {
     }
 
     public Level save(final Level level) {
-        return null;
+        return levelRepository.save(level);
     }
     public List<Level> getAll() {
         return Collections.emptyList();
