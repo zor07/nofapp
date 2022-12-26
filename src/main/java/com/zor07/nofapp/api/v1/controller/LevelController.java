@@ -10,6 +10,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LevelController {
 
 
+/*
+
+GET    /api/v1/levels  List<LevelDto>
+POST   /api/v1/levels create Level
+PUT    /api/v1/levels/{levelId} update level
+DELETE /api/v1/levels/{levelId} delete level
+
+LevelService
+save(Level level)
+getAll()
+delete(Long id)
+*/
+
+
 
 
 }
