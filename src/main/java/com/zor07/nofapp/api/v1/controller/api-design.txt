@@ -1,0 +1,38 @@
+Level
+{
+    id: 1,
+    name: level,
+    order: 1
+}
+
+GET    /api/v1/levels  List<LevelDto>
+POST   /api/v1/levels create Level
+PUT    /api/v1/levels/{levelId} update level
+DELETE /api/v1/levels/{levelId} delete level
+
+LevelService
+save(Level level)
+getAll()
+delete(Long id)
+======================================================
+
+Task
+{
+    id: 1,
+    name: task name,
+    description: task description,
+    order: 1,
+    level: {
+        id: 1,
+        name: level,
+        order: 1
+    },
+    taskContent: {
+        id : 1,
+        title : title,
+        fileUri: url,
+        data: json
+    }
+}
+GET /api/v1/levels/{levelId}/tasks List<TaskDto>
+
