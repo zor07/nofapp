@@ -9,7 +9,6 @@ import com.zor07.nofapp.repository.level.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,7 +26,7 @@ public class TaskService {
 
 
     public List<Task> getAllByLevelId(Long levelId) {
-        return Collections.emptyList();
+        return taskRepository.findAllByLevelId(levelId);
     }
 
     public Task save(Task task) {
