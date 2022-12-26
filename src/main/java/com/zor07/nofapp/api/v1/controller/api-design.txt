@@ -35,6 +35,7 @@ Task
     }
 }
 GET    /api/v1/levels/{levelId}/tasks List<TaskDto>
+GET    /api/v1/levels/{levelId}/tasks/{taskId} TaskDto
 POST   /api/vi/levels/{levelId}/tasks TaskDto - create task
 PUT    /api/vi/levels/{levelId}/tasks/{taskId} TaskDto - update task
 DELETE /api/vi/levels/{levelId}/tasks/{taskId} - delete task
@@ -43,6 +44,24 @@ TaskService
 getAllByLevelId(Long levelId)
 save(Task task)
 delete(Long id)
+deleteTaskContent(Long taskId)
+createTaskContent(TaskContent content)
+addVideoToTask(taskId, file)
+addTextToTask(taskId, jsonNode)
+
+TaskContent
+{
+    id : 1,
+    title : title,
+    fileUri: url,
+    data: json
+}
+
+POST   /api/v1/levels/{levelId}/tasks/{taskId}/content delete task content
+DELETE /api/v1/levels/{levelId}/tasks/{taskId}/content {id: 1, title: title} create content
+POST   /api/v1/levels/{levelId}/tasks/{taskId}/content/video - upload video to task
+POST   /api/v1/levels/{levelId}/tasks/{taskId}/content/text - upload text to task
+
 ===============================================================================
 
 
