@@ -1,10 +1,6 @@
 package com.zor07.nofapp.service.levels;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.level.Task;
-import com.zor07.nofapp.entity.level.TaskContent;
-import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,41 +11,22 @@ import java.util.List;
 @Transactional
 public class TaskService {
 
-    private final TaskRepository taskRepository;
-    private final TaskContentRepository taskContentRepository;
+    private final TaskRepository repository;
 
-    public TaskService(final TaskRepository taskRepository,
-                       final TaskContentRepository taskContentRepository) {
-        this.taskRepository = taskRepository;
-        this.taskContentRepository = taskContentRepository;
+    public TaskService(final TaskRepository repository) {
+        this.repository = repository;
     }
 
-
-    public List<Task> getAllByLevelId(Long levelId) {
-        return taskRepository.findAllByLevelId(levelId);
+    public List<Task> getAllByLevelId(final Long levelId) {
+        return repository.findAllByLevelId(levelId);
     }
 
-    public Task saveTask(Task task) {
-        return taskRepository.save(task);
+    public Task save(final Task task) {
+        return repository.save(task);
     }
 
-    public void saveTaskContent(TaskContent content) {
-        taskContentRepository.save(content);
+    public void delete(final Long id) {
+        repository.deleteById(id);
     }
 
-    public void deleteTask(Long id) {
-        taskRepository.deleteById(id);
-    }
-
-    public void deleteTaskContent(Long taskContentId) {
-        taskContentRepository.deleteById(taskContentId);
-    }
-
-    public Task addVideoToTask(Long taskId, File file) {
-        return null;
-    }
-
-    public Task addTextToTask(Long taskId, JsonNode jsonNode) {
-        return null;
-    }
 }
