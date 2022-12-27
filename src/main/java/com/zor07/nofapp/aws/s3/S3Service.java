@@ -16,7 +16,10 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -338,6 +341,19 @@ public class S3Service implements AutoCloseable {
 
     public void truncateBucket(final String bucket) {
         findObjects(bucket, "").forEach(this::deleteObject);
+    }
+
+    public String getMD5(byte[] input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(input);
+            BigInteger number = new BigInteger(1, messageDigest);
+
+            return number.toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.warn("Failed to calculate MD5 sum: {0}", e);
+            throw new RuntimeException(e);
+        }
     }
 
 }
