@@ -33,8 +33,8 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public Task saveTaskContent(TaskContent content) {
-        return null;
+    public void saveTaskContent(TaskContent content) {
+        taskContentRepository.save(content);
     }
 
     public void delete(Long id) {
