@@ -42,7 +42,7 @@ public class TaskService {
     }
 
     public void deleteTaskContent(Long taskContentId) {
-
+        taskContentRepository.deleteById(taskContentId);
     }
 
     public Task addVideoToTask(Long taskId, File file) {
