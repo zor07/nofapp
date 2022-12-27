@@ -19,18 +19,18 @@ public class TaskContentService {
         this.repository = repository;
     }
 
-    public void saveTaskContent(TaskContent content) {
+    public void save(TaskContent content) {
         repository.save(content);
     }
-    public void deleteTaskContent(Long taskContentId) {
+    public void delete(Long taskContentId) {
         repository.deleteById(taskContentId);
     }
 
-    public Task addVideoToTask(Long taskId, File file) {
+    public Task addVideo(Long taskId, File file) {
         return null;
     }
 
-    public Task addTextToTask(Long taskId, JsonNode jsonNode) {
+    public Task addText(Long taskId, JsonNode jsonNode) {
         return null;
     }
 }
