@@ -9,4 +9,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findAllByLevelId(Long levelId);
 
+    Task findByTaskContentId(Long taskContentId);
+
 }
