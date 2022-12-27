@@ -12,9 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.List;
 
@@ -98,21 +95,8 @@ public class ProfileService {
     }
 
     private String getAvatarKey(final Long userId, final byte[] data) {
-        final var hash = getMD5(data);
+        final var hash = s3.getMD5(data);
         return String.format("%s/%s_%s", userId, AVATAR_KEY, hash);
-    }
-
-    public static String getMD5(byte[] input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(input);
-            BigInteger number = new BigInteger(1, messageDigest);
-
-            return number.toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            LOGGER.warn("Failed to calculate MD5 sum: {0}", e);
-            throw new RuntimeException(e);
-        }
     }
 
     private void saveRelapseLog(final Instant start, final User user) {
