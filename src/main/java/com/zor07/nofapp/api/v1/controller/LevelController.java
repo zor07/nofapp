@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,8 +97,17 @@ public class LevelController {
         return ResponseEntity.accepted().body(levelMapper.toDto(level));
     }
 
-
-
-
+    @DeleteMapping("/{levelId}")
+    @ApiOperation(value = "Delete level by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted note"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> deleteLevel(final @PathVariable Long levelId) {
+        levelService.delete(levelId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
