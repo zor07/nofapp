@@ -9,12 +9,15 @@ import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.io.IOException;
 
 @Service
+@Validated
 @Transactional
 public class TaskContentService {
     private static final String TASK_BUCKET = "task";
@@ -34,7 +37,7 @@ public class TaskContentService {
         this.s3 = s3;
     }
 
-    public void save(final TaskContent content) {
+    public void save(final @Valid TaskContent content) {
         repository.save(content);
     }
     public void delete(final Long taskContentId) {
@@ -63,8 +66,10 @@ public class TaskContentService {
         return file;
     }
 
-    public Task addText(final Long taskId, final JsonNode jsonNode) {
-        return null;
+    public void addText(final Long taskContentId, final JsonNode jsonNode) {
+        final var taskContent = repository.getById(taskContentId);
+        taskContent.setData(jsonNode.toString());
+        save(taskContent);
     }
 
     private String getFileKey(final Long taskId, final byte[] data) {
