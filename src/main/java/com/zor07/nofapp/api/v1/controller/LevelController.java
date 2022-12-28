@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,7 +71,19 @@ public class LevelController {
                 .path(String.format("/api/v1/levels/%d", level.getId()))
                 .toUriString());
         return ResponseEntity.created(uri).body(levelMapper.toDto(level));
+    }
 
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Updates level", response = NoteDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Successfully updated level"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<LevelDto> updateLevel(final @RequestBody LevelDto levelDto) {
+        final var level = levelService.save(levelMapper.toEntity(levelDto));
+        return ResponseEntity.accepted().body(levelMapper.toDto(level));
     }
 
 
