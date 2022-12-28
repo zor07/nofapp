@@ -37,11 +37,6 @@ public class LevelController {
         this.levelMapper = levelMapper;
     }
 
-//    GET    /api/v1/levels  List<LevelDto>
-//    POST   /api/v1/levels create Level
-//    PUT    /api/v1/levels/{levelId} update level
-//    DELETE /api/v1/levels/{levelId} delete level
-
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Gets all levels", response = NoteDto.class)
     @ApiResponses(value = {
