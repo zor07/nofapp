@@ -11,11 +11,17 @@ public interface TaskContentRepository extends JpaRepository<TaskContent, Long> 
 
     @Query(
         nativeQuery = true,
-        value = "delete from task_content where id in (select task_content_id from task where id = :taskId)"
+        value = """
+                delete
+                from task_content
+                where id = (select task_content_id
+                            from task
+                            where id = :taskId
+                              and level_id = :levelId)"""
     )
     @Modifying
     @Transactional
-    void deleteByTaskId(Long taskId);
+    void deleteByLevelIdAndTaskId(Long taskId, Long levelId);
 }
 
 
