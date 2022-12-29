@@ -10,12 +10,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/levels/{levelId}/tasks")
@@ -48,6 +48,28 @@ public class TaskController {
         );
     }
 
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Creates new level", response = TaskDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully created new level"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<TaskDto> createTask(final @PathVariable Long levelId,
+                                              final @RequestBody TaskDto taskDto) {
+        if (!Objects.equals(taskDto.level().id(), levelId)) {
+            return ResponseEntity.badRequest().build();
+        }
+        final var task = taskService.save(taskMapper.toEntity(taskDto));
+        final var uri = URI.create(ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path(String.format("/api/v1/levels/%d/tasks/%d", levelId, task.getId()))
+                .toUriString());
+        return ResponseEntity.created(uri).body(taskMapper.toDto(task));
+    }
+
+
     @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Gets tasks of level", response = NoteDto.class)
     @ApiResponses(value = {
@@ -57,7 +79,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     public ResponseEntity<TaskDto> getTask(final @PathVariable Long levelId,
-                                                 final @PathVariable Long taskId) {
+                                           final @PathVariable Long taskId) {
         return ResponseEntity.ok(
             taskMapper.toDto(
                 taskService.getTask(levelId, taskId)
@@ -66,8 +88,7 @@ public class TaskController {
     }
 
 
-//    GET    /api/v1/levels/{levelId}/tasks/{taskId} TaskDto
-//    POST   /api/vi/levels/{levelId}/tasks TaskDto - create task
+
 //    PUT    /api/vi/levels/{levelId}/tasks/{taskId} TaskDto - update task
 //    DELETE /api/vi/levels/{levelId}/tasks/{taskId} - delete task
 //
