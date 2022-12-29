@@ -39,10 +39,23 @@ public class TaskContentService {
     public void save(final @Valid TaskContent content) {
         repository.save(content);
     }
+
+    @Transactional
     public void deleteByLevelIdAndTaskId(final Long levelId, final Long taskId) {
+        final var task = taskRepository.getById(taskId);
+        final var taskContentId = task.getTaskContent().getId();
+        if (taskContentId != null) {
+            final var taskContent = repository.getById(taskContentId);
+            final var file = taskContent.getFile();
+            if (file != null) {
+                s3.deleteObject(file.getBucket(), file.getKey());
+            }
+        }
+
         repository.deleteByLevelIdAndTaskId(levelId, taskId);
     }
 
+    @Transactional
     public void addVideo(final Long levelId,
                          final Long taskId,
                          final MultipartFile data) throws IOException {
