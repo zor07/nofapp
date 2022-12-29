@@ -56,6 +56,12 @@ public class TaskContentService {
         repository.save(taskContent);
     }
 
+    public void addText(final Long taskContentId, final JsonNode jsonNode) {
+        final var taskContent = repository.getById(taskContentId);
+        taskContent.setData(jsonNode.toString());
+        save(taskContent);
+    }
+
     private File createFile(final Task task, final MultipartFile data, final String key) {
         final var file = new File();
         file.setBucket(TASK_BUCKET);
@@ -64,12 +70,6 @@ public class TaskContentService {
         file.setMime(data.getContentType());
         file.setSize(data.getSize());
         return file;
-    }
-
-    public void addText(final Long taskContentId, final JsonNode jsonNode) {
-        final var taskContent = repository.getById(taskContentId);
-        taskContent.setData(jsonNode.toString());
-        save(taskContent);
     }
 
     private String getFileKey(final Long taskId, final byte[] data) {
