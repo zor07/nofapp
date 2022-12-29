@@ -83,4 +83,16 @@ public class TaskRepositoryTest extends AbstractApplicationTest {
         final var persisted = taskRepository.findByTaskContentId(taskContent.getId());
         TaskTestUtils.checkEntity(persisted, task, false);
     }
+
+    @Test
+    void findByLevelIdAndIdTest() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var task = TaskTestUtils.getBlankEntity(taskContent, level);
+        final var saved = taskRepository.save(task);
+
+        final var result = taskRepository.findByLevelIdAndId(level.getId(), saved.getId());
+        TaskTestUtils.checkEntity(result, task, false);
+    }
 }
