@@ -96,9 +96,9 @@ public class TaskContentController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ApiOperation(value = "Updates given task", response = TaskContentDto.class)
+    @ApiOperation(value = "Updates given task content", response = TaskContentDto.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successfully updated task"),
+            @ApiResponse(code = 201, message = "Successfully updated task content"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
