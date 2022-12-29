@@ -55,7 +55,7 @@ public class LevelController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Creates new level", response = NoteDto.class)
+    @ApiOperation(value = "Creates new level", response = LevelDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully created new level"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
