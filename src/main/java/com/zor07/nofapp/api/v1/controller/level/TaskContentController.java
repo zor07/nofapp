@@ -63,9 +63,9 @@ public class TaskContentController {
     }
 
     @DeleteMapping
-    @ApiOperation(value = "Delete task by id")
+    @ApiOperation(value = "Delete task content by level id and task id")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Successfully deleted task"),
+            @ApiResponse(code = 204, message = "Successfully deleted content"),
             @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
