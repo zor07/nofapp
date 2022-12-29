@@ -26,9 +26,19 @@ public class LevelServiceTest extends AbstractApplicationTest {
 
     @Test
     void saveTest() {
+        levelRepository.deleteAll();
+        final var all = levelRepository.findAll();
+        assertThat(all).isEmpty();
 
+        final var level = LevelTestUtils.getBlankEntity();
 
+        levelService.save(level);
+
+        final var result = levelRepository.findAll();
+        assertThat(result).hasSize(1);
+        LevelTestUtils.checkEntity(level, result.get(0), false);
     }
+
     @Test
     void getAllTest() {
 
