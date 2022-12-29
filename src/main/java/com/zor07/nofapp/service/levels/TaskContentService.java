@@ -1,6 +1,5 @@
 package com.zor07.nofapp.service.levels;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.level.Task;
@@ -57,12 +56,6 @@ public class TaskContentService {
         s3.persistObject(TASK_BUCKET, key, bytes);
         taskContent.setFile(file);
         repository.save(taskContent);
-    }
-
-    public void addText(final Long taskContentId, final JsonNode jsonNode) {
-        final var taskContent = repository.getById(taskContentId);
-        taskContent.setData(jsonNode.toString());
-        save(taskContent);
     }
 
     private File createFile(final Task task, final MultipartFile data, final String key) {
