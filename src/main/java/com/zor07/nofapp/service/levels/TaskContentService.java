@@ -40,8 +40,8 @@ public class TaskContentService {
     public void save(final @Valid TaskContent content) {
         repository.save(content);
     }
-    public void delete(final Long taskContentId) {
-        repository.deleteById(taskContentId);
+    public void deleteByLevelIdAndTaskId(final Long levelId, final Long taskId) {
+        repository.deleteByLevelIdAndTaskId(levelId, taskId);
     }
 
     public void addVideo(final Long taskContentId, final MultipartFile data) throws IOException {
