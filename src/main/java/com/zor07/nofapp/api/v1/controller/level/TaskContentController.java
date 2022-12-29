@@ -9,14 +9,17 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -67,8 +70,24 @@ public class TaskContentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/video")
+    @ApiOperation(value = "Delete task by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted task"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> uploadVideo(final @PathVariable Long levelId,
+                                            final @PathVariable Long taskId,
+                                            @RequestParam("file") MultipartFile file) throws IOException {
+        taskContentService.addVideo(levelId, taskId, file);
+        return ResponseEntity.accepted().build();
+    }
 
-//    POST   /api/v1/levels/{levelId}/tasks/{taskId}/content/video - upload video to task
+
+
+
 //    POST   /api/v1/levels/{levelId}/tasks/{taskId}/content/text - upload text to task
 
 //    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
