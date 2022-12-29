@@ -30,8 +30,8 @@ public class TaskService {
         return repository.save(task);
     }
 
-    public void delete(final Long id) {
-        repository.deleteById(id);
+    public void delete(final Long levelId, final Long id) {
+        repository.deleteByLevelIdAndId(levelId, id);
     }
 
 }
