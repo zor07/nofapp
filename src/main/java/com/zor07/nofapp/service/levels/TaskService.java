@@ -21,6 +21,11 @@ public class TaskService {
         return repository.findAllByLevelId(levelId);
     }
 
+    public Task getTask(final Long levelId, final Long taskId) {
+        return repository.findByLevelIdAndId(levelId, taskId);
+    }
+
+
     public Task save(final Task task) {
         return repository.save(task);
     }
