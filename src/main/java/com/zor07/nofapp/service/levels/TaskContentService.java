@@ -44,9 +44,12 @@ public class TaskContentService {
         repository.deleteByLevelIdAndTaskId(levelId, taskId);
     }
 
-    public void addVideo(final Long taskContentId, final MultipartFile data) throws IOException {
+    public void addVideo(final Long levelId,
+                         final Long taskId,
+                         final MultipartFile data) throws IOException {
+        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
+        final var taskContentId = task.getTaskContent().getId();
         final var taskContent = repository.getById(taskContentId);
-        final var task = taskRepository.findByTaskContentId(taskContentId);
         final var bytes = data.getBytes();
         final var key = getFileKey(task.getId(), bytes);
         final var file = fileRepository.save(createFile(task, data, key));
