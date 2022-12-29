@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FileTestUtils {
 
 
-    private static final String BUCKET_1 = "bucket_1";
-    private static final String PREFIX_1 = "prefix_1";
+    private static final String BUCKET_1 = "bucket";
+    private static final String PREFIX_1 = "prefix1";
     private static final String KEY_1 = "key_1";
     private static final String MIME_1 = "mime_1";
     private static final long SIZE_1 = 1L;
@@ -42,5 +42,13 @@ public class FileTestUtils {
         assertThat(actual.getKey()).isEqualTo(expected.getKey());
         assertThat(actual.getMime()).isEqualTo(expected.getMime());
         assertThat(actual.getSize()).isEqualTo(expected.getSize());
+    }
+
+    public static String getKey() {
+        return KEY_1;
+    }
+
+    public static String getBucket() {
+        return BUCKET_1;
     }
 }
