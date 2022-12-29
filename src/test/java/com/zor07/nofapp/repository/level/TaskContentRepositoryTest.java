@@ -62,7 +62,7 @@ public class TaskContentRepositoryTest extends AbstractApplicationTest {
         final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
         final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
-        taskContentRepository.deleteByTaskId(task.getId());
+        taskContentRepository.deleteByLevelIdAndTaskId(task.getLevel().getId(), task.getId());
 
         assertThat(taskContentRepository.findAll()).isEmpty();
     }
