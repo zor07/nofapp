@@ -18,8 +18,8 @@ public class FileTestUtils {
     private static final String MIME_2 = "mime_2";
     private static final long SIZE_2 = 2L;
 
-    public static File getBlankEntity() {
-        var file = new File();
+    public static File getBlankEntity(final String bucket) {
+        final var file = new File();
         file.setId(null);
         file.setBucket(BUCKET_1);
         file.setPrefix(PREFIX_1);
@@ -27,6 +27,10 @@ public class FileTestUtils {
         file.setMime(MIME_1);
         file.setSize(SIZE_1);
         return file;
+    }
+
+    public static File getBlankEntity() {
+        return getBlankEntity(BUCKET_1);
     }
 
     public static void checkEntity(
@@ -44,11 +48,4 @@ public class FileTestUtils {
         assertThat(actual.getSize()).isEqualTo(expected.getSize());
     }
 
-    public static String getKey() {
-        return KEY_1;
-    }
-
-    public static String getBucket() {
-        return BUCKET_1;
-    }
 }
