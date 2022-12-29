@@ -1,4 +1,4 @@
-package com.zor07.nofapp.api.v1.controller;
+package com.zor07.nofapp.api.v1.controller.level;
 
 import com.zor07.nofapp.api.v1.dto.level.LevelDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
