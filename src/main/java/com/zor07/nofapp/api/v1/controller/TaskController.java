@@ -110,17 +110,18 @@ public class TaskController {
         return ResponseEntity.accepted().body(taskMapper.toDto(task));
     }
 
+    @DeleteMapping("/{taskId}")
+    @ApiOperation(value = "Delete task by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted task"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> deleteTask(final @PathVariable Long levelId,
+                                           final @PathVariable Long taskId) {
+        taskService.delete(levelId, taskId);
+        return ResponseEntity.noContent().build();
+    }
 
-
-
-//    DELETE /api/vi/levels/{levelId}/tasks/{taskId} - delete task
-//
-//    TaskService
-//    getAllByLevelId(Long levelId)
-//    save(Task task)
-//    delete(Long id)
-//    deleteTaskContent(Long taskId)
-//    createTaskContent(TaskContent content)
-//    addVideoToTask(taskId, file)
-//    addTextToTask(taskId, jsonNode)
 }
