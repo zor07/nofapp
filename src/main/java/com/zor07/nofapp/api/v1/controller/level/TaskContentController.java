@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,8 +53,21 @@ public class TaskContentController {
         return ResponseEntity.created(uri).build();
     }
 
+    @DeleteMapping
+    @ApiOperation(value = "Delete task by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted task"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> deleteTaskContent(final @PathVariable Long levelId,
+                                                  final @PathVariable Long taskId) {
+        taskContentService.deleteByLevelIdAndTaskId(levelId, taskId);
+        return ResponseEntity.noContent().build();
+    }
 
-//    DELETE   /api/v1/levels/{levelId}/tasks/{taskId}/content delete task content
+
 //    POST   /api/v1/levels/{levelId}/tasks/{taskId}/content/video - upload video to task
 //    POST   /api/v1/levels/{levelId}/tasks/{taskId}/content/text - upload text to task
 
@@ -116,18 +130,6 @@ public class TaskContentController {
 //        return ResponseEntity.accepted().body(taskMapper.toDto(task));
 //    }
 //
-//    @DeleteMapping("/{taskId}")
-//    @ApiOperation(value = "Delete task by id")
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 204, message = "Successfully deleted task"),
-//            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
-//            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-//            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-//    })
-//    public ResponseEntity<Void> deleteTask(final @PathVariable Long levelId,
-//                                           final @PathVariable Long taskId) {
-//        taskService.delete(levelId, taskId);
-//        return ResponseEntity.noContent().build();
-//    }
+
 
 }
