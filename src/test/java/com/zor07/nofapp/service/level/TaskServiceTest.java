@@ -83,60 +83,14 @@ public class TaskServiceTest extends AbstractApplicationTest {
 
     @Test
     void deleteTest() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
+        taskService.delete(level.getId(), saved.getId());
+
+        assertThat(taskRepository.findAll()).isEmpty();
     }
 
-
-
-//    @Test
-//    void findAllByLevelIdTest() {
-//        final var level1 = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var level2 = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level2));
-//
-//        assertThat(taskRepository.findAllByLevelId(level1.getId())).hasSize(3);
-//        assertThat(taskRepository.findAllByLevelId(level2.getId())).hasSize(1);
-//    }
-//
-//    @Test
-//    void findByTaskContentIdTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var task = TaskTestUtils.getBlankEntity(taskContent, level);
-//        taskRepository.save(task);
-//
-//        final var persisted = taskRepository.findByTaskContentId(taskContent.getId());
-//        TaskTestUtils.checkEntity(persisted, task, false);
-//    }
-//
-//    @Test
-//    void findByLevelIdAndIdTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var task = TaskTestUtils.getBlankEntity(taskContent, level);
-//        final var saved = taskRepository.save(task);
-//
-//        final var result = taskRepository.findByLevelIdAndId(level.getId(), saved.getId());
-//        TaskTestUtils.checkEntity(result, task, false);
-//    }
-//
-//    @Test
-//    void deleteByLevelIdAndIdTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var task = TaskTestUtils.getBlankEntity(taskContent, level);
-//        final var saved = taskRepository.save(task);
-//
-//        taskRepository.deleteByLevelIdAndId(level.getId(), saved.getId());
-//
-//        assertThat(taskRepository.findAll()).isEmpty();
-//    }
 }
