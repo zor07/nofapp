@@ -12,6 +12,8 @@ import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
@@ -37,9 +39,12 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
     @Autowired
     private S3Service s3;
 
+    private static final String TASK_BUCKET = "task";
+    private static final String TASK_FILE_KEY= "task_file";
+
     @BeforeClass
     void setUp() {
-        s3.createBucketIfNotExists(FileTestUtils.getBucket());
+        s3.createBucketIfNotExists(TASK_BUCKET);
         tearDown();
     }
 
@@ -49,22 +54,22 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
         taskRepository.deleteAll();
         levelRepository.deleteAll();
         fileRepository.deleteAll();
-        if (s3.containsBucket(FileTestUtils.getBucket())) {
-            s3.truncateBucket(FileTestUtils.getBucket());
+        if (s3.containsBucket(TASK_BUCKET)) {
+            s3.truncateBucket(TASK_BUCKET);
         }
-
     }
 
     @AfterClass
     void cleanS3() {
-        if (s3.containsBucket(FileTestUtils.getBucket())) {
-            s3.deleteBucket(FileTestUtils.getBucket());
+        tearDown();
+        if (s3.containsBucket(TASK_BUCKET)) {
+            s3.deleteBucket(TASK_BUCKET);
         }
     }
 
     @Test
     void saveTest() {
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
         final var taskContent = TaskContentTestUtils.getBlankEntity(file);
 
         taskContentService.save(taskContent);
@@ -77,7 +82,7 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
     @Test
     void deleteByLevelIdAndTaskIdTest() throws IOException {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
         final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
         final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
@@ -95,41 +100,34 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
     }
 
     @Test
-    void addVideoTest() {
+    void addVideoTest() throws IOException {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+        final var multipartFile= new MockMultipartFile(
+                "file",
+                "hello.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                data
+        );
+
+        assertThat(fileRepository.findAll()).isEmpty();
+        assertThat(s3.findObjects(TASK_BUCKET, "")).isEmpty();
+
+        taskContentService.addVideo(level.getId(), task.getId(), multipartFile);
+
+        final var updatedTaskContent = taskContentRepository.getById(taskContent.getId());
+        final var file = updatedTaskContent.getFile();
+        assertThat(file.getBucket()).isEqualTo(TASK_BUCKET);
+        assertThat(file.getPrefix()).isEqualTo(String.format("%s-%s", task.getLevel().getId(), task.getId()));
+        assertThat(file.getKey()).startsWith(String.format("%s/%s_", task.getId(), TASK_FILE_KEY));
+        assertThat(file.getMime()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
+        assertThat(file.getSize()).isEqualTo(multipartFile.getSize());
+
+        assertThat(s3.readObject(TASK_BUCKET, file.getKey())).containsExactly(data);
     }
 
-//    @Test
-//    void testCrud() {
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = TaskContentTestUtils.getBlankEntity(file);
-//        final var all = taskContentRepository.findAll();
-//        assertThat(all).isEmpty();
-//
-//        final var id = taskContentRepository.save(taskContent).getId();
-//        final var inserted = taskContentRepository.findById(id).get();
-//        TaskContentTestUtils.checkEntity(inserted, taskContent, false);
-//
-//        TaskContentTestUtils.updateEntity(inserted);
-//        taskContentRepository.save(inserted);
-//
-//        final var updated = taskContentRepository.findById(id).get();
-//        TaskContentTestUtils.checkUpdated(updated);
-//
-//        taskContentRepository.delete(updated);
-//
-//        assertThat(taskContentRepository.findById(id)).isEmpty();
-//    }
-//
-//    @Test
-//    void deleteByTaskIdTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
-//
-//        taskContentRepository.deleteByLevelIdAndTaskId(task.getLevel().getId(), task.getId());
-//
-//        assertThat(taskContentRepository.findAll()).isEmpty();
-//    }
 }
