@@ -108,7 +108,6 @@ public class TaskController {
         }
         final var task = taskService.save(taskMapper.toEntity(taskDto));
         return ResponseEntity.accepted().body(taskMapper.toDto(task));
-
     }
 
 
