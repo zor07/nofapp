@@ -6,9 +6,14 @@ import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
+import com.zor07.nofapp.test.FileTestUtils;
+import com.zor07.nofapp.test.TaskContentTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskContentServiceTest extends AbstractApplicationTest {
 
@@ -30,6 +35,29 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
         taskRepository.deleteAll();
         levelRepository.deleteAll();
         fileRepository.deleteAll();
+    }
+
+    @Test
+    void saveTest() {
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = TaskContentTestUtils.getBlankEntity(file);
+
+        taskContentService.save(taskContent);
+
+        final var result = taskContentRepository.findAll();
+        assertThat(result).hasSize(1);
+        TaskContentTestUtils.checkEntity(result.get(0), taskContent, false);
+
+    }
+
+    @Test
+    void deleteByLevelIdAndTaskIdTest() {
+
+    }
+
+    @Test
+    void addVideoTest() {
+
     }
 
 //    @Test
