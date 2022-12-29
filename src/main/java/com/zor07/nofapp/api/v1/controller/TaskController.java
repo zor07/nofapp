@@ -87,9 +87,33 @@ public class TaskController {
         );
     }
 
+    @PostMapping(
+            value = "/{taskId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ApiOperation(value = "Updates given task", response = TaskDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully updated task"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<TaskDto> updateTask(final @PathVariable Long levelId,
+                                              final @PathVariable Long taskId,
+                                              final @RequestBody TaskDto taskDto) {
+        if (!Objects.equals(taskDto.level().id(), levelId) &&
+            !Objects.equals(taskDto.id(), taskId)) {
+            return ResponseEntity.badRequest().build();
+        }
+        final var task = taskService.save(taskMapper.toEntity(taskDto));
+        return ResponseEntity.accepted().body(taskMapper.toDto(task));
+
+    }
 
 
-//    PUT    /api/vi/levels/{levelId}/tasks/{taskId} TaskDto - update task
+
+
 //    DELETE /api/vi/levels/{levelId}/tasks/{taskId} - delete task
 //
 //    TaskService
