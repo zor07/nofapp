@@ -6,10 +6,16 @@ import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.TaskService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
+import com.zor07.nofapp.test.FileTestUtils;
+import com.zor07.nofapp.test.LevelTestUtils;
+import com.zor07.nofapp.test.TaskContentTestUtils;
+import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskServiceTest extends AbstractApplicationTest {
 
@@ -35,7 +41,17 @@ public class TaskServiceTest extends AbstractApplicationTest {
 
     @Test
     void getAllByLevelIdTest() {
+        final var level1 = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var level2 = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level2));
 
+        assertThat(taskService.getAllByLevelId(level1.getId())).hasSize(3);
+        assertThat(taskService.getAllByLevelId(level2.getId())).hasSize(1);
     }
 
     @Test
