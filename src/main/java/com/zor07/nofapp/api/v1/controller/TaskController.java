@@ -48,6 +48,22 @@ public class TaskController {
         );
     }
 
+    @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Gets tasks of level", response = NoteDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved tasks"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<TaskDto> getTask(final @PathVariable Long levelId,
+                                                 final @PathVariable Long taskId) {
+        return ResponseEntity.ok(
+            taskMapper.toDto(
+                taskService.getTask(levelId, taskId)
+            )
+        );
+    }
 
 
 //    GET    /api/v1/levels/{levelId}/tasks/{taskId} TaskDto
