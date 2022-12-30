@@ -2,6 +2,8 @@ package com.zor07.nofapp.api.v1.controller.level;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
+import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
+import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
@@ -26,6 +28,7 @@ import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskControllerTest extends AbstractApiTest {
@@ -40,6 +43,11 @@ public class TaskControllerTest extends AbstractApiTest {
     private FileRepository fileRepository;
     @Autowired
     private TaskMapper taskMapper;
+    @Autowired
+    private TaskContentMapper taskContentMapper;
+    @Autowired
+    private LevelMapper levelMapper;
+
     private static final String TASKS_ENDPOINT  = "/api/v1/levels/%s/tasks";
     private static final String TASK_ENDPOINT  = TASKS_ENDPOINT + "/%s";
 
@@ -142,6 +150,64 @@ public class TaskControllerTest extends AbstractApiTest {
         assertThat(task.taskContent().title()).isEqualTo(taskContent.getTitle());
         assertThat(task.taskContent().fileUri()).isEqualTo(String.format("%s/%s", file.getBucket(), file.getKey()));
     }
+
+    @Test
+    void createTaskTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var dto = TaskTestUtils.getBlankDto(null, taskContentMapper.toDto(taskContent), levelMapper.toDto(level));
+
+        //when
+        final var content = mvc.perform(post(url(level.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var task = objectMapper.readValue(content, TaskDto.class);
+        //task
+        assertThat(task.id()).isNotNull();
+        assertThat(task.name()).isEqualTo(dto.name());
+        assertThat(task.description()).isEqualTo(dto.description());
+        assertThat(task.order()).isEqualTo(dto.order());
+        //level
+        assertThat(task.level().id()).isNotNull();
+        assertThat(task.level().name()).isEqualTo(level.getName());
+        assertThat(task.level().order()).isEqualTo(level.getOrder());
+        //content
+        assertThat(task.taskContent().id()).isNotNull();
+        assertThat(task.taskContent().data()).isEqualTo(objectMapper.readTree(taskContent.getData()));
+        assertThat(task.taskContent().title()).isEqualTo(taskContent.getTitle());
+        assertThat(task.taskContent().fileUri()).isNull();
+
+        final var taskFromDb = taskRepository.findById(task.id()).get();
+        //task
+        assertThat(taskFromDb.getId()).isNotNull();
+        assertThat(taskFromDb.getName()).isEqualTo(dto.name());
+        assertThat(taskFromDb.getDescription()).isEqualTo(dto.description());
+        assertThat(taskFromDb.getOrder()).isEqualTo(dto.order());
+        //level
+        assertThat(taskFromDb.getLevel().getId()).isNotNull();
+        assertThat(taskFromDb.getLevel().getName()).isEqualTo(level.getName());
+        assertThat(taskFromDb.getLevel().getOrder()).isEqualTo(level.getOrder());
+        //content
+        assertThat(taskFromDb.getTaskContent().getId()).isNotNull();
+        assertThat(taskFromDb.getTaskContent().getData()).isEqualTo(taskContent.getData());
+        assertThat(taskFromDb.getTaskContent().getTitle()).isEqualTo(taskContent.getTitle());
+        //file
+        assertThat(taskFromDb.getTaskContent().getFile().getId()).isEqualTo(file.getId());
+        assertThat(taskFromDb.getTaskContent().getFile().getKey()).isEqualTo(file.getKey());
+        assertThat(taskFromDb.getTaskContent().getFile().getBucket()).isEqualTo(file.getBucket());
+        assertThat(taskFromDb.getTaskContent().getFile().getMime()).isEqualTo(file.getMime());
+        assertThat(taskFromDb.getTaskContent().getFile().getPrefix()).isEqualTo(file.getPrefix());
+        assertThat(taskFromDb.getTaskContent().getFile().getSize()).isEqualTo(file.getSize());
+    }
+
 
 
     // POST   /taskId createTask TaskDto
