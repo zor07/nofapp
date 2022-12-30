@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskControllerTest extends AbstractApiTest {
@@ -208,9 +209,42 @@ public class TaskControllerTest extends AbstractApiTest {
         assertThat(taskFromDb.getTaskContent().getFile().getSize()).isEqualTo(file.getSize());
     }
 
+    @Test
+    void updateTaskTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var expectedTask = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var newName = "new name";
+        expectedTask.setName(newName);
+        final var dto = taskMapper.toDto(expectedTask);
+
+        //when
+        final var content = mvc.perform(put(url(level.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var task = objectMapper.readValue(content, TaskDto.class);
+        assertThat(task.id()).isNotNull();
+        assertThat(task.name()).isEqualTo(newName);
+        assertThat(task.description()).isEqualTo(dto.description());
+        assertThat(task.order()).isEqualTo(dto.order());
+
+        final var taskFromDb = taskRepository.findById(task.id()).get();
+        assertThat(taskFromDb.getId()).isNotNull();
+        assertThat(taskFromDb.getName()).isEqualTo(newName);
+        assertThat(taskFromDb.getDescription()).isEqualTo(dto.description());
+        assertThat(taskFromDb.getOrder()).isEqualTo(dto.order());
+    }
 
 
-    // POST   /taskId createTask TaskDto
+
     // PUT    /taskId updateTask TaskDto
     // DELETE /taskId deleteTask
 
