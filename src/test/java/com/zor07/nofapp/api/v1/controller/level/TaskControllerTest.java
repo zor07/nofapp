@@ -109,9 +109,42 @@ public class TaskControllerTest extends AbstractApiTest {
         });
     }
 
-    // GET getTasks List<TaskDto>
+    @Test
+    void getTaskTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var expectedTask = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+
+        //when
+        final var content = mvc.perform(get(url(level.getId(), expectedTask.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var task = objectMapper.readValue(content, TaskDto.class);
+        //task
+        assertThat(task.id()).isNotNull();
+        assertThat(task.name()).isEqualTo(expectedTask.getName());
+        assertThat(task.description()).isEqualTo(expectedTask.getDescription());
+        assertThat(task.order()).isEqualTo(expectedTask.getOrder());
+        //level
+        assertThat(task.level().id()).isNotNull();
+        assertThat(task.level().name()).isEqualTo(level.getName());
+        assertThat(task.level().order()).isEqualTo(level.getOrder());
+        //content
+        assertThat(task.taskContent().id()).isNotNull();
+        assertThat(task.taskContent().data()).isEqualTo(objectMapper.readTree(taskContent.getData()));
+        assertThat(task.taskContent().title()).isEqualTo(taskContent.getTitle());
+        assertThat(task.taskContent().fileUri()).isEqualTo(String.format("%s/%s", file.getBucket(), file.getKey()));
+    }
+
+
     // POST   /taskId createTask TaskDto
-    // GET    /taskId getTask TaskDto
     // PUT    /taskId updateTask TaskDto
     // DELETE /taskId deleteTask
 
