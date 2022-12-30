@@ -25,6 +25,11 @@ public class LevelTestUtils {
         return level;
     }
 
+    public static LevelDto getBlankDto() {
+        return getBlankDto(null);
+    }
+
+
     public static LevelDto getBlankDto(final Long id) {
         return new LevelDto(id, NAME, ORDER);
     }
