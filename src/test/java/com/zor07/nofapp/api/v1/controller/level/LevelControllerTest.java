@@ -4,8 +4,8 @@ import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.service.levels.LevelService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
 
 public class LevelControllerTest extends AbstractApiTest {
 
@@ -17,12 +17,18 @@ public class LevelControllerTest extends AbstractApiTest {
     private static final String LEVELS_ENDPOINT  = "/api/v1/levels";
     private static final String LEVEL_ENDPOINT  = LEVELS_ENDPOINT + "/%s";
 
-    @BeforeClass
-    @AfterTest
-    void clearDb() {
-        levelRepository.deleteAll();
+    @BeforeMethod
+    public void setup() {
+        tearDown();
+        createDefaultUser();
     }
 
+    @AfterClass
+    void tearDown() {
+        levelRepository.deleteAll();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
+    }
 
     private String endpoint() {
         return LEVELS_ENDPOINT;
