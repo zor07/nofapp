@@ -1,5 +1,7 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zor07.nofapp.api.v1.dto.level.LevelDto;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
@@ -11,9 +13,12 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,6 +66,29 @@ public class LevelControllerTest extends AbstractApiTest {
         assertThat(actual.getId()).isNotNull();
         assertThat(actual.getOrder()).isEqualTo(levelDto.order());
         assertThat(actual.getName()).isEqualTo(levelDto.name());
+    }
+
+    @Test
+    void getLevelsTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        levelRepository.save(LevelTestUtils.getBlankEntity());
+
+        //when
+        final var content = mvc.perform(get(url())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var levels = objectMapper.readValue(content, new TypeReference<List<LevelDto>>(){});
+        assertThat(levels).hasSize(2);
+        final var actual = levels.get(0);
+        assertThat(actual.id()).isNotNull();
+        assertThat(actual.order()).isEqualTo(level.getOrder());
+        assertThat(actual.name()).isEqualTo(level.getName());
     }
 
     private String url() {
