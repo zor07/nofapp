@@ -2,6 +2,7 @@ package com.zor07.nofapp.api.v1.controller.level;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.level.LevelDto;
+import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
@@ -18,14 +19,15 @@ import java.util.List;
 import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LevelControllerTest extends AbstractApiTest {
 
     @Autowired
     private LevelRepository levelRepository;
+    @Autowired
+    private LevelMapper levelMapper;
     private static final String LEVELS_ENDPOINT  = "/api/v1/levels";
     private static final String LEVEL_ENDPOINT  = LEVELS_ENDPOINT + "/%s";
 
@@ -91,33 +93,40 @@ public class LevelControllerTest extends AbstractApiTest {
         assertThat(actual.name()).isEqualTo(level.getName());
     }
 
+    @Test
+    void updateLevelTest() throws Exception {
+        //given
+        final var newName = "new name";
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        level.setName(newName);
+        final var dto = levelMapper.toDto(level);
+
+
+        //when
+        final var content = mvc.perform(put(url(level.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var response = objectMapper.readValue(content, LevelDto.class);
+        assertThat(response.id()).isEqualTo(level.getId());
+        assertThat(response.order()).isEqualTo(level.getOrder());
+        assertThat(response.name()).isEqualTo(newName);
+
+        final var levelFromDb = levelRepository.findAll().get(0);
+        assertThat(response.id()).isEqualTo(levelFromDb.getId());
+        assertThat(response.order()).isEqualTo(levelFromDb.getOrder());
+        assertThat(response.name()).isEqualTo(levelFromDb.getName());
+    }
+
     private String url() {
         return LEVELS_ENDPOINT;
     }
     private String url(final Long levelId) {
         return String.format(LEVEL_ENDPOINT, levelId);
     }
-//
-//    @Test
-//    void getAllTest() {
-//        levelRepository.save(LevelTestUtils.getBlankEntity());
-//        levelRepository.save(LevelTestUtils.getBlankEntity());
-//        levelRepository.save(LevelTestUtils.getBlankEntity());
-//
-//        final var result = levelService.getAll();
-//
-//        assertThat(result).hasSize(3);
-//        assertThat(result).allSatisfy( level ->
-//                LevelTestUtils.checkEntity(LevelTestUtils.getBlankEntity(), level, false)
-//        );
-//    }
-//    @Test
-//    void deleteTest() {
-//        assertThat(levelRepository.findAll()).isEmpty();
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//
-//        levelService.delete(level.getId());
-//        assertThat(levelRepository.findAll()).isEmpty();
-//    }
-
 }
