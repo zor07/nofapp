@@ -1,16 +1,34 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zor07.nofapp.api.v1.dto.level.TaskDto;
+import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
-import com.zor07.nofapp.service.levels.TaskService;
-import com.zor07.nofapp.spring.AbstractApplicationTest;
+import com.zor07.nofapp.spring.AbstractApiTest;
+import com.zor07.nofapp.test.FileTestUtils;
+import com.zor07.nofapp.test.LevelTestUtils;
+import com.zor07.nofapp.test.TaskContentTestUtils;
+import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-public class TaskControllerTest extends AbstractApplicationTest {
+import java.util.List;
+
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+public class TaskControllerTest extends AbstractApiTest {
 
     @Autowired
     private TaskRepository taskRepository;
@@ -21,16 +39,82 @@ public class TaskControllerTest extends AbstractApplicationTest {
     @Autowired
     private FileRepository fileRepository;
     @Autowired
-    private TaskService taskService;
+    private TaskMapper taskMapper;
+    private static final String TASKS_ENDPOINT  = "/api/v1/levels/%s/tasks";
+    private static final String TASK_ENDPOINT  = TASKS_ENDPOINT + "/%s";
 
-    @BeforeClass
-    @AfterTest
-    void clearDb() {
+    @BeforeMethod
+    public void setup() {
+        tearDown();
+        createDefaultUser();
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
+
+    @AfterClass
+    void tearDown() {
         taskRepository.deleteAll();
         taskContentRepository.deleteAll();
         fileRepository.deleteAll();
         levelRepository.deleteAll();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
     }
+
+    private String url(final Long levelId) {
+        return String.format(TASKS_ENDPOINT, levelId);
+    }
+    private String url(final Long levelId, final Long taskId) {
+        return String.format(TASK_ENDPOINT, levelId, taskId);
+    }
+
+    @Test
+    void getAllByLevelIdTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var expectedTask = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+
+        //when
+        final var content = mvc.perform(get(url(level.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var tasks = objectMapper.readValue(content, new TypeReference<List<TaskDto>>(){});
+        assertThat(tasks).hasSize(3);
+        assertThat(tasks).allSatisfy( task -> {
+            //task
+            assertThat(task.id()).isNotNull();
+            assertThat(task.name()).isEqualTo(expectedTask.getName());
+            assertThat(task.description()).isEqualTo(expectedTask.getDescription());
+            assertThat(task.order()).isEqualTo(expectedTask.getOrder());
+            //level
+            assertThat(task.level().id()).isNotNull();
+            assertThat(task.level().name()).isEqualTo(level.getName());
+            assertThat(task.level().order()).isEqualTo(level.getOrder());
+            //content
+            assertThat(task.taskContent().id()).isNotNull();
+            assertThat(task.taskContent().data()).isEqualTo(objectMapper.readTree(taskContent.getData()));
+            assertThat(task.taskContent().title()).isEqualTo(taskContent.getTitle());
+            assertThat(task.taskContent().fileUri()).isEqualTo(String.format("%s/%s", file.getBucket(), file.getKey()));
+        });
+    }
+
+    // GET getTasks List<TaskDto>
+    // POST   /taskId createTask TaskDto
+    // GET    /taskId getTask TaskDto
+    // PUT    /taskId updateTask TaskDto
+    // DELETE /taskId deleteTask
+
 
 //    @Test
 //    void getAllByLevelIdTest() {
