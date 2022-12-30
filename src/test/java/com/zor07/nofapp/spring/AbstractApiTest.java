@@ -2,12 +2,14 @@ package com.zor07.nofapp.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
+import com.zor07.nofapp.repository.user.RoleRepository;
+import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_PASSWORD;
+import static com.zor07.nofapp.test.UserTestUtils.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public class AbstractApiTest extends AbstractApplicationTest {
@@ -20,10 +22,20 @@ public class AbstractApiTest extends AbstractApplicationTest {
 
   @Autowired
   protected UserService userService;
+  @Autowired
+  protected UserRepository userRepository;
+  @Autowired
+  protected RoleRepository roleRepository;
 
   protected final ObjectMapper objectMapper = new ObjectMapper();
   {
     objectMapper.findAndRegisterModules();
+  }
+
+  protected void createDefaultUser() {
+    userService.saveUser(createUser());
+    userService.saveRole(createRole());
+    userService.addRoleToUser(DEFAULT_USERNAME, DEFAULT_ROLE);
   }
 
   protected String getAuthHeader(MockMvc mvc, String username) throws Exception {
