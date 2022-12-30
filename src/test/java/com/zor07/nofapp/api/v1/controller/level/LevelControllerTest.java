@@ -1,18 +1,31 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
 import com.zor07.nofapp.repository.level.LevelRepository;
-import com.zor07.nofapp.service.levels.LevelService;
 import com.zor07.nofapp.spring.AbstractApiTest;
+import com.zor07.nofapp.test.LevelTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LevelControllerTest extends AbstractApiTest {
 
     @Autowired
     private LevelRepository levelRepository;
     @Autowired
-    private LevelService levelService;
+    private WebApplicationContext context;
+    private MockMvc mvc;
 
     private static final String LEVELS_ENDPOINT  = "/api/v1/levels";
     private static final String LEVEL_ENDPOINT  = LEVELS_ENDPOINT + "/%s";
@@ -21,6 +34,10 @@ public class LevelControllerTest extends AbstractApiTest {
     public void setup() {
         tearDown();
         createDefaultUser();
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @AfterClass
@@ -30,27 +47,34 @@ public class LevelControllerTest extends AbstractApiTest {
         roleRepository.deleteAll();
     }
 
-    private String endpoint() {
-        return LEVELS_ENDPOINT;
-    }
-    private String endpoint(final Long levelId) {
-        return String.format(LEVEL_ENDPOINT, levelId);
+    @Test
+    void createLevelTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var levelDto = LevelTestUtils.getBlankDto();
+
+        //when
+        final var resultActions = mvc.perform(post(url())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(levelDto))
+                .header(HttpHeaders.AUTHORIZATION, authHeader));
+
+        //then
+        resultActions.andExpect(status().isCreated());
+        final var result = levelRepository.findAll();
+        assertThat(result).hasSize(1);
+        final var actual = result.get(0);
+        assertThat(actual.getId()).isNotNull();
+        assertThat(actual.getOrder()).isEqualTo(levelDto.order());
+        assertThat(actual.getName()).isEqualTo(levelDto.name());
     }
 
-//    @Test
-//    void saveTest() {
-//        levelRepository.deleteAll();
-//        final var all = levelRepository.findAll();
-//        assertThat(all).isEmpty();
-//
-//        final var level = LevelTestUtils.getBlankEntity();
-//
-//        levelService.save(level);
-//
-//        final var result = levelRepository.findAll();
-//        assertThat(result).hasSize(1);
-//        LevelTestUtils.checkEntity(level, result.get(0), false);
-//    }
+    private String url() {
+        return LEVELS_ENDPOINT;
+    }
+    private String url(final Long levelId) {
+        return String.format(LEVEL_ENDPOINT, levelId);
+    }
 //
 //    @Test
 //    void getAllTest() {
