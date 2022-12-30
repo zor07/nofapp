@@ -14,10 +14,21 @@ public class LevelControllerTest extends AbstractApiTest {
     @Autowired
     private LevelService levelService;
 
+    private static final String LEVELS_ENDPOINT  = "/api/v1/levels";
+    private static final String LEVEL_ENDPOINT  = LEVELS_ENDPOINT + "/%s";
+
     @BeforeClass
     @AfterTest
     void clearDb() {
         levelRepository.deleteAll();
+    }
+
+
+    private String endpoint() {
+        return LEVELS_ENDPOINT;
+    }
+    private String endpoint(final Long levelId) {
+        return String.format(LEVEL_ENDPOINT, levelId);
     }
 
 //    @Test
