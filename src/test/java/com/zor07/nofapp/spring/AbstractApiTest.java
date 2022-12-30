@@ -8,6 +8,7 @@ import com.zor07.nofapp.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.WebApplicationContext;
 
 import static com.zor07.nofapp.test.UserTestUtils.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,6 +27,9 @@ public class AbstractApiTest extends AbstractApplicationTest {
   protected UserRepository userRepository;
   @Autowired
   protected RoleRepository roleRepository;
+  @Autowired
+  protected WebApplicationContext context;
+  protected MockMvc mvc;
 
   protected final ObjectMapper objectMapper = new ObjectMapper();
   {
