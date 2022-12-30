@@ -123,6 +123,22 @@ public class LevelControllerTest extends AbstractApiTest {
         assertThat(response.name()).isEqualTo(levelFromDb.getName());
     }
 
+    @Test
+    void deleteLevelTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+
+        //when
+        mvc.perform(delete(url(level.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isNoContent());
+
+        //then
+        assertThat(levelRepository.findAll()).isEmpty();
+    }
+
     private String url() {
         return LEVELS_ENDPOINT;
     }
