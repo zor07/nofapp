@@ -4,19 +4,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.notes.NoteDto;
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;
-import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.profile.UserPost;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.notes.NoteRepository;
 import com.zor07.nofapp.repository.notes.NotebookRepository;
-import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.profile.UserPostsRepository;
+import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterMethod;
@@ -25,7 +24,9 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.zor07.nofapp.test.UserTestUtils.*;
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
+import static com.zor07.nofapp.test.UserTestUtils.createRole;
+import static com.zor07.nofapp.test.UserTestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -56,7 +57,6 @@ public class UserPostsControllerTest extends AbstractApiTest {
 
     private @Autowired WebApplicationContext context;
 
-    private MockMvc mvc;
 
     @Test
     void shouldAddPostToProfile() throws Exception {
