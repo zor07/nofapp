@@ -1,7 +1,6 @@
 package com.zor07.nofapp.api.v1.controller;
 
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
-import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +33,6 @@ public class AuthControllerTest extends AbstractApiTest {
 
   @Autowired
   private UserRepository userRepository;
-  @Autowired
-  private RoleRepository roleRepository;
 
   private void clearDb () {
     userRepository.deleteAll();
