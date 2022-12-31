@@ -13,7 +13,6 @@ import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.practice.PracticeRepository;
 import com.zor07.nofapp.repository.practice.PracticeTagRepository;
 import com.zor07.nofapp.repository.practice.UserPracticeRepository;
-import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,6 @@ public class PracticeControllerTest extends AbstractApiTest {
     private @Autowired PracticeRepository practiceRepository;
     private @Autowired UserPracticeRepository userPracticeRepository;
     private @Autowired PracticeTagRepository tagRepository;
-    private @Autowired UserRepository userRepository;
     private @Autowired PracticeMapper practiceMapper;
 
     private void clearDb() {
