@@ -1,6 +1,5 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
-import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
@@ -19,8 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -56,15 +53,10 @@ public class TaskContentControllerTest extends AbstractApiTest {
     private static final String TASK_CONTENT_ENDPOINT  = "/api/v1/levels/%d/tasks/%d/content";
     private static final String TASK_CONTENT_VIDEO_ENDPOINT  = TASK_CONTENT_ENDPOINT + "/video";
 
-    @BeforeClass
-    void setUp() {
-        s3.createBucketIfNotExists(TASK_BUCKET);
-        tearDown();
-    }
-
     @BeforeMethod
     public void setup() {
         tearDown();
+        s3.createBucketIfNotExists(TASK_BUCKET);
         createDefaultUser();
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
@@ -72,22 +64,16 @@ public class TaskContentControllerTest extends AbstractApiTest {
                 .build();
     }
 
-    @AfterTest
+    @AfterClass
     void tearDown() {
-        taskContentRepository.deleteAll();
         taskRepository.deleteAll();
-        levelRepository.deleteAll();
+        taskContentRepository.deleteAll();
         fileRepository.deleteAll();
+        levelRepository.deleteAll();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
         if (s3.containsBucket(TASK_BUCKET)) {
             s3.truncateBucket(TASK_BUCKET);
-        }
-    }
-
-    @AfterClass
-    void cleanS3() {
-        tearDown();
-        if (s3.containsBucket(TASK_BUCKET)) {
-            s3.deleteBucket(TASK_BUCKET);
         }
     }
 
@@ -100,7 +86,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
         final var dto = TaskContentTestUtils.getBlankDto();
 
         //when
-        final var content = mvc.perform(post(url(level.getId(), task.getId()))
+        mvc.perform(post(url(level.getId(), task.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
@@ -108,13 +94,16 @@ public class TaskContentControllerTest extends AbstractApiTest {
                 .andReturn().getResponse().getContentAsString();
 
         //then
-        final var taskContentDto = objectMapper.readValue(content, TaskContentDto.class);
-        assertThat(taskContentDto.id()).isNotNull();
-        assertThat(taskContentDto.data()).isNull();
-        assertThat(taskContentDto.fileUri()).isNull();
-        assertThat(taskContentDto.title()).isEqualTo(dto.title());
+        final var all = taskContentRepository.findAll();
+        final var taskContent = all.get(0);
+        assertThat(all).hasSize(1);
+        assertThat(taskContent.getId()).isNotNull();
+        assertThat(taskContent.getData()).isNull();
+        assertThat(taskContent.getFile()).isNull();
+        assertThat(taskContent.getTitle()).isEqualTo(dto.title());
 
-        final var
+        final var updatedTask = taskRepository.findAll().get(0);
+        assertThat(updatedTask.getTaskContent().getId()).isEqualTo(taskContent.getId());
     }
 
     @Test
