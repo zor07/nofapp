@@ -222,7 +222,7 @@ public class TaskControllerTest extends AbstractApiTest {
         final var dto = taskMapper.toDto(expectedTask);
 
         //when
-        final var content = mvc.perform(put(url(level.getId()))
+        final var content = mvc.perform(put(url(level.getId(), expectedTask.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto))
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
