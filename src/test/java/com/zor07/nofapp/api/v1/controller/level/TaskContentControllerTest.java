@@ -1,5 +1,8 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
+import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
+import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
+import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
@@ -8,9 +11,13 @@ import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 public class TaskContentControllerTest extends AbstractApiTest {
 
@@ -26,14 +33,32 @@ public class TaskContentControllerTest extends AbstractApiTest {
     private TaskContentService taskContentService;
     @Autowired
     private S3Service s3;
+    @Autowired
+    private TaskMapper taskMapper;
+    @Autowired
+    private TaskContentMapper taskContentMapper;
+    @Autowired
+    private LevelMapper levelMapper;
 
     private static final String TASK_BUCKET = "task";
     private static final String TASK_FILE_KEY= "task_file";
+    private static final String TASK_CONTENT_ENDPOINT  = "/api/v1/levels/%d/tasks/%d/content";
+    private static final String TASK_CONTENT_VIDEO_ENDPOINT  = TASK_CONTENT_ENDPOINT + "/video";
 
     @BeforeClass
     void setUp() {
         s3.createBucketIfNotExists(TASK_BUCKET);
         tearDown();
+    }
+
+    @BeforeMethod
+    public void setup() {
+        tearDown();
+        createDefaultUser();
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @AfterTest
@@ -53,6 +78,20 @@ public class TaskContentControllerTest extends AbstractApiTest {
         if (s3.containsBucket(TASK_BUCKET)) {
             s3.deleteBucket(TASK_BUCKET);
         }
+    }
+
+
+    // POST createTaskContent
+    // DELETE deleteTaskContent
+    // POST /video uploadVideo
+    // PUT /taskContentId updateTaskContent
+
+    private String url(final Long levelId, final Long taskId) {
+        return String.format(TASK_CONTENT_ENDPOINT, levelId, taskId);
+    }
+
+    private String videoUrl(final Long levelId, final Long taskId) {
+        return String.format(TASK_CONTENT_VIDEO_ENDPOINT, levelId, taskId);
     }
 
 //    @Test
