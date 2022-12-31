@@ -18,7 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -57,7 +56,6 @@ public class ProfileControllerTest extends AbstractApiTest {
     private @Autowired UserRepository userRepository;
     private @Autowired RoleRepository roleRepository;
     private @Autowired S3Service s3;
-    private @Autowired WebApplicationContext context;
 
     @Test
     void shouldReturnProfiles() throws Exception {
