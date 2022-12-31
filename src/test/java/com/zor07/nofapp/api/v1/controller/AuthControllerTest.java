@@ -1,9 +1,7 @@
 package com.zor07.nofapp.api.v1.controller;
 
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
-import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -30,9 +28,6 @@ public class AuthControllerTest extends AbstractApiTest {
           "password": "pass"
         }
         """;
-
-  @Autowired
-  private UserRepository userRepository;
 
   private void clearDb () {
     userRepository.deleteAll();
