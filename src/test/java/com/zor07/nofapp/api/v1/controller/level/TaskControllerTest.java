@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -243,64 +244,23 @@ public class TaskControllerTest extends AbstractApiTest {
         assertThat(taskFromDb.getOrder()).isEqualTo(dto.order());
     }
 
+    @Test
+    void deleteTaskTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
+        //when
+        mvc.perform(delete(url(level.getId(), task.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isNoContent())
+                .andReturn().getResponse().getContentAsString();
 
-    // PUT    /taskId updateTask TaskDto
-    // DELETE /taskId deleteTask
-
-
-//    @Test
-//    void getAllByLevelIdTest() {
-//        final var level1 = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var level2 = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-//        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level2));
-//
-//        assertThat(taskService.getAllByLevelId(level1.getId())).hasSize(3);
-//        assertThat(taskService.getAllByLevelId(level2.getId())).hasSize(1);
-//    }
-//
-//    @Test
-//    void getTaskTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
-//
-//        final var result = taskService.getTask(level.getId(), saved.getId());
-//        TaskTestUtils.checkEntity(result, saved, true);
-//    }
-//
-//    @Test
-//    void saveTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var task = TaskTestUtils.getBlankEntity(taskContent, level);
-//
-//        final var saved = taskService.save(task);
-//
-//        final var all = taskRepository.findAll();
-//
-//        assertThat(all).hasSize(1);
-//        TaskTestUtils.checkEntity(all.get(0), task, false);
-//        TaskTestUtils.checkEntity(all.get(0), saved, true);
-//    }
-//
-//    @Test
-//    void deleteTest() {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
-//
-//        taskService.delete(level.getId(), saved.getId());
-//
-//        assertThat(taskRepository.findAll()).isEmpty();
-//    }
-
+        //then
+        assertThat(taskRepository.findAll()).isEmpty();
+    }
 }
