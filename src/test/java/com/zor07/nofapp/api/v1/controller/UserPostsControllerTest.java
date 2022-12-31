@@ -9,7 +9,6 @@ import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.notes.NoteRepository;
 import com.zor07.nofapp.repository.notes.NotebookRepository;
 import com.zor07.nofapp.repository.profile.UserPostsRepository;
-import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -45,8 +44,6 @@ public class UserPostsControllerTest extends AbstractApiTest {
     private NoteRepository noteRepository;
     @Autowired
     private UserPostsRepository userPostsRepository;
-    @Autowired
-    private UserService userService;
 
 
     @Test
