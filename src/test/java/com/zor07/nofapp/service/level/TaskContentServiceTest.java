@@ -84,6 +84,24 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
     }
 
     @Test
+    void updateTest() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var newTitle = "new title";
+        final var newTaskContent = TaskContentTestUtils.getBlankEntity(file);
+        newTaskContent.setId(taskContent.getId());
+        newTaskContent.setTitle(newTitle);
+
+        taskContentService.update(level.getId(), task.getId(), newTaskContent);
+
+        final var result = taskContentRepository.findAll();
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getTitle()).isEqualTo(newTitle);
+    }
+
+    @Test
     void deleteByLevelIdAndTaskIdTest() throws IOException {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
