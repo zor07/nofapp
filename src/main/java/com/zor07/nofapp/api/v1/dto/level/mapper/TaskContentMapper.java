@@ -31,14 +31,15 @@ public interface TaskContentMapper {
 
     @Mappings({
             @Mapping(target = "fileUri", expression = "java(getFileUri(entity))"),
+            @Mapping(target = "data", expression = "java(fromString(entity.getData()))"),
     })
-    TaskContentDto toDto(final TaskContent entity);
+    TaskContentDto toDto(final TaskContent entity) throws JsonProcessingException;
 
 
     @Mappings({
             @Mapping(target = "id", expression = "java(dto.id())"),
             @Mapping(target = "title", expression = "java(dto.title())"),
-            @Mapping(target = "data", ignore = true),
+            @Mapping(target = "data", expression = "java(fromJsonNode(dto.data()))"),
             @Mapping(target = "file", ignore = true),
     })
     TaskContent toEntity(final TaskContentDto dto);
