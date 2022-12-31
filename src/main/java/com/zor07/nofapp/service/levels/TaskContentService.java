@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 @Validated
@@ -44,6 +45,16 @@ public class TaskContentService {
         final var taskContent =  repository.save(content);
         task.setTaskContent(taskContent);
         taskRepository.save(task);
+    }
+
+    public void update(final Long levelId,
+                       final Long taskId,
+                       final @Valid TaskContent content) {
+        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
+        if (task.getTaskContent() == null || !Objects.equals(task.getTaskContent().getId(), taskId)) {
+            throw new IllegalArgumentException("wrong task content");
+        }
+        repository.save(content);
     }
 
     @Transactional
