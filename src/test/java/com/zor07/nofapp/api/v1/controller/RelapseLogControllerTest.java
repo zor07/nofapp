@@ -5,7 +5,6 @@ import com.zor07.nofapp.api.v1.dto.profile.RelapseLogDto;
 import com.zor07.nofapp.entity.profile.RelapseLog;
 import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.profile.RelapseLogRepository;
-import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +37,6 @@ public class RelapseLogControllerTest extends AbstractApiTest {
 
     @Autowired
     private RelapseLogRepository relapseLogRepository;
-    @Autowired
-    private UserRepository userRepository;
-
 
     @BeforeMethod
     @AfterClass
