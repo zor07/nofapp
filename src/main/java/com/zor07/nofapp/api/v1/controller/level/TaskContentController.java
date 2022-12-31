@@ -76,10 +76,10 @@ public class TaskContentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/video")
+    @PostMapping(value = "/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Uploads video to task")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successfully uploaded task"),
+            @ApiResponse(code = 200, message = "Successfully uploaded video"),
             @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
@@ -88,7 +88,7 @@ public class TaskContentController {
                                             final @PathVariable Long taskId,
                                             @RequestParam("file") MultipartFile file) throws IOException {
         taskContentService.addVideo(levelId, taskId, file);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(
