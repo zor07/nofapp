@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -106,10 +107,20 @@ public class TaskContentControllerTest extends AbstractApiTest {
     @Test
     void deleteTaskContentTest() throws Exception  {
         //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
         //when
+        mvc.perform(delete(url(level.getId(), task.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isNoContent())
+                .andReturn().getResponse().getContentAsString();
 
         //then
+        assertThat(taskContentRepository.findAll()).isEmpty();
     }
 
 
@@ -195,68 +206,4 @@ public class TaskContentControllerTest extends AbstractApiTest {
     private String videoUrl(final Long levelId, final Long taskId) {
         return String.format(TASK_CONTENT_VIDEO_ENDPOINT, levelId, taskId);
     }
-
-//    @Test
-//    void saveTest() {
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
-//        final var taskContent = TaskContentTestUtils.getBlankEntity(file);
-//
-//        taskContentService.save(taskContent);
-//
-//        final var result = taskContentRepository.findAll();
-//        assertThat(result).hasSize(1);
-//        TaskContentTestUtils.checkEntity(result.get(0), taskContent, false);
-//    }
-//
-//    @Test
-//    void deleteByLevelIdAndTaskIdTest() throws IOException {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-//        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
-//
-//        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
-//        final var data = Files.toByteArray(srcFile);
-//        s3.persistObject(file.getBucket(), file.getKey(), data);
-//
-//        assertThat(taskContentRepository.findAll()).isNotEmpty();
-//        assertThat(s3.findObjects(file.getBucket(), "")).isNotEmpty();
-//
-//        taskContentService.deleteByLevelIdAndTaskId(level.getId(), task.getId());
-//
-//        assertThat(taskContentRepository.findAll()).isEmpty();
-//        assertThat(s3.findObjects(file.getBucket(), "")).isEmpty();
-//    }
-//
-//    @Test
-//    void addVideoTest() throws IOException {
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null));
-//        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
-//
-//        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
-//        final var data = Files.toByteArray(srcFile);
-//        final var multipartFile= new MockMultipartFile(
-//                "file",
-//                "hello.txt",
-//                MediaType.TEXT_PLAIN_VALUE,
-//                data
-//        );
-//
-//        assertThat(fileRepository.findAll()).isEmpty();
-//        assertThat(s3.findObjects(TASK_BUCKET, "")).isEmpty();
-//
-//        taskContentService.addVideo(level.getId(), task.getId(), multipartFile);
-//
-//        final var updatedTaskContent = taskContentRepository.getById(taskContent.getId());
-//        final var file = updatedTaskContent.getFile();
-//        assertThat(file.getBucket()).isEqualTo(TASK_BUCKET);
-//        assertThat(file.getPrefix()).isEqualTo(String.format("%s-%s", task.getLevel().getId(), task.getId()));
-//        assertThat(file.getKey()).startsWith(String.format("%s/%s_", task.getId(), TASK_FILE_KEY));
-//        assertThat(file.getMime()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
-//        assertThat(file.getSize()).isEqualTo(multipartFile.getSize());
-//
-//        assertThat(s3.readObject(TASK_BUCKET, file.getKey())).containsExactly(data);
-//    }
-
 }
