@@ -9,7 +9,6 @@ import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.profile.ProfileRepository;
 import com.zor07.nofapp.repository.profile.RelapseLogRepository;
-import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,6 @@ public class ProfileControllerTest extends AbstractApiTest {
     private @Autowired ProfileRepository profileRepository;
     private @Autowired RelapseLogRepository relapseLogRepository;
     private @Autowired UserService userService;
-    private @Autowired UserRepository userRepository;
     private @Autowired S3Service s3;
 
     @Test
