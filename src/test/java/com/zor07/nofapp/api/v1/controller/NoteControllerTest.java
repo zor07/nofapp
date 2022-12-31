@@ -7,7 +7,6 @@ import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;
 import com.zor07.nofapp.repository.notes.NoteRepository;
 import com.zor07.nofapp.repository.notes.NotebookRepository;
-import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -42,8 +41,6 @@ public class NoteControllerTest extends AbstractApiTest {
   private NotebookRepository notebookRepository;
   @Autowired
   private NoteRepository noteRepository;
-  @Autowired
-  private UserRepository userRepository;
 
   private Notebook createNotebook(final String username) {
     final var user = userService.getUser(username);
