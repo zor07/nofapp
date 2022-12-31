@@ -7,20 +7,19 @@ import com.zor07.nofapp.api.v1.dto.practice.PracticeDto;
 import com.zor07.nofapp.api.v1.dto.practice.mapper.PracticeMapper;
 import com.zor07.nofapp.entity.practice.Practice;
 import com.zor07.nofapp.entity.practice.PracticeTag;
-import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.practice.UserPractice;
 import com.zor07.nofapp.entity.practice.UserPracticeKey;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.practice.PracticeRepository;
 import com.zor07.nofapp.repository.practice.PracticeTagRepository;
-import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.practice.UserPracticeRepository;
+import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.security.UserRole;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
@@ -29,7 +28,10 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.zor07.nofapp.test.UserTestUtils.*;
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_ROLE;
+import static com.zor07.nofapp.test.UserTestUtils.createAdminRole;
+import static com.zor07.nofapp.test.UserTestUtils.createRole;
+import static com.zor07.nofapp.test.UserTestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -59,8 +61,6 @@ public class PracticeControllerTest extends AbstractApiTest {
     private @Autowired UserRepository userRepository;
     private @Autowired RoleRepository roleRepository;
     private @Autowired PracticeMapper practiceMapper;
-
-    private MockMvc mvc;
 
     private void clearDb() {
         userPracticeRepository.deleteAll();
