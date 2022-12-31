@@ -73,13 +73,6 @@ public class TaskControllerTest extends AbstractApiTest {
         roleRepository.deleteAll();
     }
 
-    private String url(final Long levelId) {
-        return String.format(TASKS_ENDPOINT, levelId);
-    }
-    private String url(final Long levelId, final Long taskId) {
-        return String.format(TASK_ENDPOINT, levelId, taskId);
-    }
-
     @Test
     void getAllByLevelIdTest() throws Exception {
         //given
@@ -263,4 +256,13 @@ public class TaskControllerTest extends AbstractApiTest {
         //then
         assertThat(taskRepository.findAll()).isEmpty();
     }
+
+    private String url(final Long levelId) {
+        return String.format(TASKS_ENDPOINT, levelId);
+    }
+
+    private String url(final Long levelId, final Long taskId) {
+        return String.format(TASK_ENDPOINT, levelId, taskId);
+    }
+
 }
