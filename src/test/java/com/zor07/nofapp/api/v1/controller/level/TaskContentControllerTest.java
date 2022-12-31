@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
+import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
@@ -10,7 +11,12 @@ import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.spring.AbstractApiTest;
+import com.zor07.nofapp.test.LevelTestUtils;
+import com.zor07.nofapp.test.TaskContentTestUtils;
+import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
@@ -18,7 +24,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskContentControllerTest extends AbstractApiTest {
 
@@ -82,7 +92,33 @@ public class TaskContentControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void createTaskContentTest() {
+    void createTaskContentTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(null, level));
+        final var dto = TaskContentTestUtils.getBlankDto();
+
+        //when
+        final var content = mvc.perform(post(url(level.getId(), task.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var taskContentDto = objectMapper.readValue(content, TaskContentDto.class);
+        assertThat(taskContentDto.id()).isNotNull();
+        assertThat(taskContentDto.data()).isNull();
+        assertThat(taskContentDto.fileUri()).isNull();
+        assertThat(taskContentDto.title()).isEqualTo(dto.title());
+
+        final var
+    }
+
+    @Test
+    void deleteTaskContentTest() throws Exception  {
         //given
 
         //when
@@ -90,18 +126,9 @@ public class TaskContentControllerTest extends AbstractApiTest {
         //then
     }
 
-    @Test
-    void deleteTaskContentTest() {
-        //given
-
-        //when
-
-        //then
-    }
-
 
     @Test
-    void uploadVideoTest() {
+    void uploadVideoTest() throws Exception {
         //given
 
         //when
@@ -111,7 +138,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void updateTaskContentTest() {
+    void updateTaskContentTest() throws Exception  {
         //given
 
         //when

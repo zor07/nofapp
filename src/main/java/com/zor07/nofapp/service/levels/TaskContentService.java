@@ -36,8 +36,14 @@ public class TaskContentService {
         this.s3 = s3;
     }
 
-    public void save(final @Valid TaskContent content) {
-        repository.save(content);
+    @Transactional
+    public void save(final Long levelId,
+                     final Long taskId,
+                     final @Valid TaskContent content) {
+        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
+        final var taskContent =  repository.save(content);
+        task.setTaskContent(taskContent);
+        taskRepository.save(task);
     }
 
     @Transactional
