@@ -12,6 +12,7 @@ import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
+import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,7 @@ import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskContentControllerTest extends AbstractApiTest {
@@ -129,33 +131,36 @@ public class TaskContentControllerTest extends AbstractApiTest {
 
     @Test
     void updateTaskContentTest() throws Exception  {
-//        //given
-//        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
-//        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-//        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null))
-//        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
-//
-////        final var newTaskContent = TaskContentTestUtils.get
-//
-//        //when
-//        mvc.perform(post(url(level.getId(), task.getId()))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto))
-//                        .header(HttpHeaders.AUTHORIZATION, authHeader))
-//                .andExpect(status().isCreated())
-//                .andReturn().getResponse().getContentAsString();
-//
-//        //then
-//        final var all = taskContentRepository.findAll();
-//        final var taskContent = all.get(0);
-//        assertThat(all).hasSize(1);
-//        assertThat(taskContent.getId()).isNotNull();
-//        assertThat(taskContent.getData()).isNull();
-//        assertThat(taskContent.getFile()).isNull();
-//        assertThat(taskContent.getTitle()).isEqualTo(dto.title());
-//
-//        final var updatedTask = taskRepository.findAll().get(0);
-//        assertThat(updatedTask.getTaskContent().getId()).isEqualTo(taskContent.getId());
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var taskContentToSave = TaskContentTestUtils.getBlankEntity(null);
+        taskContentToSave.setData(null);
+        final var taskContent = taskContentRepository.save(taskContentToSave);
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+
+        final var taskContentToUpdate = TaskContentTestUtils.getBlankEntity(null);
+        taskContentToUpdate.setId(taskContent.getId());
+
+        //when
+        mvc.perform(put(urlId(level.getId(), task.getId(), taskContent.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskContentMapper.toDto(taskContentToUpdate)))
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var all = taskContentRepository.findAll();
+        final var result = all.get(0);
+        assertThat(all).hasSize(1);
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getData()).isEqualTo(taskContentToUpdate.getData());
+        assertThat(result.getFile()).isNull();
+        assertThat(result.getTitle()).isEqualTo(taskContentToUpdate.getTitle());
+
+        final var updatedTask = taskRepository.findAll().get(0);
+        assertThat(updatedTask.getTaskContent().getId()).isEqualTo(result.getId());
     }
 
 
