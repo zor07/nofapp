@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -56,8 +55,6 @@ public class TimerControllerTest extends AbstractApiTest {
 
   @Autowired
   private TimerRepository timerRepository;
-  @Autowired
-  private WebApplicationContext context;
   @Autowired
   private UserRepository userRepository;
   @Autowired
