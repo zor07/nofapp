@@ -69,14 +69,18 @@ public class TaskContentServiceTest extends AbstractApplicationTest {
 
     @Test
     void saveTest() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var file = fileRepository.save(FileTestUtils.getBlankEntity(TASK_BUCKET));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(null, level));
         final var taskContent = TaskContentTestUtils.getBlankEntity(file);
 
-        taskContentService.save(taskContent);
+        taskContentService.save(level.getId(), task.getId(), taskContent);
 
         final var result = taskContentRepository.findAll();
         assertThat(result).hasSize(1);
         TaskContentTestUtils.checkEntity(result.get(0), taskContent, false);
+        final var udpatedTask = taskRepository.getById(task.getId());
+        assertThat(udpatedTask.getTaskContent().getId()).isEqualTo(result.get(0).getId());
     }
 
     @Test
