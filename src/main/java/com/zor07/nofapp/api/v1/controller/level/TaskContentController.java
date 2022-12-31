@@ -54,7 +54,7 @@ public class TaskContentController {
                                                             final @PathVariable Long taskId,
                                                             final @RequestBody TaskContentDto taskContentDto) {
 
-        taskContentService.save(taskContentMapper.toEntity(taskContentDto));
+        taskContentService.save(levelId, taskId, taskContentMapper.toEntity(taskContentDto));
         final var uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(String.format("/api/v1/levels/%d/tasks/%d", levelId, taskId))
