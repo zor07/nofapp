@@ -51,6 +51,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
     private static final String TASK_BUCKET = "task";
     private static final String TASK_FILE_KEY= "task_file";
     private static final String TASK_CONTENT_ENDPOINT  = "/api/v1/levels/%d/tasks/%d/content";
+    private static final String TASK_CONTENT_ID_ENDPOINT  = TASK_CONTENT_ENDPOINT + "/%d";
     private static final String TASK_CONTENT_VIDEO_ENDPOINT  = TASK_CONTENT_ENDPOINT + "/video";
 
     @BeforeMethod
@@ -129,16 +130,38 @@ public class TaskContentControllerTest extends AbstractApiTest {
     @Test
     void updateTaskContentTest() throws Exception  {
         //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(null, level));
+        final var dto = TaskContentTestUtils.getBlankDto();
 
         //when
-        // - /taskContentId
+        mvc.perform(post(url(level.getId(), task.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto))
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
 
         //then
+        final var all = taskContentRepository.findAll();
+        final var taskContent = all.get(0);
+        assertThat(all).hasSize(1);
+        assertThat(taskContent.getId()).isNotNull();
+        assertThat(taskContent.getData()).isNull();
+        assertThat(taskContent.getFile()).isNull();
+        assertThat(taskContent.getTitle()).isEqualTo(dto.title());
+
+        final var updatedTask = taskRepository.findAll().get(0);
+        assertThat(updatedTask.getTaskContent().getId()).isEqualTo(taskContent.getId());
     }
 
 
     private String url(final Long levelId, final Long taskId) {
         return String.format(TASK_CONTENT_ENDPOINT, levelId, taskId);
+    }
+    private String urlId(final Long levelId, final Long taskId, final Long taskContentId) {
+        return String.format(TASK_CONTENT_ID_ENDPOINT, levelId, taskId, taskContentId);
     }
 
     private String videoUrl(final Long levelId, final Long taskId) {
