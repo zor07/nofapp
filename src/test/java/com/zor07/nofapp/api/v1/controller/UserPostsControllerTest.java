@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -54,8 +53,6 @@ public class UserPostsControllerTest extends AbstractApiTest {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-
-    private @Autowired WebApplicationContext context;
 
 
     @Test
