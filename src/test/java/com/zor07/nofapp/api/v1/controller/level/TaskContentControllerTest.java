@@ -9,7 +9,6 @@ import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
-import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
@@ -17,7 +16,9 @@ import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.testcontainers.shaded.com.google.common.io.Files;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskContentControllerTest extends AbstractApiTest {
@@ -39,8 +41,6 @@ public class TaskContentControllerTest extends AbstractApiTest {
     private LevelRepository levelRepository;
     @Autowired
     private TaskRepository taskRepository;
-    @Autowired
-    private TaskContentService taskContentService;
     @Autowired
     private S3Service s3;
     @Autowired
@@ -101,7 +101,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
         final var taskContent = all.get(0);
         assertThat(all).hasSize(1);
         assertThat(taskContent.getId()).isNotNull();
-        assertThat(taskContent.getData()).isNull();
+        assertThat(taskContent.getData()).isEqualTo("null");
         assertThat(taskContent.getFile()).isNull();
         assertThat(taskContent.getTitle()).isEqualTo(dto.title());
 
@@ -122,11 +122,38 @@ public class TaskContentControllerTest extends AbstractApiTest {
     @Test
     void uploadVideoTest() throws Exception {
         //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
+        final var data = Files.toByteArray(srcFile);
+
+        final var multipartFile = new MockMultipartFile(
+                "file",
+                "logback-test.xml",
+                "text/plain",
+                data
+        );
 
         //when
-        // - /taskContentId
+        mvc.perform(multipart(videoUrl(level.getId(), task.getId()))
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         //then
+        final var updatedTaskContent = taskContentRepository.getById(taskContent.getId());
+        final var file = updatedTaskContent.getFile();
+        assertThat(file.getBucket()).isEqualTo(TASK_BUCKET);
+        assertThat(file.getPrefix()).isEqualTo(String.format("%s-%s", task.getLevel().getId(), task.getId()));
+        assertThat(file.getKey()).startsWith(String.format("%s/%s_", task.getId(), TASK_FILE_KEY));
+        assertThat(file.getMime()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
+        assertThat(file.getSize()).isEqualTo(multipartFile.getSize());
+
+        assertThat(s3.readObject(TASK_BUCKET, file.getKey())).containsExactly(data);
     }
 
     @Test
