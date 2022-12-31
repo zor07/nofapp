@@ -112,7 +112,7 @@ public class TaskContentController {
             !Objects.equals(task.getId(), taskContentId)) {
             return ResponseEntity.badRequest().build();
         }
-        taskContentService.save(taskContentMapper.toEntity(taskDto));
+        taskContentService.update(levelId, taskId, taskContentMapper.toEntity(taskDto));
         return ResponseEntity.accepted().build();
     }
 
