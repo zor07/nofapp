@@ -1,10 +1,18 @@
 package com.zor07.nofapp.entity.level;
 
 import com.zor07.nofapp.entity.file.File;
-import com.zor07.nofapp.validation.JsonString;
+import com.zor07.nofapp.validation.NullableJsonString;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "task_content", schema = "public")
@@ -30,7 +38,7 @@ public class TaskContent {
 
     @Type(type = "json")
     @Column(columnDefinition = "jsonb")
-    @JsonString
+    @NullableJsonString
     private String data;
 
     public TaskContent() {
