@@ -16,6 +16,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -80,11 +81,45 @@ public class TaskContentControllerTest extends AbstractApiTest {
         }
     }
 
+    @Test
+    void createTaskContentTest() {
+        //given
 
-    // POST createTaskContent
-    // DELETE deleteTaskContent
-    // POST /video uploadVideo
-    // PUT /taskContentId updateTaskContent
+        //when
+
+        //then
+    }
+
+    @Test
+    void deleteTaskContentTest() {
+        //given
+
+        //when
+
+        //then
+    }
+
+
+    @Test
+    void uploadVideoTest() {
+        //given
+
+        //when
+        // - /taskContentId
+
+        //then
+    }
+
+    @Test
+    void updateTaskContentTest() {
+        //given
+
+        //when
+        // - /taskContentId
+
+        //then
+    }
+
 
     private String url(final Long levelId, final Long taskId) {
         return String.format(TASK_CONTENT_ENDPOINT, levelId, taskId);
