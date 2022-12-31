@@ -19,6 +19,9 @@ public class TaskContentTestUtils {
 
     private static final String FILE_URI = "asdasd/asdads";
 
+    public static TaskContentDto getBlankDto() throws IOException {
+        return new TaskContentDto(null, TITLE, FILE_URI, new ObjectMapper().readTree(DATA));
+    }
     public static TaskContentDto getBlankDto(final Long id) throws IOException {
         return new TaskContentDto(id, TITLE, FILE_URI, new ObjectMapper().readTree(DATA));
     }
