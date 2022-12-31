@@ -13,7 +13,6 @@ import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.AfterClass;
@@ -22,7 +21,9 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static com.zor07.nofapp.test.UserTestUtils.*;
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_ROLE;
+import static com.zor07.nofapp.test.UserTestUtils.createRole;
+import static com.zor07.nofapp.test.UserTestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -49,8 +50,6 @@ public class NoteControllerTest extends AbstractApiTest {
   private UserRepository userRepository;
   @Autowired
   private RoleRepository roleRepository;
-
-  private MockMvc mvc;
 
   private Notebook createNotebook(final String username) {
     final var user = userService.getUser(username);
