@@ -9,7 +9,6 @@ import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.notes.NoteRepository;
 import com.zor07.nofapp.repository.notes.NotebookRepository;
 import com.zor07.nofapp.repository.profile.UserPostsRepository;
-import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApiTest;
@@ -51,8 +50,6 @@ public class UserPostsControllerTest extends AbstractApiTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
 
 
     @Test
