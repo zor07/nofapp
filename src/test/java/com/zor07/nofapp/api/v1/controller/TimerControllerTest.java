@@ -3,8 +3,6 @@ package com.zor07.nofapp.api.v1.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.entity.timer.Timer;
 import com.zor07.nofapp.repository.timer.TimerRepository;
-import com.zor07.nofapp.repository.user.RoleRepository;
-import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -55,10 +53,6 @@ public class TimerControllerTest extends AbstractApiTest {
 
   @Autowired
   private TimerRepository timerRepository;
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private RoleRepository roleRepository;
 
   private void clearDb() {
     timerRepository.deleteAll();
