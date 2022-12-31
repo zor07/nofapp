@@ -1,9 +1,7 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
 import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
-import com.zor07.nofapp.api.v1.dto.level.mapper.LevelMapper;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
-import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.aws.s3.S3Service;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
@@ -26,9 +24,9 @@ import org.testng.annotations.Test;
 import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskContentControllerTest extends AbstractApiTest {
@@ -44,11 +42,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
     @Autowired
     private S3Service s3;
     @Autowired
-    private TaskMapper taskMapper;
-    @Autowired
     private TaskContentMapper taskContentMapper;
-    @Autowired
-    private LevelMapper levelMapper;
 
     private static final String TASK_BUCKET = "task";
     private static final String TASK_FILE_KEY= "task_file";
