@@ -2,7 +2,6 @@ package com.zor07.nofapp.api.v1.controller.level;
 
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
-import com.zor07.nofapp.api.v1.dto.notes.NoteDto;
 import com.zor07.nofapp.service.levels.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +38,7 @@ public class TaskController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Gets tasks of level", response = NoteDto.class)
+    @ApiOperation(value = "Gets tasks of level", response = TaskDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved tasks"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -78,7 +77,7 @@ public class TaskController {
 
 
     @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Gets tasks of level", response = NoteDto.class)
+    @ApiOperation(value = "Gets tasks of level", response = TaskDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved tasks"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
