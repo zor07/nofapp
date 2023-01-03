@@ -1,6 +1,7 @@
 package com.zor07.nofapp.service.levels;
 
 import com.zor07.nofapp.entity.level.Task;
+import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,12 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository repository;
+    private final LevelRepository levelRepository;
 
-    public TaskService(final TaskRepository repository) {
+    public TaskService(final TaskRepository repository,
+                       final LevelRepository levelRepository) {
         this.repository = repository;
+        this.levelRepository = levelRepository;
     }
 
     public List<Task> getAllByLevelId(final Long levelId) {
@@ -26,7 +30,10 @@ public class TaskService {
     }
 
 
-    public Task save(final Task task) {
+    @Transactional
+    public Task save(Long levelId, final Task task) {
+        final var level = levelRepository.getById(levelId);
+        task.setLevel(level);
         return repository.save(task);
     }
 

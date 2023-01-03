@@ -64,10 +64,7 @@ public class TaskController {
     })
     public ResponseEntity<TaskDto> createTask(final @PathVariable Long levelId,
                                               final @RequestBody TaskDto taskDto) {
-        if (!Objects.equals(taskDto.level().id(), levelId)) {
-            return ResponseEntity.badRequest().build();
-        }
-        final var task = taskService.save(taskMapper.toEntity(taskDto));
+        final var task = taskService.save(levelId, taskMapper.toEntity(taskDto));
         final var uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(String.format("/api/v1/levels/%d/tasks/%d", levelId, task.getId()))
@@ -108,11 +105,10 @@ public class TaskController {
     public ResponseEntity<TaskDto> updateTask(final @PathVariable Long levelId,
                                               final @PathVariable Long taskId,
                                               final @RequestBody TaskDto taskDto) {
-        if (!Objects.equals(taskDto.level().id(), levelId) &&
-            !Objects.equals(taskDto.id(), taskId)) {
+        if (!Objects.equals(taskDto.id(), taskId)) {
             return ResponseEntity.badRequest().build();
         }
-        final var task = taskService.save(taskMapper.toEntity(taskDto));
+        final var task = taskService.save(levelId, taskMapper.toEntity(taskDto));
         return ResponseEntity.accepted().body(taskMapper.toDto(task));
     }
 
