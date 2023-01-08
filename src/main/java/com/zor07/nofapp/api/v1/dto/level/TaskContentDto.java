@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public record TaskContentDto(
         Long id,
+        TaskDto task,
+        Integer order,
         String title,
         String fileUri,
         JsonNode data

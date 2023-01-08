@@ -31,6 +31,13 @@ public class TaskContent {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "task_id", referencedColumnName = "id")
+    private Task task;
+
+    @Column(name="\"order\"")
+    private Integer order;
+
+    @OneToOne
     @JoinColumn(name = "file_id", referencedColumnName = "id")
     private File file;
 
@@ -44,8 +51,15 @@ public class TaskContent {
     public TaskContent() {
     }
 
-    public TaskContent(Long id, File file, String title, String data) {
+    public TaskContent(final Long id,
+                       final Task task,
+                       final Integer order,
+                       final File file,
+                       final String title,
+                       final String data) {
         this.id = id;
+        this.task = task;
+        this.order = order;
         this.file = file;
         this.title = title;
         this.data = data;
@@ -57,6 +71,22 @@ public class TaskContent {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
     public File getFile() {

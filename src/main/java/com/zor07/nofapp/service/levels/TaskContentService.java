@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -37,55 +38,74 @@ public class TaskContentService {
         this.s3 = s3;
     }
 
+    public List<TaskContent> getTaskContent(final Long levelId,
+                                            final Long taskId) {
+        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
+        return repository.findAllByTaskId(task.getId());
+    }
+
     @Transactional
     public void save(final Long levelId,
                      final Long taskId,
                      final @Valid TaskContent content) {
         final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
-        final var taskContent =  repository.save(content);
-        task.setTaskContent(taskContent);
-        taskRepository.save(task);
+        content.setTask(task);
+        repository.save(content);
     }
 
     public void update(final Long levelId,
                        final Long taskId,
                        final @Valid TaskContent content) {
         final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
-        if (task.getTaskContent() == null || !Objects.equals(task.getTaskContent().getId(), taskId)) {
+        if (content.getTask() == null || !Objects.equals(content.getTask().getId(), task.getId())) {
             throw new IllegalArgumentException("wrong task content");
         }
         repository.save(content);
     }
 
     @Transactional
-    public void deleteByLevelIdAndTaskId(final Long levelId, final Long taskId) {
-        final var task = taskRepository.getById(taskId);
-        final var taskContentId = task.getTaskContent().getId();
-        if (taskContentId != null) {
-            final var taskContent = repository.getById(taskContentId);
-            final var file = taskContent.getFile();
-            if (file != null) {
-                s3.deleteObject(file.getBucket(), file.getKey());
-            }
-        }
-
-        repository.deleteByLevelIdAndTaskId(levelId, taskId);
+    public void deleteTaskContent(final Long levelId,
+                                  final Long taskId,
+                                  final Long taskContentId) {
+        getTaskData(levelId, taskId, taskContentId);
+        repository.deleteById(taskContentId);
     }
 
     @Transactional
     public void addVideo(final Long levelId,
                          final Long taskId,
+                         final Long taskContentId,
                          final MultipartFile data) throws IOException {
-        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
-        final var taskContentId = task.getTaskContent().getId();
+        final var taskData = getTaskData(levelId, taskId, taskContentId);
         final var taskContent = repository.getById(taskContentId);
         final var bytes = data.getBytes();
-        final var key = getFileKey(task.getId(), bytes);
-        final var file = fileRepository.save(createFile(task, data, key));
+        final var key = getFileKey(taskData.task.getId(), bytes);
+        final var file = fileRepository.save(createFile(taskData.task, data, key));
 
         s3.persistObject(TASK_BUCKET, key, bytes);
         taskContent.setFile(file);
         repository.save(taskContent);
+    }
+
+    private TaskData getTaskData(final Long levelId,
+                                 final Long taskId,
+                                 final Long taskContentId) {
+        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
+        final var taskContent = repository.getById(taskContentId);
+        if (!Objects.equals(task.getId(), taskContent.getTask().getId())) {
+            throw new IllegalArgumentException("Wrong task content");
+        }
+        return new TaskData(task, taskContent);
+    }
+
+    private static class TaskData {
+        private Task task;
+        private TaskContent taskContent;
+
+        public TaskData(Task task, TaskContent taskContent) {
+            this.task = task;
+            this.taskContent = taskContent;
+        }
     }
 
     private File createFile(final Task task, final MultipartFile data, final String key) {

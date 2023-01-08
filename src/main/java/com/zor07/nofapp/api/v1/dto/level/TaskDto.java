@@ -6,8 +6,7 @@ public record TaskDto(
         String name,
         String description,
         Integer order,
-        LevelDto level,
-        TaskContentDto taskContent
+        LevelDto level
 ) {
 
 }

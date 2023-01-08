@@ -24,8 +24,6 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
                              references="level(id)"/>
             </column>
 
-            <column name="task_content_id" type="int"/>
-
             <column name="order" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -39,14 +37,5 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
             </column>
 
         </createTable>
-
-        <addForeignKeyConstraint baseTableName="task"
-                                 baseColumnNames="task_content_id"
-                                 constraintName="fk_task_content_id"
-                                 referencedTableName="task_content"
-                                 referencedColumnNames="id"
-                                 onDelete="SET NULL" />
     </changeSet>
-
-
 </databaseChangeLog>
