@@ -7,8 +7,8 @@ import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,8 +24,8 @@ public class TaskContentRepositoryTest extends AbstractApplicationTest {
     @Autowired
     private TaskRepository taskRepository;
 
-    @BeforeClass
-    @AfterTest
+    @BeforeMethod
+    @AfterClass
     void clearDb() {
         taskContentRepository.deleteAll();
         taskRepository.deleteAll();
@@ -36,7 +36,9 @@ public class TaskContentRepositoryTest extends AbstractApplicationTest {
     @Test
     void testCrud() {
         final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = TaskContentTestUtils.getBlankEntity(file);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        final var taskContent = TaskContentTestUtils.getBlankEntity(task, file);
         final var all = taskContentRepository.findAll();
         assertThat(all).isEmpty();
 
@@ -56,14 +58,33 @@ public class TaskContentRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
-    void deleteByTaskIdTest() {
+    void findAllByTaskIdTest() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
+        taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
+        taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
 
-        taskContentRepository.deleteByLevelIdAndTaskId(task.getLevel().getId(), task.getId());
+        taskContentRepository.findAllByTaskId(task.getId());
 
-        assertThat(taskContentRepository.findAll()).isEmpty();
+        final var all = taskContentRepository.findAll();
+        assertThat(all).hasSize(3);
+
+        final var resultTaskContent = all.get(0);
+        assertThat(resultTaskContent.getId()).isNotNull();
+        assertThat(resultTaskContent.getTitle()).isEqualTo(TaskContentTestUtils.TITLE);
+        assertThat(resultTaskContent.getData()).isEqualTo(TaskContentTestUtils.DATA);
+        assertThat(resultTaskContent.getOrder()).isEqualTo(TaskContentTestUtils.ORDER);
+
+        final var resultTask = resultTaskContent.getTask();
+        assertThat(resultTask.getId()).isEqualTo(task.getId());
+        assertThat(resultTask.getOrder()).isEqualTo(task.getOrder());
+        assertThat(resultTask.getName()).isEqualTo(task.getName());
+
+        final var resultLevel = resultTask.getLevel();
+        assertThat(resultLevel.getId()).isEqualTo(level.getId());
+        assertThat(resultLevel.getOrder()).isEqualTo(level.getOrder());
+        assertThat(resultLevel.getName()).isEqualTo(level.getName());
     }
 }

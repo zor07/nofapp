@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
 import com.zor07.nofapp.aws.s3.S3Service;
@@ -8,6 +9,7 @@ import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
+import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
@@ -21,6 +23,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -28,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskContentControllerTest extends AbstractApiTest {
@@ -49,7 +54,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
     private static final String TASK_FILE_KEY= "task_file";
     private static final String TASK_CONTENT_ENDPOINT  = "/api/v1/levels/%d/tasks/%d/content";
     private static final String TASK_CONTENT_ID_ENDPOINT  = TASK_CONTENT_ENDPOINT + "/%d";
-    private static final String TASK_CONTENT_VIDEO_ENDPOINT  = TASK_CONTENT_ENDPOINT + "/video";
+    private static final String TASK_CONTENT_VIDEO_ENDPOINT  = TASK_CONTENT_ID_ENDPOINT + "/video";
 
     @BeforeMethod
     public void setup() {
@@ -64,8 +69,8 @@ public class TaskContentControllerTest extends AbstractApiTest {
 
     @AfterClass
     void tearDown() {
-        taskRepository.deleteAll();
         taskContentRepository.deleteAll();
+        taskRepository.deleteAll();
         fileRepository.deleteAll();
         levelRepository.deleteAll();
         userRepository.deleteAll();
@@ -76,12 +81,52 @@ public class TaskContentControllerTest extends AbstractApiTest {
     }
 
     @Test
+    void getTaskContentsTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
+        taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
+        taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
+
+        //when
+        final var content = mvc.perform(get(url(level.getId(), task.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var all = objectMapper.readValue(content, new TypeReference<List<TaskContentDto>>(){});
+        assertThat(all).hasSize(3);
+
+        final var resultTaskContent = all.get(0);
+        assertThat(resultTaskContent.id()).isNotNull();
+        assertThat(resultTaskContent.title()).isEqualTo(TaskContentTestUtils.TITLE);
+        assertThat(resultTaskContent.data()).isEqualTo(objectMapper.readTree(TaskContentTestUtils.DATA));
+        assertThat(resultTaskContent.order()).isEqualTo(TaskContentTestUtils.ORDER);
+        assertThat(resultTaskContent.fileUri()).isEqualTo(String.format("%s/%s", file.getBucket(), file.getKey()));
+
+        final var resultTask = resultTaskContent.task();
+        assertThat(resultTask.id()).isEqualTo(task.getId());
+        assertThat(resultTask.order()).isEqualTo(task.getOrder());
+        assertThat(resultTask.name()).isEqualTo(task.getName());
+
+        final var resultLevel = resultTask.level();
+        assertThat(resultLevel.id()).isEqualTo(level.getId());
+        assertThat(resultLevel.order()).isEqualTo(level.getOrder());
+        assertThat(resultLevel.name()).isEqualTo(level.getName());
+    }
+
+    @Test
     void createTaskContentTest() throws Exception {
         //given
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var task = taskRepository.save(TaskTestUtils.getBlankEntity(null, level));
-        final var dto = new TaskContentDto(null, "title", null, null);
+        final var dto = new TaskContentDto(null, null, 1, "title", null, null);
 
         //when
         mvc.perform(post(url(level.getId(), task.getId()))
@@ -99,9 +144,6 @@ public class TaskContentControllerTest extends AbstractApiTest {
         assertThat(taskContent.getData()).isEqualTo("null");
         assertThat(taskContent.getFile()).isNull();
         assertThat(taskContent.getTitle()).isEqualTo(dto.title());
-
-        final var updatedTask = taskRepository.findAll().get(0);
-        assertThat(updatedTask.getTaskContent().getId()).isEqualTo(taskContent.getId());
     }
 
     @Test
@@ -109,11 +151,11 @@ public class TaskContentControllerTest extends AbstractApiTest {
         //given
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null));
-        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, null));
 
         //when
-        mvc.perform(delete(url(level.getId(), task.getId()))
+        mvc.perform(delete(urlId(level.getId(), task.getId(), taskContent.getId()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
                 .andExpect(status().isNoContent())
@@ -129,8 +171,8 @@ public class TaskContentControllerTest extends AbstractApiTest {
         //given
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(null));
-        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, null));
         final var srcFile = new java.io.File("src/test/resources/logback-test.xml");
         final var data = Files.toByteArray(srcFile);
 
@@ -142,7 +184,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
         );
 
         //when
-        mvc.perform(multipart(videoUrl(level.getId(), task.getId()))
+        mvc.perform(multipart(videoUrl(level.getId(), task.getId(), taskContent.getId()))
                         .file(multipartFile)
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
@@ -166,12 +208,12 @@ public class TaskContentControllerTest extends AbstractApiTest {
         //given
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var taskContentToSave = TaskContentTestUtils.getBlankEntity(null);
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        final var taskContentToSave = TaskContentTestUtils.getBlankEntity(task, null);
         taskContentToSave.setData(null);
         final var taskContent = taskContentRepository.save(taskContentToSave);
-        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
 
-        final var taskContentToUpdate = TaskContentTestUtils.getBlankEntity(null);
+        final var taskContentToUpdate = TaskContentTestUtils.getBlankEntity(task, null);
         taskContentToUpdate.setId(taskContent.getId());
 
         //when
@@ -190,9 +232,6 @@ public class TaskContentControllerTest extends AbstractApiTest {
         assertThat(result.getData()).isEqualTo(taskContentToUpdate.getData());
         assertThat(result.getFile()).isNull();
         assertThat(result.getTitle()).isEqualTo(taskContentToUpdate.getTitle());
-
-        final var updatedTask = taskRepository.findAll().get(0);
-        assertThat(updatedTask.getTaskContent().getId()).isEqualTo(result.getId());
     }
 
 
@@ -203,7 +242,7 @@ public class TaskContentControllerTest extends AbstractApiTest {
         return String.format(TASK_CONTENT_ID_ENDPOINT, levelId, taskId, taskContentId);
     }
 
-    private String videoUrl(final Long levelId, final Long taskId) {
-        return String.format(TASK_CONTENT_VIDEO_ENDPOINT, levelId, taskId);
+    private String videoUrl(final Long levelId, final Long taskId, final Long taskContentId) {
+        return String.format(TASK_CONTENT_VIDEO_ENDPOINT, levelId, taskId, taskContentId);
     }
 }

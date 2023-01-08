@@ -8,10 +8,13 @@ import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.test.*;
+import com.zor07.nofapp.test.LevelTestUtils;
+import com.zor07.nofapp.test.TaskTestUtils;
+import com.zor07.nofapp.test.UserProgresTestUtils;
+import com.zor07.nofapp.test.UserTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +37,8 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
     private UserProgressRepository userProgressRepository;
 
 
-    @BeforeClass
-    @AfterTest
+    @BeforeMethod
+    @AfterClass
     void clearDb() {
         userProgressRepository.deleteAll();
         taskRepository.deleteAll();
@@ -76,8 +79,6 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
 
     private Task createTask() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-        return TaskTestUtils.getBlankEntity(taskContent, level);
+        return TaskTestUtils.getBlankEntity(level);
     }
 }

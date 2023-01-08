@@ -17,6 +17,13 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
                               nullable="false"/>
             </column>
 
+            <column name="task_id"
+                    type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_task_id"
+                             references="task(id)"/>
+            </column>
+
             <column name="file_id"
                     type="int">
                 <constraints foreignKeyName="fk_file_id"
@@ -25,6 +32,10 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
 
             <column  name="title"  type="varchar">
                 <constraints  nullable="false"/>
+            </column>
+
+            <column name="order" type="int">
+                <constraints nullable="false"/>
             </column>
 
             <column  name="data"  type="jsonb"/>

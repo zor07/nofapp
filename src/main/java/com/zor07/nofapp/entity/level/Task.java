@@ -23,10 +23,6 @@ public class Task {
     @JoinColumn(name = "level_id", referencedColumnName = "id")
     private Level level;
 
-    @OneToOne
-    @JoinColumn(name = "task_content_id", referencedColumnName = "id")
-    private TaskContent taskContent;
-
     @Column(name="\"order\"")
     private Integer order;
 
@@ -37,10 +33,13 @@ public class Task {
     public Task() {
     }
 
-    public Task(Long id, Level level, TaskContent taskContent, Integer order, String name, String description) {
+    public Task(final Long id,
+                final Level level,
+                final Integer order,
+                final String name,
+                final String description) {
         this.id = id;
         this.level = level;
-        this.taskContent = taskContent;
         this.order = order;
         this.name = name;
         this.description = description;
@@ -60,14 +59,6 @@ public class Task {
 
     public void setLevel(Level level) {
         this.level = level;
-    }
-
-    public TaskContent getTaskContent() {
-        return taskContent;
-    }
-
-    public void setTaskContent(TaskContent taskContent) {
-        this.taskContent = taskContent;
     }
 
     public Integer getOrder() {
