@@ -1,10 +1,8 @@
 package com.zor07.nofapp.test;
 
 import com.zor07.nofapp.api.v1.dto.level.LevelDto;
-import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.entity.level.Level;
-import com.zor07.nofapp.entity.level.TaskContent;
 import com.zor07.nofapp.entity.level.Task;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,31 +17,28 @@ public class TaskTestUtils {
     public static final String NEW_NAME = "new name";
     public static final String NEW_DESCRIPTION = "new description";
 
-    public static Task getBlankEntity(final TaskContent content, final Level level) {
-        return getBlankEntity(null, content, level);
+    public static Task getBlankEntity(final Level level) {
+        return getBlankEntity(null, level);
     }
 
     public static TaskDto getBlankDto(
             final Long id,
-            final TaskContentDto content,
             final LevelDto level
     ) {
-        return new TaskDto(id, NAME, DESCRIPTION, ORDER, level, content);
+        return new TaskDto(id, NAME, DESCRIPTION, ORDER, level);
     }
 
     public static Task getBlankEntity(
             final Long id,
-            final TaskContent content,
             final Level level
     ) {
-        final var task = new Task();
-        task.setId(id);
-        task.setName(NAME);
-        task.setDescription(DESCRIPTION);
-        task.setOrder(ORDER);
-        task.setTaskContent(content);
-        task.setLevel(level);
-        return task;
+        return new Task(
+                id,
+                level,
+                ORDER,
+                NAME,
+                DESCRIPTION
+        );
     }
 
     public static Task updateEntity(final Task task) {
