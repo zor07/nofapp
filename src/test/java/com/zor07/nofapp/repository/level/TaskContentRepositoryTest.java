@@ -58,7 +58,7 @@ public class TaskContentRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
-    void deleteByTaskIdTest() {
+    void findAllByTaskIdTest() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var file = fileRepository.save(FileTestUtils.getBlankEntity());
         final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
