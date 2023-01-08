@@ -1,30 +1,21 @@
 package com.zor07.nofapp.api.v1.dto.level.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.LevelTestUtils;
-import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.mapstruct.factory.Mappers;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskMapperTest {
 
     private final TaskMapper mapper = Mappers.getMapper(TaskMapper.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final Long ID = 1L;
 
     @Test
-    void toDto() throws JsonProcessingException {
+    void toDto() {
         final var level = LevelTestUtils.getBlankEntity(ID);
-        final var file = FileTestUtils.getBlankEntity();
-        final var taskContent = TaskContentTestUtils.getBlankEntity(ID, file);
-        final var entity = TaskTestUtils.getBlankEntity(ID, taskContent, level);
+        final var entity = TaskTestUtils.getBlankEntity(ID, level);
 
         final var taskDto = mapper.toDto(entity);
 
@@ -39,10 +30,9 @@ public class TaskMapperTest {
     }
 
     @Test
-    void toEntity() throws IOException {
-        final var taskContent = TaskContentTestUtils.getBlankDto(ID);
-        final var level = LevelTestUtils.getBlankDto(ID);
-        final var dto = TaskTestUtils.getBlankDto(ID, taskContent, level);
+    void toEntity() {
+        final var levelDto = LevelTestUtils.getBlankDto(ID);
+        final var taskDto = TaskTestUtils.getBlankDto(ID, levelDto);
 
         final var task = mapper.toEntity(taskDto);
 
