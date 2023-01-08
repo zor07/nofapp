@@ -98,14 +98,7 @@ public class TaskContentService {
         return new TaskData(task, taskContent);
     }
 
-    private static class TaskData {
-        private Task task;
-        private TaskContent taskContent;
-
-        public TaskData(Task task, TaskContent taskContent) {
-            this.task = task;
-            this.taskContent = taskContent;
-        }
+    private record TaskData(Task task, TaskContent taskContent) {
     }
 
     private File createFile(final Task task, final MultipartFile data, final String key) {
