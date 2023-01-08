@@ -21,7 +21,7 @@ public class TaskContentTestUtils {
     public static final String NEW_DATA = "{\"data\": \"new value\"}";
 
     private static final String FILE_URI = "asdasd/asdads";
-    private static final Integer ORDER = 1;
+    public static final Integer ORDER = 1;
 
     public static TaskContentDto getBlankDto(final Long id, final TaskDto taskDto) throws IOException {
         return new TaskContentDto(
