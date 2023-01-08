@@ -3,8 +3,8 @@ package com.zor07.nofapp.repository.level;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.LevelTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,8 +14,8 @@ public class LevelRepositoryTest extends AbstractApplicationTest {
     @Autowired
     private LevelRepository levelRepository;
 
-    @BeforeClass
-    @AfterTest
+    @BeforeMethod
+    @AfterClass
     void clearDb() {
         levelRepository.deleteAll();
     }
