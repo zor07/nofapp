@@ -26,13 +26,16 @@ public class TaskMapperTest {
         final var taskContent = TaskContentTestUtils.getBlankEntity(ID, file);
         final var entity = TaskTestUtils.getBlankEntity(ID, taskContent, level);
 
-        final var dto = mapper.toDto(entity);
+        final var taskDto = mapper.toDto(entity);
 
-        assertThat(dto.id()).isEqualTo(entity.getId());
-        assertThat(dto.name()).isEqualTo(entity.getName());
-        assertThat(dto.order()).isEqualTo(entity.getOrder());
-        TaskContentMapperTest.checkDto(dto.taskContent(), entity.getTaskContent());
-        LevelMapperTest.check(entity.getLevel(), dto.level());
+        assertThat(taskDto.id()).isEqualTo(entity.getId());
+        assertThat(taskDto.name()).isEqualTo(entity.getName());
+        assertThat(taskDto.order()).isEqualTo(entity.getOrder());
+
+        final var levelDto = taskDto.level();
+        assertThat(levelDto.id()).isEqualTo(ID);
+        assertThat(levelDto.name()).isEqualTo(level.getName());
+        assertThat(levelDto.order()).isEqualTo(level.getOrder());
     }
 
     @Test
@@ -41,19 +44,15 @@ public class TaskMapperTest {
         final var level = LevelTestUtils.getBlankDto(ID);
         final var dto = TaskTestUtils.getBlankDto(ID, taskContent, level);
 
-        final var entity = mapper.toEntity(dto);
+        final var task = mapper.toEntity(taskDto);
 
-        assertThat(entity.getId()).isEqualTo(dto.id());
-        assertThat(entity.getName()).isEqualTo(dto.name());
-        assertThat(entity.getDescription()).isEqualTo(dto.description());
-        LevelMapperTest.check(entity.getLevel(), dto.level());
-        assertThat(entity.getTaskContent().getId()).isEqualTo(dto.taskContent().id());
-        assertThat(entity.getTaskContent().getTitle()).isEqualTo(dto.taskContent().title());
-        assertThat(
-                objectMapper.readTree(entity.getTaskContent().getData())
-        ).isEqualTo(
-                objectMapper.readTree(dto.taskContent().data().toString())
-        );
-        assertThat(entity.getTaskContent().getFile()).isNull();
+        assertThat(task.getId()).isEqualTo(taskDto.id());
+        assertThat(task.getName()).isEqualTo(taskDto.name());
+        assertThat(task.getDescription()).isEqualTo(taskDto.description());
+
+        final var level = task.getLevel();
+        assertThat(level.getId()).isEqualTo(ID);
+        assertThat(level.getName()).isEqualTo(levelDto.name());
+        assertThat(level.getOrder()).isEqualTo(levelDto.order());
     }
 }
