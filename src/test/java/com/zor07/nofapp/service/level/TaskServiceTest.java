@@ -1,18 +1,14 @@
 package com.zor07.nofapp.service.level;
 
-import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
-import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.TaskService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
-import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.LevelTestUtils;
-import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,20 +18,14 @@ public class TaskServiceTest extends AbstractApplicationTest {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
-    private TaskContentRepository taskContentRepository;
-    @Autowired
     private LevelRepository levelRepository;
-    @Autowired
-    private FileRepository fileRepository;
     @Autowired
     private TaskService taskService;
 
-    @BeforeClass
-    @AfterTest
+    @BeforeMethod
+    @AfterClass
     void clearDb() {
         taskRepository.deleteAll();
-        taskContentRepository.deleteAll();
-        fileRepository.deleteAll();
         levelRepository.deleteAll();
     }
 
@@ -43,12 +33,10 @@ public class TaskServiceTest extends AbstractApplicationTest {
     void getAllByLevelIdTest() {
         final var level1 = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var level2 = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level1));
-        taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level2));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level1));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level2));
 
         assertThat(taskService.getAllByLevelId(level1.getId())).hasSize(3);
         assertThat(taskService.getAllByLevelId(level2.getId())).hasSize(1);
@@ -57,9 +45,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
     @Test
     void getTaskTest() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(level));
 
         final var result = taskService.getTask(level.getId(), saved.getId());
         TaskTestUtils.checkEntity(result, saved, true);
@@ -68,9 +54,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
     @Test
     void saveTest() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-        final var task = TaskTestUtils.getBlankEntity(taskContent, null);
+        final var task = TaskTestUtils.getBlankEntity(level);
 
         final var saved = taskService.save(level.getId(), task);
 
@@ -86,9 +70,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
     @Test
     void deleteTest() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
-        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(file));
-        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(taskContent, level));
+        final var saved = taskRepository.save(TaskTestUtils.getBlankEntity(level));
 
         taskService.delete(level.getId(), saved.getId());
 
