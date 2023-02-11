@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface TaskContentRepository extends JpaRepository<TaskContent, Long> {
 
+    TaskContent findByTaskIdAndId(Long taskId, Long id);
     List<TaskContent> findAllByTaskId(Long taskId);
 }
 

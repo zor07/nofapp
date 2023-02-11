@@ -81,6 +81,41 @@ public class TaskContentControllerTest extends AbstractApiTest {
     }
 
     @Test
+    void getTaskContentTest() throws Exception {
+        //given
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var file = fileRepository.save(FileTestUtils.getBlankEntity());
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        final var taskContent = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, file));
+
+        //when
+        final var content = mvc.perform(get(urlId(level.getId(), task.getId(), taskContent.getId()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        //then
+        final var resultTaskContent = objectMapper.readValue(content, TaskContentDto.class);
+        assertThat(resultTaskContent.id()).isNotNull();
+        assertThat(resultTaskContent.title()).isEqualTo(TaskContentTestUtils.TITLE);
+        assertThat(resultTaskContent.data()).isEqualTo(objectMapper.readTree(TaskContentTestUtils.DATA));
+        assertThat(resultTaskContent.order()).isEqualTo(TaskContentTestUtils.ORDER);
+        assertThat(resultTaskContent.fileUri()).isEqualTo(String.format("%s/%s", file.getBucket(), file.getKey()));
+
+        final var resultTask = resultTaskContent.task();
+        assertThat(resultTask.id()).isEqualTo(task.getId());
+        assertThat(resultTask.order()).isEqualTo(task.getOrder());
+        assertThat(resultTask.name()).isEqualTo(task.getName());
+
+        final var resultLevel = resultTask.level();
+        assertThat(resultLevel.id()).isEqualTo(level.getId());
+        assertThat(resultLevel.order()).isEqualTo(level.getOrder());
+        assertThat(resultLevel.name()).isEqualTo(level.getName());
+    }
+
+    @Test
     void getTaskContentsTest() throws Exception {
         //given
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);

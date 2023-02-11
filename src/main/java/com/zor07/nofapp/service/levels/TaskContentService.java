@@ -44,6 +44,13 @@ public class TaskContentService {
         return repository.findAllByTaskId(task.getId());
     }
 
+    public TaskContent getTaskContent(final Long levelId,
+                                      final Long taskId,
+                                      final Long taskContentId) {
+        final var task = taskRepository.findByLevelIdAndId(levelId, taskId);
+        return repository.findByTaskIdAndId(taskId, taskContentId);
+    }
+
     @Transactional
     public void save(final Long levelId,
                      final Long taskId,
