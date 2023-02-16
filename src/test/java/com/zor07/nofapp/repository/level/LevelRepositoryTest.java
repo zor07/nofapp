@@ -21,6 +21,42 @@ public class LevelRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
+    void findNextLevelTest_shouldReturnNextLevel() {
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+
+        final var result = levelRepository.findNextLevel(10);
+
+        assertThat(result.getOrder()).isEqualTo(20);
+    }
+
+    @Test
+    void findNextLevelTest_shouldReturnNull() {
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+
+        assertThat(levelRepository.findNextLevel(30)).isNull();
+    }
+
+    @Test
+    void findFirstLevelTest_shouldReturnFirstLevel() {
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+
+        final var result = levelRepository.findFirstLevel();
+
+        assertThat(result.getOrder()).isEqualTo(10);
+    }
+
+    @Test
+    void findFirstLevelTest_shouldReturnNull() {
+        assertThat(levelRepository.findFirstLevel()).isNull();
+    }
+
+    @Test
     void testCrud() {
         levelRepository.deleteAll();
         final var all = levelRepository.findAll();

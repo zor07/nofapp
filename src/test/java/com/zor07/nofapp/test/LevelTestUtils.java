@@ -17,6 +17,12 @@ public class LevelTestUtils {
         return getBlankEntity(null);
     }
 
+    public static Level getBlankEntityWithOrder(final Integer order) {
+        final var level = getBlankEntity(null);
+        level.setOrder(order);
+        return level;
+    }
+
     public static Level getBlankEntity(final Long id) {
         final var level = new Level();
         level.setId(id);

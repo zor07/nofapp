@@ -28,4 +28,12 @@ public class LevelService {
     public void delete(final Long id) {
         levelRepository.deleteById(id);
     }
+
+    public Level findFirstLevel() {
+        return levelRepository.findFirstLevel();
+    }
+
+    public Level findNextLevel(final Level level) {
+        return levelRepository.findNextLevel(level.getOrder());
+    }
 }
