@@ -1,5 +1,6 @@
 package com.zor07.nofapp.service.levels;
 
+import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.entity.level.Task;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
@@ -29,7 +30,6 @@ public class TaskService {
         return repository.findByLevelIdAndId(levelId, taskId);
     }
 
-
     @Transactional
     public Task save(Long levelId, final Task task) {
         final var level = levelRepository.getById(levelId);
@@ -39,6 +39,14 @@ public class TaskService {
 
     public void delete(final Long levelId, final Long id) {
         repository.deleteByLevelIdAndId(levelId, id);
+    }
+
+    public Task findFirstTaskOfLevel(final Level level) {
+        return repository.findFirstTaskOfLevel(level.getId());
+    }
+
+    public Task findNextTaskOfLevel(Level levelId, Task task) {
+        return repository.findNextTaskOfLevel(levelId.getId(), task.getOrder());
     }
 
 }

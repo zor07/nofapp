@@ -25,6 +25,50 @@ public class TaskRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
+    void findFirstTaskOfLevel_shouldReturnFirstTask() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = taskRepository.findFirstTaskOfLevel(level.getId());
+
+        assertThat(result.getOrder()).isEqualTo(10);
+    }
+
+    @Test
+    void findFirstTaskOfLevel_shouldReturnNull() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        assertThat(
+                taskRepository.findNextTaskOfLevel(level.getId(), 30)
+        ).isNull();
+    }
+
+    @Test
+    void findNextTaskOfLevel_shouldReturnNextTask() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = taskRepository.findNextTaskOfLevel(level.getId(), 10);
+
+        assertThat(result.getOrder()).isEqualTo(20);
+    }
+
+    @Test
+    void findNextTaskOfLevel_shouldReturnNull() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        assertThat(
+                taskRepository.findNextTaskOfLevel(level.getId(), 30)
+        ).isNull();
+    }
+
+    @Test
     void testCrud() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var task = TaskTestUtils.getBlankEntity(level);

@@ -77,4 +77,49 @@ public class TaskServiceTest extends AbstractApplicationTest {
         assertThat(taskRepository.findAll()).isEmpty();
     }
 
+    @Test
+    void findFirstTaskOfLevel_shouldReturnFirstTask() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = taskService.findFirstTaskOfLevel(level);
+
+        assertThat(result.getOrder()).isEqualTo(10);
+    }
+
+    @Test
+    void findFirstTaskOfLevel_shouldReturnNull() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task = TaskTestUtils.getBlankEntityWithOrder(level, 10);
+        assertThat(
+                taskService.findNextTaskOfLevel(level, task)
+        ).isNull();
+    }
+
+    @Test
+    void findNextTaskOfLevel_shouldReturnNextTask() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = taskService.findNextTaskOfLevel(level, task1);
+
+        assertThat(result.getOrder()).isEqualTo(20);
+    }
+
+    @Test
+    void findNextTaskOfLevel_shouldReturnNull() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        assertThat(
+                taskService.findNextTaskOfLevel(level, task3)
+        ).isNull();
+    }
+
 }

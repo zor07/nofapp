@@ -21,6 +21,12 @@ public class TaskTestUtils {
         return getBlankEntity(null, level);
     }
 
+    public static Task getBlankEntityWithOrder(final Level level, final Integer order) {
+        final var entity = getBlankEntity(null, level);
+        entity.setOrder(order);
+        return entity;
+    }
+
     public static TaskDto getBlankDto(
             final Long id,
             final LevelDto level
