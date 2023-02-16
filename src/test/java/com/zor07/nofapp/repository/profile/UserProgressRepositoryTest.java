@@ -1,6 +1,7 @@
 package com.zor07.nofapp.repository.profile;
 
 import com.zor07.nofapp.entity.level.Task;
+import com.zor07.nofapp.entity.profile.UserProgress;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
@@ -50,9 +51,20 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
+    void findByUserIdTest() {
+        final var user = userRepository.save(UserTestUtils.createUser());
+        final var task = taskRepository.save(createTaskWithOrder(777));
+        userProgressRepository.save(new UserProgress(user, task));
+
+        final var result = userProgressRepository.findByUserId(user.getId());
+
+        assertThat(result.getCurrentTask().getOrder()).isEqualTo(777);
+    }
+
+    @Test
     void testCrud() {
-        var user = userRepository.save(UserTestUtils.createUser());
-        var task = taskRepository.save(createTask());
+        final var user = userRepository.save(UserTestUtils.createUser());
+        final var task = taskRepository.save(createTask());
         userProgressRepository.deleteAll();
 
         final var all = userProgressRepository.findAll();
@@ -80,5 +92,12 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
     private Task createTask() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         return TaskTestUtils.getBlankEntity(level);
+    }
+
+    private Task createTaskWithOrder(final Integer order) {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task = TaskTestUtils.getBlankEntity(level);
+        task.setOrder(order);
+        return task;
     }
 }

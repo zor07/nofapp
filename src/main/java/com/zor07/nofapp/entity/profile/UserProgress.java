@@ -36,6 +36,11 @@ public class UserProgress {
         this.currentTask = currentTask;
     }
 
+    public UserProgress(User user, Task currentTask) {
+        this.user = user;
+        this.currentTask = currentTask;
+    }
+
     public UserProgress() {
     }
 
