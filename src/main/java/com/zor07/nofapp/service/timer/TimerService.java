@@ -1,40 +1,15 @@
 package com.zor07.nofapp.service.timer;
 
 import com.zor07.nofapp.entity.timer.Timer;
-import com.zor07.nofapp.repository.timer.TimerRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 
-@Service
-@Transactional
-public class TimerService {
+public interface TimerService {
+    List<Timer> findAllByUserId(Long userId);
 
-    private final TimerRepository repository;
+    void save(Timer timer);
 
-    public TimerService(TimerRepository repository) {
-        this.repository = repository;
-    }
+    void stopTimer(Long timerId, Long userId);
 
-    public List<Timer> findAllByUserId(final Long userId) {
-        return repository.findAllByUserId(userId);
-    }
-
-    public void save(final Timer timer) {
-        repository.save(timer);
-    }
-
-    public void stopTimer(final Long timerId, final Long userId) {
-        final var timer = repository.findByIdAndUserId(timerId, userId);
-        if (timer != null) {
-            timer.setStop(Instant.now());
-            repository.save(timer);
-        }
-    }
-
-    public void deleteByIdAndUserId(final Long timerId, final Long  userId) {
-        repository.deleteByIdAndUserId(timerId, userId);
-    }
+    void deleteByIdAndUserId(Long timerId, Long userId);
 }
