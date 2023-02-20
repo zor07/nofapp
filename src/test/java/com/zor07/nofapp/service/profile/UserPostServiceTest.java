@@ -2,13 +2,12 @@ package com.zor07.nofapp.service.profile;
 
 import com.zor07.nofapp.entity.notes.Note;
 import com.zor07.nofapp.entity.notes.Notebook;
-import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.profile.UserPost;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.notes.NoteRepository;
 import com.zor07.nofapp.repository.notes.NotebookRepository;
 import com.zor07.nofapp.repository.profile.UserPostsRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
-import com.zor07.nofapp.service.profile.UserPostService;
 import com.zor07.nofapp.service.user.UserService;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import org.springframework.beans.factory.annotation.Autowired;
