@@ -2,51 +2,21 @@ package com.zor07.nofapp.service.levels;
 
 import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.entity.level.Task;
-import com.zor07.nofapp.repository.level.LevelRepository;
-import com.zor07.nofapp.repository.level.TaskRepository;
-import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
-@Service
-@Transactional
-public class TaskService {
+public interface TaskService {
+    List<Task> getAllByLevelId(Long levelId);
 
-    private final TaskRepository repository;
-    private final LevelRepository levelRepository;
-
-    public TaskService(final TaskRepository repository,
-                       final LevelRepository levelRepository) {
-        this.repository = repository;
-        this.levelRepository = levelRepository;
-    }
-
-    public List<Task> getAllByLevelId(final Long levelId) {
-        return repository.findAllByLevelId(levelId);
-    }
-
-    public Task getTask(final Long levelId, final Long taskId) {
-        return repository.findByLevelIdAndId(levelId, taskId);
-    }
+    Task getTask(Long levelId, Long taskId);
 
     @Transactional
-    public Task save(Long levelId, final Task task) {
-        final var level = levelRepository.getById(levelId);
-        task.setLevel(level);
-        return repository.save(task);
-    }
+    Task save(Long levelId, Task task);
 
-    public void delete(final Long levelId, final Long id) {
-        repository.deleteByLevelIdAndId(levelId, id);
-    }
+    void delete(Long levelId, Long id);
 
-    public Task findFirstTaskOfLevel(final Level level) {
-        return repository.findFirstTaskOfLevel(level.getId());
-    }
+    Task findFirstTaskOfLevel(Level level);
 
-    public Task findNextTaskOfLevel(Level levelId, Task task) {
-        return repository.findNextTaskOfLevel(levelId.getId(), task.getOrder());
-    }
-
+    Task findNextTaskOfLevel(Level levelId, Task task);
 }

@@ -31,7 +31,8 @@ public class LevelController {
     private final LevelService levelService;
     private final LevelMapper levelMapper;
 
-    public LevelController(LevelService levelService, LevelMapper levelMapper) {
+    public LevelController(LevelService levelService,
+                           LevelMapper levelMapper) {
         this.levelService = levelService;
         this.levelMapper = levelMapper;
     }
