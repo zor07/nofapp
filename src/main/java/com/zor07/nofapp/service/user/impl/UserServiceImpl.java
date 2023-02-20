@@ -1,9 +1,10 @@
-package com.zor07.nofapp.service.user;
+package com.zor07.nofapp.service.user.impl;
 
 import com.zor07.nofapp.entity.user.Role;
 import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
+import com.zor07.nofapp.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
