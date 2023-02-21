@@ -1,32 +1,33 @@
 package com.zor07.nofapp.service.profile.impl;
 
+import com.zor07.nofapp.entity.level.TaskContent;
 import com.zor07.nofapp.entity.profile.UserProgress;
 import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.profile.UserProgressRepository;
 import com.zor07.nofapp.service.levels.LevelService;
+import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.service.levels.TaskService;
 import com.zor07.nofapp.service.profile.UserProgressService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserProgressServiceImpl implements UserProgressService {
 
     private final UserProgressRepository userProgressRepository;
     private final TaskService taskService;
+    private final TaskContentService taskContentService;
     private final LevelService levelService;
 
     public UserProgressServiceImpl(final UserProgressRepository userProgressRepository,
                                    final TaskService taskService,
+                                   final TaskContentService taskContentService,
                                    final LevelService levelService) {
         this.userProgressRepository = userProgressRepository;
         this.taskService = taskService;
+        this.taskContentService = taskContentService;
         this.levelService = levelService;
-    }
-
-
-    @Override
-    public UserProgress getUserProgress(final User user) {
-        return userProgressRepository.findByUserId(user.getId());
     }
 
     @Override
@@ -39,7 +40,7 @@ public class UserProgressServiceImpl implements UserProgressService {
     }
 
     @Override
-    public UserProgress setNextTaskInUserProgress(final User user) {
+    public UserProgress updateUserProgressToNextTask(final User user) {
         final var userProgress = userProgressRepository.findByUserId(user.getId());
         final var currentTask = userProgress.getCurrentTask();
         final var currentLevel = currentTask.getLevel();
@@ -60,5 +61,15 @@ public class UserProgressServiceImpl implements UserProgressService {
                 nextTask
         );
         return userProgressRepository.save(newUserProgress);
+    }
+
+    @Override
+    public List<TaskContent> getCurrentTaskContentForUser(final User user) {
+        final var userProgress = userProgressRepository.findByUserId(user.getId());
+        final var currentTask = userProgress.getCurrentTask();
+        return taskContentService.getTaskContent(
+                currentTask.getLevel().getId(),
+                currentTask.getId()
+        );
     }
 }
