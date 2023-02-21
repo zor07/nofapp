@@ -25,7 +25,6 @@ import java.util.List;
 @Api( tags = "User posts" )
 public class UserProgressController {
 
-
     private final UserService userService;
     private final UserProgressService userProgressService;
     private final TaskContentMapper taskContentMapper;
@@ -37,7 +36,6 @@ public class UserProgressController {
         this.userProgressService = userProgressService;
         this.taskContentMapper = taskContentMapper;
     }
-
 
     @GetMapping
     @ApiOperation(value = "Retrieves user task content", response = TaskContentDto.class, responseContainer = "List")

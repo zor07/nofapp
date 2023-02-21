@@ -1,6 +1,9 @@
 package com.zor07.nofapp.api.v1.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.entity.profile.UserProgress;
+import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
@@ -13,16 +16,26 @@ import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
-import com.zor07.nofapp.test.UserTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
+import static com.zor07.nofapp.test.UserTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserProgressControllerTest extends AbstractApiTest {
-    // TODO fix tests
+    private static final String USER_PROGRESS_ENDPOINT = "/api/v1/progress";
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
@@ -41,6 +54,13 @@ public class UserProgressControllerTest extends AbstractApiTest {
     @Autowired
     private UserProgressService userProgressService;
 
+    @BeforeClass
+    void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
 
     @BeforeMethod
     @AfterClass
@@ -55,23 +75,11 @@ public class UserProgressControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void initUserProgressTest() {
-        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var user = userRepository.save(UserTestUtils.createUser());
-        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level,10));
-        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level,20));
-        assertThat(userProgressRepository.findByUserId(user.getId())).isNull();
-
-        userProgressService.initUserProgress(user);
-
-        final var result = userProgressRepository.findByUserId(user.getId());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task1.getOrder());
-    }
-
-    @Test
-    void setNextTaskInUserProgress_shouldSetNextTaskOfSameLevel() {
+    void setNextTaskInUserProgress_shouldSetNextTaskOfSameLevel() throws Exception {
         //given
-        final var user = userRepository.save(UserTestUtils.createUser());
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         final var level1 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
         final var level2 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
@@ -83,7 +91,13 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task1));
 
         //when
-        final var result = userProgressService.updateUserProgressToNextTask(user);
+        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/nextTask")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        final var result = userProgressRepository.findByUserId(user.getId());
 
         //then
         assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
@@ -95,9 +109,11 @@ public class UserProgressControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void setNextTaskInUserProgress_shouldSetNextTaskOfNextLevel() {
+    void setNextTaskInUserProgress_shouldSetNextTaskOfNextLevel() throws Exception {
         //given
-        final var user = userRepository.save(UserTestUtils.createUser());
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         final var level1 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
         final var level2 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
@@ -109,7 +125,13 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task2));
 
         //when
-        final var result = userProgressService.updateUserProgressToNextTask(user);
+        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/nextTask")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        final var result = userProgressRepository.findByUserId(user.getId());
 
         //then
         assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
@@ -121,9 +143,11 @@ public class UserProgressControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void setNextTaskInUserProgress_shouldreturnNull() {
+    void setNextTaskInUserProgress_shouldNotChangeUserProgressWhenNoMoreTasks() throws Exception {
         //given
-        final var user = userRepository.save(UserTestUtils.createUser());
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         final var level1 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
         final var level2 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
@@ -135,10 +159,17 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task4));
 
         //when
-        final var result = userProgressService.updateUserProgressToNextTask(user);
+        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/nextTask")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isAccepted())
+                .andReturn().getResponse().getContentAsString();
+
+        final var result = userProgressRepository.findByUserId(user.getId());
 
         //then
-        assertThat(result).isNull();
+        assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
+        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task4.getOrder());
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
         assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
@@ -146,10 +177,12 @@ public class UserProgressControllerTest extends AbstractApiTest {
     }
 
     @Test
-    void getCurrentTaskContentForUserTest() {
+    void getCurrentTaskContentForUserTest() throws Exception {
         //given
         final var title = "my test title";
-        final var user = userRepository.save(UserTestUtils.createUser());
+        final var roleName = persistRole();
+        final var user = persistUser(DEFAULT_USERNAME, roleName);
+        final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
@@ -162,10 +195,29 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task));
 
         //when
-        final var result = userProgressService.getCurrentTaskContentForUser(user);
+        final var content = mvc.perform(get(USER_PROGRESS_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, authHeader))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        final var result = objectMapper.readValue(content, new TypeReference<List<TaskContentDto>>(){});
 
         assertThat(result).hasSize(2);
-        assertThat(result).allMatch( it -> it.getTitle().equals(title));
+        assertThat(result).allMatch( it -> it.title().equals(title));
+    }
+
+    private String persistRole() {
+        final var role = createRole();
+        roleRepository.save(role);
+        return role.getName();
+    }
+
+    private User persistUser(final String name, final String roleName) {
+        final var user = createUser(name);
+        userService.saveUser(user);
+        userService.addRoleToUser(user.getUsername(), roleName);
+        return user;
     }
 
 }
