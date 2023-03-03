@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/progress")
-@Api( tags = "User posts" )
+@Api( tags = "User progress" )
 public class UserProgressController {
 
     private final UserService userService;
