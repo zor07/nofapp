@@ -65,7 +65,12 @@ public class UserProgressServiceImpl implements UserProgressService {
 
     @Override
     public List<TaskContent> getCurrentTaskContentForUser(final User user) {
-        final var userProgress = userProgressRepository.findByUserId(user.getId());
+        var userProgress = userProgressRepository.findByUserId(user.getId());
+        if (userProgress == null) {
+            initUserProgress(user);
+            userProgress = userProgressRepository.findByUserId(user.getId());
+        }
+
         final var currentTask = userProgress.getCurrentTask();
         return taskContentService.getTaskContent(
                 currentTask.getLevel().getId(),
