@@ -1,13 +1,13 @@
-package com.zor07.nofapp.service.profile;
+package com.zor07.nofapp.service.userprogress;
 
-import com.zor07.nofapp.entity.profile.UserProgress;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
-import com.zor07.nofapp.repository.profile.UserProgressRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
+import com.zor07.nofapp.repository.userprogress.UserProgressRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskContentTestUtils;

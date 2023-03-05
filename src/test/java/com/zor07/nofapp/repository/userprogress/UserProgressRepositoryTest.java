@@ -1,7 +1,7 @@
-package com.zor07.nofapp.repository.profile;
+package com.zor07.nofapp.repository.userprogress;
 
 import com.zor07.nofapp.entity.level.Task;
-import com.zor07.nofapp.entity.profile.UserProgress;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;

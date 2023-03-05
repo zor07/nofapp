@@ -1,13 +1,13 @@
 package com.zor07.nofapp.service.profile.impl;
 
 import com.zor07.nofapp.entity.level.TaskContent;
-import com.zor07.nofapp.entity.profile.UserProgress;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.entity.user.User;
-import com.zor07.nofapp.repository.profile.UserProgressRepository;
+import com.zor07.nofapp.repository.userprogress.UserProgressRepository;
 import com.zor07.nofapp.service.levels.LevelService;
 import com.zor07.nofapp.service.levels.TaskContentService;
 import com.zor07.nofapp.service.levels.TaskService;
-import com.zor07.nofapp.service.profile.UserProgressService;
+import com.zor07.nofapp.service.userprogress.UserProgressService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

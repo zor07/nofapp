@@ -1,7 +1,7 @@
-package com.zor07.nofapp.service.profile;
+package com.zor07.nofapp.service.userprogress;
 
 import com.zor07.nofapp.entity.level.TaskContent;
-import com.zor07.nofapp.entity.profile.UserProgress;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.entity.user.User;
 
 import java.util.List;

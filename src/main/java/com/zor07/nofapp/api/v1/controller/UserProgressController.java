@@ -3,7 +3,7 @@ package com.zor07.nofapp.api.v1.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
-import com.zor07.nofapp.service.profile.UserProgressService;
+import com.zor07.nofapp.service.userprogress.UserProgressService;
 import com.zor07.nofapp.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
