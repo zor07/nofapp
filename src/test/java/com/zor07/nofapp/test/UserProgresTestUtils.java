@@ -11,12 +11,12 @@ public class UserProgresTestUtils {
     public static UserProgress getBlankEntity(final User user, final Task task) {
         final var userProgress = new UserProgress();
         userProgress.setUser(user);
-        userProgress.setCurrentTask(task);
+        userProgress.setTask(task);
         return userProgress;
     }
 
     public static void checkUpdated(final UserProgress userProgress) {
-        TaskTestUtils.checkUpdated(userProgress.getCurrentTask());
+        TaskTestUtils.checkUpdated(userProgress.getTask());
     }
 
     public static void checkEntity(
@@ -28,7 +28,7 @@ public class UserProgresTestUtils {
             assertThat(actual.getId()).isEqualTo(expected.getId());
         }
         UserTestUtils.checkEntity(actual.getUser(), expected.getUser(), checkId);
-        TaskTestUtils.checkEntity(actual.getCurrentTask(), expected.getCurrentTask(), checkId);
+        TaskTestUtils.checkEntity(actual.getTask(), expected.getTask(), checkId);
     }
 
 }

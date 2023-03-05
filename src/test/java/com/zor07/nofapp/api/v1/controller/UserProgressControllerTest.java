@@ -100,12 +100,12 @@ public class UserProgressControllerTest extends AbstractApiTest {
         final var result = userProgressRepository.findByUserId(user.getId());
 
         //then
-        assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task2.getOrder());
+        assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
+        assertThat(result.getTask().getOrder()).isEqualTo(task2.getOrder());
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
-        assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
-        assertThat(currentProgress.getCurrentTask().getOrder()).isEqualTo(task2.getOrder());
+        assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
+        assertThat(currentProgress.getTask().getOrder()).isEqualTo(task2.getOrder());
     }
 
     @Test
@@ -134,12 +134,12 @@ public class UserProgressControllerTest extends AbstractApiTest {
         final var result = userProgressRepository.findByUserId(user.getId());
 
         //then
-        assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task3.getOrder());
+        assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
+        assertThat(result.getTask().getOrder()).isEqualTo(task3.getOrder());
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
-        assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
-        assertThat(currentProgress.getCurrentTask().getOrder()).isEqualTo(task3.getOrder());
+        assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
+        assertThat(currentProgress.getTask().getOrder()).isEqualTo(task3.getOrder());
     }
 
     @Test
@@ -168,12 +168,12 @@ public class UserProgressControllerTest extends AbstractApiTest {
         final var result = userProgressRepository.findByUserId(user.getId());
 
         //then
-        assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task4.getOrder());
+        assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
+        assertThat(result.getTask().getOrder()).isEqualTo(task4.getOrder());
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
-        assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
-        assertThat(currentProgress.getCurrentTask().getOrder()).isEqualTo(task4.getOrder());
+        assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
+        assertThat(currentProgress.getTask().getOrder()).isEqualTo(task4.getOrder());
     }
 
     @Test

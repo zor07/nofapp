@@ -58,7 +58,7 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
 
         final var result = userProgressRepository.findByUserId(user.getId());
 
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(777);
+        assertThat(result.getTask().getOrder()).isEqualTo(777);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
         UserProgresTestUtils.checkEntity(userProgress, inserted, false);
 
         final var newTask = taskRepository.save(TaskTestUtils.updateEntity(createTask()));
-        inserted.setCurrentTask(newTask);
+        inserted.setTask(newTask);
 
         userProgressRepository.save(inserted);
 

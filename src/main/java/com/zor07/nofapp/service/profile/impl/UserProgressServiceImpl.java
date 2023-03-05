@@ -42,7 +42,7 @@ public class UserProgressServiceImpl implements UserProgressService {
     @Override
     public UserProgress updateUserProgressToNextTask(final User user) {
         final var userProgress = userProgressRepository.findByUserId(user.getId());
-        final var currentTask = userProgress.getCurrentTask();
+        final var currentTask = userProgress.getTask();
         final var currentLevel = currentTask.getLevel();
         var nextTask = taskService.findNextTaskOfLevel(currentLevel, currentTask);
 
@@ -71,7 +71,7 @@ public class UserProgressServiceImpl implements UserProgressService {
             userProgress = userProgressRepository.findByUserId(user.getId());
         }
 
-        final var currentTask = userProgress.getCurrentTask();
+        final var currentTask = userProgress.getTask();
         return taskContentService.getTaskContent(
                 currentTask.getLevel().getId(),
                 currentTask.getId()

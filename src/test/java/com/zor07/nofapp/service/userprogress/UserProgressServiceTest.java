@@ -64,7 +64,7 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
         userProgressService.initUserProgress(user);
 
         final var result = userProgressRepository.findByUserId(user.getId());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task1.getOrder());
+        assertThat(result.getTask().getOrder()).isEqualTo(task1.getOrder());
     }
 
     @Test
@@ -85,12 +85,12 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
         final var result = userProgressService.updateUserProgressToNextTask(user);
 
         //then
-        assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task2.getOrder());
+        assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
+        assertThat(result.getTask().getOrder()).isEqualTo(task2.getOrder());
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
-        assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
-        assertThat(currentProgress.getCurrentTask().getOrder()).isEqualTo(task2.getOrder());
+        assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
+        assertThat(currentProgress.getTask().getOrder()).isEqualTo(task2.getOrder());
     }
 
     @Test
@@ -111,12 +111,12 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
         final var result = userProgressService.updateUserProgressToNextTask(user);
 
         //then
-        assertThat(result.getCurrentTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
-        assertThat(result.getCurrentTask().getOrder()).isEqualTo(task3.getOrder());
+        assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
+        assertThat(result.getTask().getOrder()).isEqualTo(task3.getOrder());
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
-        assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
-        assertThat(currentProgress.getCurrentTask().getOrder()).isEqualTo(task3.getOrder());
+        assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
+        assertThat(currentProgress.getTask().getOrder()).isEqualTo(task3.getOrder());
     }
 
     @Test
@@ -140,8 +140,8 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
         assertThat(result).isNull();
 
         final var currentProgress = userProgressRepository.findByUserId(user.getId());
-        assertThat(currentProgress.getCurrentTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
-        assertThat(currentProgress.getCurrentTask().getOrder()).isEqualTo(task4.getOrder());
+        assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
+        assertThat(currentProgress.getTask().getOrder()).isEqualTo(task4.getOrder());
     }
 
     @Test

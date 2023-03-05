@@ -1,9 +1,16 @@
 package com.zor07.nofapp.entity.userprogress;
 
-import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.level.Task;
+import com.zor07.nofapp.entity.user.User;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "user_progress", schema = "public")
@@ -27,18 +34,18 @@ public class UserProgress {
     private User user;
 
     @OneToOne
-    @JoinColumn(name = "current_task_id", referencedColumnName = "id")
-    private Task currentTask;
+    @JoinColumn(name = "task_id", referencedColumnName = "id")
+    private Task task;
 
-    public UserProgress(Long id, User user, Task currentTask) {
+    public UserProgress(Long id, User user, Task task) {
         this.id = id;
         this.user = user;
-        this.currentTask = currentTask;
+        this.task = task;
     }
 
     public UserProgress(User user, Task currentTask) {
         this.user = user;
-        this.currentTask = currentTask;
+        this.task = currentTask;
     }
 
     public UserProgress() {
@@ -60,11 +67,11 @@ public class UserProgress {
         this.user = user;
     }
 
-    public Task getCurrentTask() {
-        return currentTask;
+    public Task getTask() {
+        return task;
     }
 
-    public void setCurrentTask(Task currentTask) {
-        this.currentTask = currentTask;
+    public void setTask(Task currentTask) {
+        this.task = currentTask;
     }
 }
