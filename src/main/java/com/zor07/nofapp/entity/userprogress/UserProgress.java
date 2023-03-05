@@ -11,12 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.time.Instant;
 
 @Entity
 @Table(name = "user_progress", schema = "public")
 public class UserProgress {
-
-
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -37,10 +36,15 @@ public class UserProgress {
     @JoinColumn(name = "task_id", referencedColumnName = "id")
     private Task task;
 
-    public UserProgress(Long id, User user, Task task) {
+    private Instant completedDatetime;
+
+    public UserProgress(Long id,
+                        User user,
+                        Task task) {
         this.id = id;
         this.user = user;
         this.task = task;
+        this.completedDatetime = Instant.now();
     }
 
     public UserProgress(User user, Task currentTask) {
@@ -73,5 +77,13 @@ public class UserProgress {
 
     public void setTask(Task currentTask) {
         this.task = currentTask;
+    }
+
+    public Instant getCompletedDatetime() {
+        return completedDatetime;
+    }
+
+    public void setCompletedDatetime(Instant completedDatetime) {
+        this.completedDatetime = completedDatetime;
     }
 }

@@ -1,8 +1,8 @@
 package com.zor07.nofapp.service.profile.impl;
 
 import com.zor07.nofapp.entity.level.TaskContent;
-import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.entity.user.User;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.repository.userprogress.UserProgressRepository;
 import com.zor07.nofapp.service.levels.LevelService;
 import com.zor07.nofapp.service.levels.TaskContentService;
@@ -58,8 +58,7 @@ public class UserProgressServiceImpl implements UserProgressService {
         final var newUserProgress = new UserProgress(
                 userProgress.getId(),
                 userProgress.getUser(),
-                nextTask
-        );
+                nextTask);
         return userProgressRepository.save(newUserProgress);
     }
 

@@ -4,6 +4,8 @@ import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.entity.level.Task;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserProgresTestUtils {
@@ -12,6 +14,7 @@ public class UserProgresTestUtils {
         final var userProgress = new UserProgress();
         userProgress.setUser(user);
         userProgress.setTask(task);
+        userProgress.setCompletedDatetime(Instant.now());
         return userProgress;
     }
 
@@ -27,6 +30,7 @@ public class UserProgresTestUtils {
         if (checkId) {
             assertThat(actual.getId()).isEqualTo(expected.getId());
         }
+        assertThat(actual.getCompletedDatetime()).isNotNull();
         UserTestUtils.checkEntity(actual.getUser(), expected.getUser(), checkId);
         TaskTestUtils.checkEntity(actual.getTask(), expected.getTask(), checkId);
     }

@@ -24,13 +24,24 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
                              references="user(id)"/>
             </column>
 
-            <column name="current_task_id" type="int">
+            <column name="task_id" type="int">
                 <constraints nullable="false"
                              foreignKeyName="fk_task_id"
                              references="task(id)"/>
             </column>
 
+            <column name="completed_datetime"
+                    type="timestamp"
+                    defaultValueComputed="current_timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+
+        <addUniqueConstraint
+                columnNames="user_id, task_id"
+                constraintName="user_task_unique_constraint"
+                tableName="user_progress"/>
+
     </changeSet>
 
 </databaseChangeLog>
