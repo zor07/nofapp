@@ -16,10 +16,9 @@ public interface TaskService {
 
     void delete(Long levelId, Long id);
 
+    Task findNextTask(Task task);
+
+    Task findPrevTask(Task task);
+
     Task findFirstTaskOfLevel(Level level);
-
-    Task findNextTaskOfLevel(Level level, Task task);
-
-    Task findPrevTaskOfLevel(Level level, Task task);
-
 }

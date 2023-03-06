@@ -26,6 +26,17 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
                 select t.*
                 from task t
                 where t.level_id = :levelId
+                order by t."order" desc 
+                limit 1"""
+    )
+    Task findLastTaskOfLevel(Long levelId);
+
+    @Query(
+            nativeQuery = true,
+            value = """
+                select t.*
+                from task t
+                where t.level_id = :levelId
                   and t."order" > :currentTaskOrder
                 order by t."order"
                 limit 1"""

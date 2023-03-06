@@ -19,6 +19,11 @@ public class LevelServiceImpl implements LevelService {
     }
 
     @Override
+    public Level findById(Long levelId) {
+        return levelRepository.findById(levelId).orElse(null);
+    }
+
+    @Override
     public Level save(final Level level) {
         return levelRepository.save(level);
     }

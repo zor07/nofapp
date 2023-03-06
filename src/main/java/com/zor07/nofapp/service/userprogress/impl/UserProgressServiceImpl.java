@@ -43,16 +43,10 @@ public class UserProgressServiceImpl implements UserProgressService {
     public UserProgress updateUserProgressToNextTask(final User user) {
         final var userProgress = userProgressRepository.findByUserId(user.getId());
         final var currentTask = userProgress.getTask();
-        final var currentLevel = currentTask.getLevel();
-        var nextTask = taskService.findNextTaskOfLevel(currentLevel, currentTask);
+        var nextTask = taskService.findNextTask(currentTask);
 
         if (nextTask == null) {
-            final var nextLevel = levelService.findNextLevel(currentLevel);
-            if (nextLevel == null) {
-                return null;
-            }
-
-            nextTask = taskService.findFirstTaskOfLevel(nextLevel);
+            return null;
         }
 
         final var newUserProgress = new UserProgress(

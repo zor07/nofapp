@@ -5,6 +5,8 @@ import com.zor07.nofapp.entity.level.Level;
 import java.util.List;
 
 public interface LevelService {
+
+    Level findById(Long levelId);
     Level save(Level level);
 
     List<Level> getAll();

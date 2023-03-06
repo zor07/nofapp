@@ -2,8 +2,8 @@ package com.zor07.nofapp.service.levels.impl;
 
 import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.entity.level.Task;
-import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
+import com.zor07.nofapp.service.levels.LevelService;
 import com.zor07.nofapp.service.levels.TaskService;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +15,12 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository repository;
-    private final LevelRepository levelRepository;
+    private final LevelService levelService;
 
     public TaskServiceImpl(final TaskRepository repository,
-                           final LevelRepository levelRepository) {
+                           final LevelService levelService) {
         this.repository = repository;
-        this.levelRepository = levelRepository;
+        this.levelService = levelService;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public Task save(Long levelId, final Task task) {
-        final var level = levelRepository.getById(levelId);
+        final var level = levelService.findById(levelId);
         task.setLevel(level);
         return repository.save(task);
     }
@@ -47,17 +47,49 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Task findNextTask(final Task task) {
+        final var currentLevel = task.getLevel();
+        var nextTask = repository.findNextTaskOfLevel(currentLevel.getId(), task.getOrder());
+        if (nextTask == null) {
+            final var nextLevel = levelService.findNextLevel(currentLevel);
+            if (nextLevel == null) {
+                return null;
+            }
+            nextTask = findFirstTaskOfLevel(nextLevel);
+        }
+
+        return nextTask;
+    }
+
+    @Override
+    public Task findPrevTask(final Task task) {
+        final var currentLevel = task.getLevel();
+        var prevTask = repository.findPrevTaskOfLevel(currentLevel.getId(), task.getOrder());
+        if (prevTask == null) {
+            final var prevLevel = levelService.findPrevLevel(currentLevel);
+            if (prevLevel == null) {
+                return null;
+            }
+            prevTask = findLastTaskOfLevel(prevLevel);
+        }
+
+        return prevTask;
+    }
+
+    @Override
     public Task findFirstTaskOfLevel(final Level level) {
         return repository.findFirstTaskOfLevel(level.getId());
     }
 
-    @Override
-    public Task findNextTaskOfLevel(Level levelId, Task task) {
+    private Task findLastTaskOfLevel(final Level level) {
+        return repository.findLastTaskOfLevel(level.getId());
+    }
+
+    private Task findNextTaskOfLevel(final Level levelId, final Task task) {
         return repository.findNextTaskOfLevel(levelId.getId(), task.getOrder());
     }
 
-    @Override
-    public Task findPrevTaskOfLevel(Level level, Task task) {
+    private Task findPrevTaskOfLevel(final Level level, final Task task) {
         return repository.findPrevTaskOfLevel(level.getId(), task.getOrder());
     }
 }
