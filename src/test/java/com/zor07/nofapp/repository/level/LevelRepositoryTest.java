@@ -57,7 +57,7 @@ public class LevelRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
-    void findPrevLevelTest_shouldReturnNextLevel() {
+    void findPrevLevelTest_shouldReturnPrevLevel() {
         levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
         levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
         levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
