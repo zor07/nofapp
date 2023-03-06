@@ -42,4 +42,9 @@ public class LevelServiceImpl implements LevelService {
     public Level findNextLevel(final Level level) {
         return levelRepository.findNextLevel(level.getOrder());
     }
+
+    @Override
+    public Level findPrevLevel(Level level) {
+        return levelRepository.findPrevLevel(level.getOrder());
+    }
 }

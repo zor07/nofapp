@@ -56,6 +56,26 @@ public class LevelServiceTest extends AbstractApplicationTest {
     }
 
     @Test
+    void findPrevLevelTest_shouldReturnNextLevel() {
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+
+        final var result = levelRepository.findPrevLevel(20);
+
+        assertThat(result.getOrder()).isEqualTo(10);
+    }
+
+    @Test
+    void findPrevLevelTest_shouldReturnNull() {
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+
+        assertThat(levelRepository.findPrevLevel(10)).isNull();
+    }
+
+    @Test
     void findFirstLevelTest_shouldReturnNull() {
         assertThat(levelService.findFirstLevel()).isNull();
     }

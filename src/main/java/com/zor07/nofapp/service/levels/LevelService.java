@@ -14,4 +14,6 @@ public interface LevelService {
     Level findFirstLevel();
 
     Level findNextLevel(Level level);
+
+    Level findPrevLevel(Level level);
 }

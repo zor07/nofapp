@@ -27,4 +27,15 @@ public interface LevelRepository  extends JpaRepository<Level, Long> {
     )
     Level findNextLevel(Integer currentLevelOrder);
 
+    @Query(
+            nativeQuery = true,
+            value = """
+                select *
+                from level
+                where "order" < :currentLevelOrder
+                order by "order"
+                limit 1"""
+    )
+    Level findPrevLevel(Integer currentLevelOrder);
+
 }
