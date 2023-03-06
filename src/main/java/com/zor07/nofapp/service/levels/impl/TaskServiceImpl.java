@@ -56,4 +56,8 @@ public class TaskServiceImpl implements TaskService {
         return repository.findNextTaskOfLevel(levelId.getId(), task.getOrder());
     }
 
+    @Override
+    public Task findPrevTaskOfLevel(Level level, Task task) {
+        return repository.findPrevTaskOfLevel(level.getId(), task.getOrder());
+    }
 }

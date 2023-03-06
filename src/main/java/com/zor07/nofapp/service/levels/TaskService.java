@@ -18,5 +18,8 @@ public interface TaskService {
 
     Task findFirstTaskOfLevel(Level level);
 
-    Task findNextTaskOfLevel(Level levelId, Task task);
+    Task findNextTaskOfLevel(Level level, Task task);
+
+    Task findPrevTaskOfLevel(Level level, Task task);
+
 }

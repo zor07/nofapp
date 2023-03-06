@@ -69,6 +69,30 @@ public class TaskRepositoryTest extends AbstractApplicationTest {
     }
 
     @Test
+    void findPrevTaskOfLevel_shouldReturnPrevTask() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = taskRepository.findPrevTaskOfLevel(level.getId(), 20);
+
+        assertThat(result.getOrder()).isEqualTo(10);
+    }
+
+    @Test
+    void findPrevTaskOfLevel_shouldReturnNull() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        assertThat(
+                taskRepository.findPrevTaskOfLevel(level.getId(), 10)
+        ).isNull();
+    }
+
+    @Test
     void testCrud() {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var task = TaskTestUtils.getBlankEntity(level);

@@ -32,6 +32,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     )
     Task findNextTaskOfLevel(Long levelId, Integer currentTaskOrder);
 
+    @Query(
+            nativeQuery = true,
+            value = """
+                select t.*
+                from task t
+                where t.level_id = :levelId
+                  and t."order" < :currentTaskOrder
+                order by t."order"
+                limit 1"""
+    )
+    Task findPrevTaskOfLevel(Long levelId, Integer currentTaskOrder);
+
     List<Task> findAllByLevelId(Long levelId);
 
     Task findByLevelIdAndId(Long levelId, Long id);

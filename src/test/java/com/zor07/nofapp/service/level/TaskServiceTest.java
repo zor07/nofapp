@@ -122,4 +122,28 @@ public class TaskServiceTest extends AbstractApplicationTest {
         ).isNull();
     }
 
+    @Test
+    void findPrevTaskOfLevel_shouldReturnPrevTask() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = taskService.findPrevTaskOfLevel(level, task2);
+
+        assertThat(result.getOrder()).isEqualTo(10);
+    }
+
+    @Test
+    void findPrevTaskOfLevel_shouldReturnNull() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
+        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        assertThat(
+                taskService.findPrevTaskOfLevel(level, task1)
+        ).isNull();
+    }
+
 }
