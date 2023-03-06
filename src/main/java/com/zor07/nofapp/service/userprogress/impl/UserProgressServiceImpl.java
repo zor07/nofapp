@@ -1,4 +1,4 @@
-package com.zor07.nofapp.service.profile.impl;
+package com.zor07.nofapp.service.userprogress.impl;
 
 import com.zor07.nofapp.entity.level.TaskContent;
 import com.zor07.nofapp.entity.user.User;
