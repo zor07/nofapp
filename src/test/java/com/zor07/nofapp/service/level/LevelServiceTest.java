@@ -57,27 +57,34 @@ public class LevelServiceTest extends AbstractApplicationTest {
 
     @Test
     void findPrevLevelTest_shouldReturnPrevLevel() {
-        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
-        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
-        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+        final var level1 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        final var level2 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        final var level3 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
 
-        final var result = levelRepository.findPrevLevel(20);
+        final var result = levelService.findPrevLevel(level2);
 
         assertThat(result.getOrder()).isEqualTo(10);
     }
 
     @Test
     void findPrevLevelTest_shouldReturnNull() {
-        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
-        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
-        levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
+        final var level1 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        final var level2 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(20));
+        final var level3 = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(30));
 
-        assertThat(levelRepository.findPrevLevel(10)).isNull();
+        assertThat(levelService.findPrevLevel(level1)).isNull();
     }
 
     @Test
     void findFirstLevelTest_shouldReturnNull() {
         assertThat(levelService.findFirstLevel()).isNull();
+    }
+
+    @Test
+    void findByIdTest() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        final var result = levelService.findById(level.getId());
+        LevelTestUtils.checkEntity(result, level, true);
     }
 
     @Test
