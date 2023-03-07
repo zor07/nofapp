@@ -1,15 +1,13 @@
 package com.zor07.nofapp.service.userprogress;
 
-import com.zor07.nofapp.entity.level.TaskContent;
-import com.zor07.nofapp.entity.userprogress.UserProgress;
+import com.zor07.nofapp.entity.level.Task;
 import com.zor07.nofapp.entity.user.User;
-
-import java.util.List;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 
 public interface UserProgressService {
     void initUserProgress(User user);
 
-    UserProgress updateUserProgressToNextTask(User user);
+    UserProgress addNextTaskToUserProgress(User user);
 
-    List<TaskContent> getCurrentTaskContentForUser(User user);
+    Task getCurrentTaskForUser(User user);
 }
