@@ -1,10 +1,9 @@
 package com.zor07.nofapp.api.v1.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
-import com.zor07.nofapp.api.v1.dto.level.mapper.TaskContentMapper;
-import com.zor07.nofapp.service.userprogress.UserProgressService;
+import com.zor07.nofapp.api.v1.dto.level.TaskDto;
+import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.service.user.UserService;
+import com.zor07.nofapp.service.userprogress.UserProgressService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/progress")
@@ -27,38 +25,28 @@ public class UserProgressController {
 
     private final UserService userService;
     private final UserProgressService userProgressService;
-    private final TaskContentMapper taskContentMapper;
+    private final TaskMapper taskMapper;
 
     public UserProgressController(final UserService userService,
                                   final UserProgressService userProgressService,
-                                  final TaskContentMapper taskContentMapper) {
+                                  final TaskMapper taskMapper) {
         this.userService = userService;
         this.userProgressService = userProgressService;
-        this.taskContentMapper = taskContentMapper;
+        this.taskMapper = taskMapper;
     }
 
     @GetMapping
-    @ApiOperation(value = "Retrieves user task content", response = TaskContentDto.class, responseContainer = "List")
+    @ApiOperation(value = "Retrieves task user is solving now", response = TaskDto.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved task content"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    public ResponseEntity<List<TaskContentDto>> getCurrentTaskContentForUser(final @ApiIgnore Principal principal) {
+    public ResponseEntity<TaskDto> getCurrentTaskContentForUser(final @ApiIgnore Principal principal) {
         final var user = userService.getUser(principal);
-        final var taskContentList = userProgressService.getCurrentTaskContentForUser(user)
-                .stream()
-                .map(taskContent -> {
-                    try {
-                        return taskContentMapper.toDto(taskContent);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList();
-
-        return ResponseEntity.ok(taskContentList);
+        final var task = userProgressService.getCurrentTaskForUser(user);
+        return ResponseEntity.ok(taskMapper.toDto(task));
     }
 
     @PutMapping(path = "/nextTask")
@@ -71,7 +59,7 @@ public class UserProgressController {
     })
     public ResponseEntity<Void> updateUserProgressToNextTask(@ApiIgnore final Principal principal) {
         final var user = userService.getUser(principal);
-        userProgressService.updateUserProgressToNextTask(user);
+        userProgressService.addNextTaskToUserProgress(user);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

@@ -1,20 +1,18 @@
 package com.zor07.nofapp.api.v1.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.zor07.nofapp.api.v1.dto.level.TaskContentDto;
-import com.zor07.nofapp.entity.userprogress.UserProgress;
+import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.entity.user.User;
+import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
 import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
-import com.zor07.nofapp.repository.userprogress.UserProgressRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
+import com.zor07.nofapp.repository.userprogress.UserProgressRepository;
 import com.zor07.nofapp.service.userprogress.UserProgressService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
-import com.zor07.nofapp.test.TaskContentTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -24,8 +22,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 import static com.zor07.nofapp.test.UserTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,13 +93,13 @@ public class UserProgressControllerTest extends AbstractApiTest {
                 .andExpect(status().isAccepted())
                 .andReturn().getResponse().getContentAsString();
 
-        final var result = userProgressRepository.findByUserId(user.getId());
+        final var result = userProgressRepository.findCurrentUserProgress(user.getId());
 
         //then
         assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
         assertThat(result.getTask().getOrder()).isEqualTo(task2.getOrder());
 
-        final var currentProgress = userProgressRepository.findByUserId(user.getId());
+        final var currentProgress = userProgressRepository.findCurrentUserProgress(user.getId());
         assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task2.getLevel().getOrder());
         assertThat(currentProgress.getTask().getOrder()).isEqualTo(task2.getOrder());
     }
@@ -131,13 +127,13 @@ public class UserProgressControllerTest extends AbstractApiTest {
                 .andExpect(status().isAccepted())
                 .andReturn().getResponse().getContentAsString();
 
-        final var result = userProgressRepository.findByUserId(user.getId());
+        final var result = userProgressRepository.findCurrentUserProgress(user.getId());
 
         //then
         assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
         assertThat(result.getTask().getOrder()).isEqualTo(task3.getOrder());
 
-        final var currentProgress = userProgressRepository.findByUserId(user.getId());
+        final var currentProgress = userProgressRepository.findCurrentUserProgress(user.getId());
         assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task3.getLevel().getOrder());
         assertThat(currentProgress.getTask().getOrder()).isEqualTo(task3.getOrder());
     }
@@ -165,13 +161,13 @@ public class UserProgressControllerTest extends AbstractApiTest {
                 .andExpect(status().isAccepted())
                 .andReturn().getResponse().getContentAsString();
 
-        final var result = userProgressRepository.findByUserId(user.getId());
+        final var result = userProgressRepository.findCurrentUserProgress(user.getId());
 
         //then
         assertThat(result.getTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
         assertThat(result.getTask().getOrder()).isEqualTo(task4.getOrder());
 
-        final var currentProgress = userProgressRepository.findByUserId(user.getId());
+        final var currentProgress = userProgressRepository.findCurrentUserProgress(user.getId());
         assertThat(currentProgress.getTask().getLevel().getOrder()).isEqualTo(task4.getLevel().getOrder());
         assertThat(currentProgress.getTask().getOrder()).isEqualTo(task4.getOrder());
     }
@@ -185,13 +181,7 @@ public class UserProgressControllerTest extends AbstractApiTest {
         final var authHeader = getAuthHeader(mvc, DEFAULT_USERNAME);
 
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
-        final var task = taskRepository.save(TaskTestUtils.getBlankEntity(level));
-        final var taskContent1 = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, null));
-        final var taskContent2 = taskContentRepository.save(TaskContentTestUtils.getBlankEntity(task, null));
-        taskContent1.setTitle(title);
-        taskContent2.setTitle(title);
-        taskContentRepository.save(taskContent1);
-        taskContentRepository.save(taskContent2);
+        final var task = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 777));
         userProgressRepository.save(new UserProgress(user, task));
 
         //when
@@ -201,10 +191,9 @@ public class UserProgressControllerTest extends AbstractApiTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        final var result = objectMapper.readValue(content, new TypeReference<List<TaskContentDto>>(){});
+        final var result = objectMapper.readValue(content, TaskDto.class);
 
-        assertThat(result).hasSize(2);
-        assertThat(result).allMatch( it -> it.title().equals(title));
+        assertThat(result.order()).isEqualTo(777);
     }
 
     private String persistRole() {
