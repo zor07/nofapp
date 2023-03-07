@@ -40,10 +40,12 @@ public class UserProgress {
 
     public UserProgress(Long id,
                         User user,
-                        Task task) {
+                        Task task,
+                        Instant completedDatetime) {
         this.id = id;
         this.user = user;
         this.task = task;
+        this.completedDatetime = completedDatetime;
     }
 
     public UserProgress(User user, Task currentTask) {
