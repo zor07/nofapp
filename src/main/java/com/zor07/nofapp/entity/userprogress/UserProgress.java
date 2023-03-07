@@ -44,7 +44,6 @@ public class UserProgress {
         this.id = id;
         this.user = user;
         this.task = task;
-        this.completedDatetime = Instant.now();
     }
 
     public UserProgress(User user, Task currentTask) {

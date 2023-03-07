@@ -18,6 +18,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserProgressRepositoryTest extends AbstractApplicationTest {
@@ -78,11 +80,13 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
 
         final var newTask = taskRepository.save(TaskTestUtils.updateEntity(createTask()));
         inserted.setTask(newTask);
+        inserted.setCompletedDatetime(Instant.now());
 
         userProgressRepository.save(inserted);
 
         final var updated = userProgressRepository.findById(id).get();
         UserProgresTestUtils.checkUpdated(updated);
+        assertThat(updated.getCompletedDatetime()).isNotNull();
 
         userProgressRepository.delete(updated);
 

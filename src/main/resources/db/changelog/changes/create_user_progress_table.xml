@@ -31,10 +31,8 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
             </column>
 
             <column name="completed_datetime"
-                    type="timestamp"
-                    defaultValueComputed="current_timestamp">
-                <constraints nullable="false"/>
-            </column>
+                    type="timestamp"/>
+
         </createTable>
 
         <addUniqueConstraint
