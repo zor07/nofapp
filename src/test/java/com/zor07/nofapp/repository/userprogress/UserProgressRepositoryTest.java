@@ -55,12 +55,32 @@ public class UserProgressRepositoryTest extends AbstractApplicationTest {
     @Test
     void findByUserIdTest() {
         final var user = userRepository.save(UserTestUtils.createUser());
-        final var task = taskRepository.save(createTaskWithOrder(777));
-        userProgressRepository.save(new UserProgress(user, task));
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+        userProgressRepository.save(new UserProgress(user, task1));
+        userProgressRepository.save(new UserProgress(user, task2));
+        userProgressRepository.save(new UserProgress(user, task3));
 
         final var result = userProgressRepository.findByUserId(user.getId());
 
-        assertThat(result.getTask().getOrder()).isEqualTo(777);
+        assertThat(result).hasSize(3);
+    }
+
+    @Test
+    void findCurrentUserProgressTest() {
+        final var user = userRepository.save(UserTestUtils.createUser());
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        final var task1 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+        userProgressRepository.save(new UserProgress(null, user, task1, Instant.now()));
+        userProgressRepository.save(new UserProgress(null, user, task2, Instant.now()));
+        userProgressRepository.save(new UserProgress(null, user, task3, null));
+
+        final var result = userProgressRepository.findCurrentUserProgress(user.getId());
+        assertThat(result.getTask().getOrder()).isEqualTo(30);
     }
 
     @Test
