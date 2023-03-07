@@ -94,7 +94,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
         final var level = levelRepository.save(LevelTestUtils.getBlankEntity());
         final var task = TaskTestUtils.getBlankEntityWithOrder(level, 10);
         assertThat(
-                taskService.findNextTaskOfLevel(level, task)
+                taskService.findNextTask(task)
         ).isNull();
     }
 
@@ -105,7 +105,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
         final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
         final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
 
-        final var result = taskService.findNextTaskOfLevel(level, task1);
+        final var result = taskService.findNextTask(task1);
 
         assertThat(result.getOrder()).isEqualTo(20);
     }
@@ -118,7 +118,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
         final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
 
         assertThat(
-                taskService.findNextTaskOfLevel(level, task3)
+                taskService.findNextTask(task3)
         ).isNull();
     }
 
@@ -129,7 +129,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
         final var task2 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
         final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
 
-        final var result = taskService.findPrevTaskOfLevel(level, task2);
+        final var result = taskService.findPrevTask(task2);
 
         assertThat(result.getOrder()).isEqualTo(10);
     }
@@ -142,7 +142,7 @@ public class TaskServiceTest extends AbstractApplicationTest {
         final var task3 = taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
 
         assertThat(
-                taskService.findPrevTaskOfLevel(level, task1)
+                taskService.findPrevTask(task1)
         ).isNull();
     }
 
