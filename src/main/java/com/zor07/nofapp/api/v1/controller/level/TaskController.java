@@ -76,7 +76,7 @@ public class TaskController {
     @GetMapping(value = "/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Gets tasks of level", response = TaskDto.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved tasks"),
+            @ApiResponse(code = 200, message = "Successfully retrieved task"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
@@ -87,6 +87,42 @@ public class TaskController {
             taskMapper.toDto(
                 taskService.getTask(levelId, taskId)
             )
+        );
+    }
+
+    @GetMapping(value = "/{taskId}/next", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Gets next task after task with given taskId", response = TaskDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved task"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<TaskDto> getNextTask(final @PathVariable Long levelId,
+                                               final @PathVariable Long taskId) {
+        final var task = taskService.getTask(levelId, taskId);
+        return ResponseEntity.ok(
+                taskMapper.toDto(
+                        taskService.findNextTask(task)
+                )
+        );
+    }
+
+    @GetMapping(value = "/{taskId}/prev", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Gets previous task before task with given taskId", response = TaskDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved task"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<TaskDto> getPrevTask(final @PathVariable Long levelId,
+                                               final @PathVariable Long taskId) {
+        final var task = taskService.getTask(levelId, taskId);
+        return ResponseEntity.ok(
+                taskMapper.toDto(
+                        taskService.findPrevTask(task)
+                )
         );
     }
 
