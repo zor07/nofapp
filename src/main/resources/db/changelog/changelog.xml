@@ -25,7 +25,6 @@ http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd">
     <include file="changes/create_user_posts_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_level_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_task_table.xml" relativeToChangelogFile="true"/>
-    <include file="changes/create_task_content_table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create_user_progress_table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
