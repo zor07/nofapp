@@ -3,7 +3,6 @@ package com.zor07.nofapp.service.userprogress;
 import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
-import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
@@ -28,8 +27,6 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private TaskContentRepository taskContentRepository;
-    @Autowired
     private LevelRepository levelRepository;
     @Autowired
     private FileRepository fileRepository;
@@ -44,7 +41,6 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
     @AfterClass
     void clearDb() {
         userProgressRepository.deleteAll();
-        taskContentRepository.deleteAll();
         taskRepository.deleteAll();
         fileRepository.deleteAll();
         levelRepository.deleteAll();

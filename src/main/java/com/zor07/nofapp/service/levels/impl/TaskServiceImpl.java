@@ -1,26 +1,39 @@
 package com.zor07.nofapp.service.levels.impl;
 
+import com.zor07.nofapp.aws.s3.S3Service;
+import com.zor07.nofapp.entity.file.File;
 import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.entity.level.Task;
+import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.service.levels.LevelService;
 import com.zor07.nofapp.service.levels.TaskService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 
 @Service
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
+    private static final String TASK_BUCKET = "task";
+    private static final String TASK_FILE_KEY= "task_file";
     private final TaskRepository repository;
     private final LevelService levelService;
+    private final FileRepository fileRepository;
+    private final S3Service s3;
 
     public TaskServiceImpl(final TaskRepository repository,
-                           final LevelService levelService) {
+                           final LevelService levelService,
+                           final FileRepository fileRepository,
+                           final S3Service s3) {
         this.repository = repository;
         this.levelService = levelService;
+        this.fileRepository = fileRepository;
+        this.s3 = s3;
     }
 
     @Override
@@ -81,15 +94,35 @@ public class TaskServiceImpl implements TaskService {
         return repository.findFirstTaskOfLevel(level.getId());
     }
 
+    @Override
+    public void addVideo(Long levelId, Long taskId, MultipartFile data) throws IOException {
+        final var task = repository.findByLevelIdAndId(levelId, taskId);
+        final var bytes = data.getBytes();
+        final var key = getFileKey(taskId, bytes);
+        final var file = fileRepository.save(createFile(task, data, key));
+
+        s3.persistObject(TASK_BUCKET, key, bytes);
+        task.setFile(file);
+        repository.save(task);
+    }
+
     private Task findLastTaskOfLevel(final Level level) {
         return repository.findLastTaskOfLevel(level.getId());
     }
 
-    private Task findNextTaskOfLevel(final Level levelId, final Task task) {
-        return repository.findNextTaskOfLevel(levelId.getId(), task.getOrder());
+    private File createFile(final Task task, final MultipartFile data, final String key) {
+        final var file = new File();
+        file.setBucket(TASK_BUCKET);
+        file.setPrefix(String.format("%s-%s", task.getLevel().getId(), task.getId()));
+        file.setKey(key);
+        file.setMime(data.getContentType());
+        file.setSize(data.getSize());
+        return file;
     }
 
-    private Task findPrevTaskOfLevel(final Level level, final Task task) {
-        return repository.findPrevTaskOfLevel(level.getId(), task.getOrder());
+    private String getFileKey(final Long taskId, final byte[] data) {
+        final var hash = s3.getMD5(data);
+        return String.format("%s/%s_%s", taskId, TASK_FILE_KEY, hash);
     }
+
 }

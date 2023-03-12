@@ -1,6 +1,10 @@
 package com.zor07.nofapp.entity.level;
 
 
+import com.zor07.nofapp.entity.file.File;
+import com.zor07.nofapp.validation.NullableJsonString;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 @Entity
@@ -30,6 +34,15 @@ public class Task {
 
     private String description;
 
+    @OneToOne
+    @JoinColumn(name = "file_id", referencedColumnName = "id")
+    private File file;
+
+    @Type(type = "json")
+    @Column(columnDefinition = "jsonb")
+    @NullableJsonString
+    private String data;
+
     public Task() {
     }
 
@@ -37,12 +50,16 @@ public class Task {
                 final Level level,
                 final Integer order,
                 final String name,
-                final String description) {
+                final String description,
+                final File file,
+                final String data) {
         this.id = id;
         this.level = level;
         this.order = order;
         this.name = name;
         this.description = description;
+        this.file = file;
+        this.data = data;
     }
 
     public Long getId() {
@@ -83,5 +100,21 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

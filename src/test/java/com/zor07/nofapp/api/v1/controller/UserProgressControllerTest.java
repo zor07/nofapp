@@ -5,12 +5,10 @@ import com.zor07.nofapp.entity.user.User;
 import com.zor07.nofapp.entity.userprogress.UserProgress;
 import com.zor07.nofapp.repository.file.FileRepository;
 import com.zor07.nofapp.repository.level.LevelRepository;
-import com.zor07.nofapp.repository.level.TaskContentRepository;
 import com.zor07.nofapp.repository.level.TaskRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.repository.userprogress.UserProgressRepository;
-import com.zor07.nofapp.service.userprogress.UserProgressService;
 import com.zor07.nofapp.spring.AbstractApiTest;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
@@ -23,7 +21,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.zor07.nofapp.test.UserTestUtils.*;
+import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
+import static com.zor07.nofapp.test.UserTestUtils.createRole;
+import static com.zor07.nofapp.test.UserTestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,16 +39,11 @@ public class UserProgressControllerTest extends AbstractApiTest {
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private TaskContentRepository taskContentRepository;
-    @Autowired
     private LevelRepository levelRepository;
     @Autowired
     private FileRepository fileRepository;
     @Autowired
     private UserProgressRepository userProgressRepository;
-
-    @Autowired
-    private UserProgressService userProgressService;
 
     @BeforeClass
     void setup() {
@@ -62,7 +57,6 @@ public class UserProgressControllerTest extends AbstractApiTest {
     @AfterClass
     void clearDb() {
         userProgressRepository.deleteAll();
-        taskContentRepository.deleteAll();
         taskRepository.deleteAll();
         fileRepository.deleteAll();
         levelRepository.deleteAll();

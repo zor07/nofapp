@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1.controller.level;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.service.levels.TaskService;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +53,13 @@ public class TaskController {
         return ResponseEntity.ok(
                 taskService.getAllByLevelId(levelId)
                         .stream()
-                        .map(taskMapper::toDto)
+                        .map(task -> {
+                            try {
+                                return taskMapper.toDto(task);
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
                         .toList()
         );
     }
@@ -63,7 +73,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     public ResponseEntity<TaskDto> createTask(final @PathVariable Long levelId,
-                                              final @RequestBody TaskDto taskDto) {
+                                              final @RequestBody TaskDto taskDto) throws JsonProcessingException {
         final var task = taskService.save(levelId, taskMapper.toEntity(taskDto));
         final var uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
@@ -82,7 +92,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     public ResponseEntity<TaskDto> getTask(final @PathVariable Long levelId,
-                                           final @PathVariable Long taskId) {
+                                           final @PathVariable Long taskId) throws JsonProcessingException {
         return ResponseEntity.ok(
             taskMapper.toDto(
                 taskService.getTask(levelId, taskId)
@@ -99,7 +109,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     public ResponseEntity<TaskDto> getNextTask(final @PathVariable Long levelId,
-                                               final @PathVariable Long taskId) {
+                                               final @PathVariable Long taskId) throws JsonProcessingException {
         final var task = taskService.getTask(levelId, taskId);
         return ResponseEntity.ok(
                 taskMapper.toDto(
@@ -117,7 +127,7 @@ public class TaskController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     public ResponseEntity<TaskDto> getPrevTask(final @PathVariable Long levelId,
-                                               final @PathVariable Long taskId) {
+                                               final @PathVariable Long taskId) throws JsonProcessingException {
         final var task = taskService.getTask(levelId, taskId);
         return ResponseEntity.ok(
                 taskMapper.toDto(
@@ -140,7 +150,7 @@ public class TaskController {
     })
     public ResponseEntity<TaskDto> updateTask(final @PathVariable Long levelId,
                                               final @PathVariable Long taskId,
-                                              final @RequestBody TaskDto taskDto) {
+                                              final @RequestBody TaskDto taskDto) throws JsonProcessingException {
         if (!Objects.equals(taskDto.id(), taskId)) {
             return ResponseEntity.badRequest().build();
         }
@@ -160,6 +170,21 @@ public class TaskController {
                                            final @PathVariable Long taskId) {
         taskService.delete(levelId, taskId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{taskId}/video", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Uploads video to task")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully uploaded video"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> uploadVideo(final @PathVariable Long levelId,
+                                            final @PathVariable Long taskId,
+                                            final @RequestParam("file") MultipartFile file) throws IOException {
+        taskService.addVideo(levelId, taskId, file);
+        return ResponseEntity.ok().build();
     }
 
 }

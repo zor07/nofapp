@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.service.user.UserService;
@@ -43,7 +44,7 @@ public class UserProgressController {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
-    public ResponseEntity<TaskDto> getCurrentTaskContentForUser(final @ApiIgnore Principal principal) {
+    public ResponseEntity<TaskDto> getCurrentTaskContentForUser(final @ApiIgnore Principal principal) throws JsonProcessingException {
         final var user = userService.getUser(principal);
         final var task = userProgressService.getCurrentTaskForUser(user);
         return ResponseEntity.ok(taskMapper.toDto(task));
