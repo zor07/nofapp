@@ -3,14 +3,17 @@ package com.zor07.nofapp.api.v1.dto.level.mapper;
 import com.zor07.nofapp.api.v1.dto.level.LevelDto;
 import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.test.LevelTestUtils;
-import org.mapstruct.factory.Mappers;
+import com.zor07.nofapp.test.TaskTestUtils;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LevelMapperTest {
+public class LevelMapperTest  {
 
-    private final LevelMapper mapper = Mappers.getMapper(LevelMapper.class);
+    private final TaskMapper taskMapper = new TaskMapper();
+    private final LevelMapper mapper = new LevelMapper(taskMapper);
 
     private static final Long ID = 1L;
 
@@ -22,9 +25,16 @@ public class LevelMapperTest {
 
     @Test
     void toDtoTest() {
-        final var entity = LevelTestUtils.getBlankEntity(ID);
-        final var dto = mapper.toDto(entity);
-        check(entity, dto);
+        final var level = LevelTestUtils.getBlankEntity(ID);
+        final var task1 = TaskTestUtils.getBlankEntity(level);
+        final var task2 = TaskTestUtils.getBlankEntity(level);
+        final var task3 = TaskTestUtils.getBlankEntity(level);
+        final var tasks = Arrays.asList(task1, task2, task3);
+        level.setTasks(tasks);
+
+        final var dto = mapper.toDto(level);
+        check(level, dto);
+        assertThat(dto.tasks()).hasSize(3);
     }
 
     @Test
@@ -32,6 +42,7 @@ public class LevelMapperTest {
         final var dto = LevelTestUtils.getBlankDto(ID);
         final var entity = mapper.toEntity(dto);
         check(entity, dto);
+        assertThat(entity.getTasks()).isEmpty();
     }
 
 

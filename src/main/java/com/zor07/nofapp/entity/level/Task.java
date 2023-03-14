@@ -23,7 +23,7 @@ public class Task {
     )
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "level_id", referencedColumnName = "id")
     private Level level;
 

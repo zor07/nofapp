@@ -1,7 +1,11 @@
 package com.zor07.nofapp.test;
 
 import com.zor07.nofapp.api.v1.dto.level.LevelDto;
+import com.zor07.nofapp.api.v1.dto.level.TaskDto;
 import com.zor07.nofapp.entity.level.Level;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +41,11 @@ public class LevelTestUtils {
 
 
     public static LevelDto getBlankDto(final Long id) {
-        return new LevelDto(id, NAME, ORDER);
+        return new LevelDto(id, NAME, ORDER, Collections.emptyList());
+    }
+
+    public static LevelDto getBlankDto(final Long id, List<TaskDto> tasks) {
+        return new LevelDto(id, NAME, ORDER, tasks);
     }
 
     public static void updateEntity(final Level level) {

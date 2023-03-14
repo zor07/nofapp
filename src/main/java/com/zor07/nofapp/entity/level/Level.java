@@ -1,6 +1,14 @@
 package com.zor07.nofapp.entity.level;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "level", schema = "public")
@@ -22,6 +30,9 @@ public class Level {
 
     @Column(name="\"order\"")
     private Integer order;
+
+    @OneToMany(mappedBy = "level")
+    private List<Task> tasks;
 
     public Level(Long id, Integer order, String name) {
         this.id = id;
@@ -54,5 +65,13 @@ public class Level {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

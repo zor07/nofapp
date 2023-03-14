@@ -2,6 +2,7 @@ package com.zor07.nofapp.repository.level;
 
 import com.zor07.nofapp.spring.AbstractApplicationTest;
 import com.zor07.nofapp.test.LevelTestUtils;
+import com.zor07.nofapp.test.TaskTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
@@ -13,10 +14,13 @@ public class LevelRepositoryTest extends AbstractApplicationTest {
 
     @Autowired
     private LevelRepository levelRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     @BeforeMethod
     @AfterClass
     void clearDb() {
+        taskRepository.deleteAll();
         levelRepository.deleteAll();
     }
 
@@ -97,5 +101,17 @@ public class LevelRepositoryTest extends AbstractApplicationTest {
         levelRepository.delete(updated);
 
         assertThat(levelRepository.findById(id)).isEmpty();
+    }
+
+    @Test
+    void testOneToMany() {
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level));
+        taskRepository.save(TaskTestUtils.getBlankEntity(level));
+
+        final var result = levelRepository.findPrevLevel(20);
+
+        assertThat(result.getTasks()).hasSize(3);
     }
 }

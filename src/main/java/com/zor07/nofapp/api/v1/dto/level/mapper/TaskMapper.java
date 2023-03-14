@@ -3,25 +3,25 @@ package com.zor07.nofapp.api.v1.dto.level.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zor07.nofapp.api.v1.dto.level.LevelDto;
 import com.zor07.nofapp.api.v1.dto.level.TaskDto;
+import com.zor07.nofapp.entity.level.Level;
 import com.zor07.nofapp.entity.level.Task;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface TaskMapper {
+@Component
+public class TaskMapper {
 
-    ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    default String fromJsonNode(final JsonNode jsonNode) {
+    private String fromJsonNode(final JsonNode jsonNode) {
         return jsonNode == null ? null : jsonNode.toString();
     }
 
-    default JsonNode fromString(final String string) throws JsonProcessingException {
+    private JsonNode fromString(final String string) throws JsonProcessingException {
         return string == null ? null : OBJECT_MAPPER.readTree(string);
     }
-    default String getFileUri(final Task task) {
+    private String getFileUri(final Task task) {
         final var avatar = task.getFile();
         if (avatar == null) {
             return null;
@@ -29,21 +29,62 @@ public interface TaskMapper {
         return String.format("%s/%s", avatar.getBucket(), avatar.getKey());
     }
 
-    @Mappings({
-            @Mapping(target = "fileUri", expression = "java(getFileUri(entity))"),
-            @Mapping(target = "data", expression = "java(fromString(entity.getData()))"),
-    })
-    TaskDto toDto(final Task entity) throws JsonProcessingException;
+    private LevelDto levelToLevelDto(final Level level) {
+        if (level == null) {
+            return null;
+        }
+        final var id = level.getId();
+        final var name = level.getName();
+        final var order = level.getOrder();
+        return new LevelDto(
+                id,
+                name,
+                order,
+                null
+        );
+    }
 
-    @Mappings({
-            @Mapping(target = "id", expression = "java(dto.id())"),
-            @Mapping(target = "name", expression = "java(dto.name())"),
-            @Mapping(target = "description", expression = "java(dto.description())"),
-            @Mapping(target = "order", expression = "java(dto.order())"),
-            @Mapping(target = "level", source = "level"),
-            @Mapping(target = "data", expression = "java(fromJsonNode(dto.data()))"),
-            @Mapping(target = "file", ignore = true),
-    })
-    Task toEntity(final TaskDto dto);
+    private Level levelDtoToLevel(final LevelDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        final var level = new Level();
+        level.setId(dto.id());
+        level.setName(dto.name());
+        level.setOrder(dto.order());
+        return level;
+    }
+
+    public TaskDto toDto(final Task entity) throws JsonProcessingException {
+        final var id = entity.getId();
+        final var name = entity.getName();
+        final var description = entity.getDescription();
+        final var order = entity.getOrder();
+        final var level = levelToLevelDto(entity.getLevel());
+        final var fileUri = getFileUri(entity);
+        final var data = fromString(entity.getData());
+        return new TaskDto(
+                id,
+                name,
+                description,
+                order,
+                level,
+                fileUri,
+                data
+        );
+
+    }
+
+    public Task toEntity(final TaskDto dto) {
+        final var task = new Task();
+        task.setId(dto.id());
+        task.setLevel(levelDtoToLevel(dto.level()));
+        task.setOrder(dto.order());
+        task.setName(dto.name());
+        task.setDescription(dto.description());
+        task.setData(fromJsonNode(dto.data()));
+        return task;
+    }
+
 
 }

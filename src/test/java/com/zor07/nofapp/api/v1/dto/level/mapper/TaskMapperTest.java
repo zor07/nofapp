@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zor07.nofapp.test.FileTestUtils;
 import com.zor07.nofapp.test.LevelTestUtils;
 import com.zor07.nofapp.test.TaskTestUtils;
-import org.mapstruct.factory.Mappers;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskMapperTest {
 
-    private final TaskMapper mapper = Mappers.getMapper(TaskMapper.class);
+    private final TaskMapper mapper = new TaskMapper();
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Long ID = 1L;
 
