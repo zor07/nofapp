@@ -46,8 +46,11 @@ public class LevelController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
     })
     public ResponseEntity<List<LevelDto>> getLevels() {
+        final var all = levelService.getAll();
+//        all.forEach(Level::getTasks);
         return ResponseEntity.ok(
-                levelService.getAll()
+
+                all
                         .stream()
                         .map(levelMapper::toDto)
                         .toList()
