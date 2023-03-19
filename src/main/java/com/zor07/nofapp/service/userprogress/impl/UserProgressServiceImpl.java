@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class UserProgressServiceImpl implements UserProgressService {
@@ -64,6 +65,11 @@ public class UserProgressServiceImpl implements UserProgressService {
         }
 
         return userProgress.getTask();
+    }
+
+    @Override
+    public List<UserProgress> getUserProgress(User user) {
+        return userProgressRepository.findByUserId(user.getId());
     }
 
     private void addCompletedDatetimeToUserProgress(final UserProgress userProgress) {
