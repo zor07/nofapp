@@ -1,5 +1,6 @@
 package com.zor07.nofapp.api.v1.dto.mapper;
 
+import com.zor07.nofapp.api.v1.dto.level.mapper.TaskMapper;
 import com.zor07.nofapp.api.v1.dto.userprogress.UserProgressDto;
 import com.zor07.nofapp.api.v1.dto.userprogress.mapper.UserProgressMapper;
 import com.zor07.nofapp.entity.userprogress.UserProgress;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserProgressMapperTest {
 
-    private final UserProgressMapper mapper = new UserProgressMapper();
+    private final UserProgressMapper mapper = new UserProgressMapper(new TaskMapper());
 
     @Test
     void toDtoTest() {
@@ -37,7 +38,7 @@ public class UserProgressMapperTest {
 
         final var result = mapper.toDto(userProgressList);
 
-        assertThat(result.uncompletedTask().task().getId()).isEqualTo(4L);
+        assertThat(result.uncompletedTask().task().id()).isEqualTo(4L);
         assertThat(result.uncompletedTask().completed()).isFalse();
         assertThat(result.userTasks()).hasSize(4);
         assertThat(result.userTasks().stream().filter(UserProgressDto.UserTaskDto::completed)).hasSize(3);
