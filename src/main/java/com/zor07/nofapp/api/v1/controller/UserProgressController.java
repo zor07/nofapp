@@ -49,7 +49,7 @@ public class UserProgressController {
         return ResponseEntity.ok(userProgressMapper.toDto(userProgressList));
     }
 
-    @PutMapping(path = "/nextTask")
+    @PutMapping(path = "/finishCurrentTask")
     @ApiOperation(value = "Updates user progress to next task")
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "Successfully updated user progress to next task"),

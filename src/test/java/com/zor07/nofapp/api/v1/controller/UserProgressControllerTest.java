@@ -83,7 +83,7 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task1));
 
         //when
-        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/nextTask")
+        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/finishCurrentTask")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
                 .andExpect(status().isAccepted())
@@ -117,7 +117,7 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task2));
 
         //when
-        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/nextTask")
+        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/finishCurrentTask")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
                 .andExpect(status().isAccepted())
@@ -151,7 +151,7 @@ public class UserProgressControllerTest extends AbstractApiTest {
         userProgressRepository.save(new UserProgress(user, task4));
 
         //when
-        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/nextTask")
+        mvc.perform(put(USER_PROGRESS_ENDPOINT + "/finishCurrentTask")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, authHeader))
                 .andExpect(status().isAccepted())
