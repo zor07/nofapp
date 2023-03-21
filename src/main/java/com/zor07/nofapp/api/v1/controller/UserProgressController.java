@@ -49,6 +49,7 @@ public class UserProgressController {
         return ResponseEntity.ok(userProgressMapper.toDto(userProgressList));
     }
 
+    // todo init user progress
     @PutMapping(path = "/finishCurrentTask")
     @ApiOperation(value = "Updates user progress to next task")
     @ApiResponses(value = {
