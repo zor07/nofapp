@@ -68,8 +68,14 @@ public class UserProgressServiceImpl implements UserProgressService {
     }
 
     @Override
+    @Transactional
     public List<UserProgress> getUserProgress(User user) {
-        return userProgressRepository.findByUserId(user.getId());
+        final var userProgresses = userProgressRepository.findByUserId(user.getId());
+        if (userProgresses == null || userProgresses.isEmpty()) {
+            initUserProgress(user);
+            return userProgressRepository.findByUserId(user.getId());
+        }
+        return userProgresses;
     }
 
     private void addCompletedDatetimeToUserProgress(final UserProgress userProgress) {

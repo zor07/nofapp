@@ -182,4 +182,18 @@ public class UserProgressServiceTest extends AbstractApplicationTest {
         assertThat(result).hasSize(3);
     }
 
+    @Test
+    void getUserProgressShouldInitUserProgress() {
+        final var user = userRepository.save(UserTestUtils.createUser());
+        final var level = levelRepository.save(LevelTestUtils.getBlankEntityWithOrder(10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 10));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 20));
+        taskRepository.save(TaskTestUtils.getBlankEntityWithOrder(level, 30));
+
+        final var result = userProgressService.getUserProgress(user);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getTask().getOrder()).isEqualTo(10);
+    }
+
 }
