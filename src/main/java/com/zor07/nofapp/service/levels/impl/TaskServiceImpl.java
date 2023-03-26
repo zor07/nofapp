@@ -51,6 +51,14 @@ public class TaskServiceImpl implements TaskService {
     public Task save(Long levelId, final Task task) {
         final var level = levelService.findById(levelId);
         task.setLevel(level);
+
+        if (task.getId() != null) {
+            final var taskFromDb = repository.findByLevelIdAndId(levelId, task.getId());
+            if (taskFromDb != null && taskFromDb.getFile() != null) {
+                task.setFile(taskFromDb.getFile());
+            }
+        }
+
         return repository.save(task);
     }
 
@@ -95,6 +103,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public void addVideo(Long levelId, Long taskId, MultipartFile data) throws IOException {
         final var task = repository.findByLevelIdAndId(levelId, taskId);
         final var bytes = data.getBytes();
@@ -104,6 +113,20 @@ public class TaskServiceImpl implements TaskService {
         s3.persistObject(TASK_BUCKET, key, bytes);
         task.setFile(file);
         repository.save(task);
+    }
+
+    @Override
+    @Transactional
+    public void deleteVideo(Long levelId, Long taskId) {
+        final var task = repository.findByLevelIdAndId(levelId, taskId);
+        final var file = task.getFile();
+
+        if (file != null) {
+            task.setFile(null);
+            s3.deleteObject(TASK_BUCKET, file.getKey());
+            fileRepository.deleteById(file.getId());
+            repository.save(task);
+        }
     }
 
     private Task findLastTaskOfLevel(final Level level) {

@@ -187,4 +187,18 @@ public class TaskController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping(value = "/{taskId}/video")
+    @ApiOperation(value = "Deletes video from task")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Successfully deleted video"),
+            @ApiResponse(code = 401, message = "You are not authorized to update the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    })
+    public ResponseEntity<Void> deleteVideo(final @PathVariable Long levelId,
+                                            final @PathVariable Long taskId) {
+        taskService.deleteVideo(levelId, taskId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -28,4 +28,9 @@ public interface TaskService {
     void addVideo(Long levelId,
                   Long taskId,
                   MultipartFile data) throws IOException;
+
+    @Transactional
+    void deleteVideo(Long levelId,
+                     Long taskId);
+
 }
