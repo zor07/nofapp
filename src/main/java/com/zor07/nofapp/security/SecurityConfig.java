@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(final HttpSecurity http) throws Exception {
     final var filter = new CustomAuthenticationFilter(authenticationManagerBean(), objectMapper);
     filter.setFilterProcessesUrl("/api/v1/auth/login");
-    http.cors();
+    http.cors().disable();
     http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.authorizeRequests().antMatchers("/api/v1/auth/login/**", "/spring-security-rest/**", "/swagger-ui/**", "/api/v1/auth/token/refresh/**").permitAll();
