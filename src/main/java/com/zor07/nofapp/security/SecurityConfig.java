@@ -31,7 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final PasswordEncoder bCryptPasswordEncoder;
   private final ObjectMapper objectMapper;
 
-  private final CORSFilter corsFilter = new CORSFilter();
 
   @Autowired
   public SecurityConfig(final UserDetailsService userDetailsService,
@@ -51,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(final HttpSecurity http) throws Exception {
     final var filter = new CustomAuthenticationFilter(authenticationManagerBean(), objectMapper);
     filter.setFilterProcessesUrl("/api/v1/auth/login");
-    http.cors().disable();
+    http.cors();
     http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.authorizeRequests().antMatchers("/api/v1/auth/login/**", "/spring-security-rest/**", "/swagger-ui/**", "/api/v1/auth/token/refresh/**").permitAll();
@@ -59,7 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyAuthority(UserRole.ROLE_USER.getRoleName(), UserRole.ROLE_ADMIN.getRoleName());
     http.authorizeRequests().anyRequest().authenticated();
     http.addFilter(filter);
-    http.addFilter(corsFilter);
     http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
   }
 
@@ -80,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     configuration.setAllowCredentials(true);
     configuration.setAllowedHeaders(Collections.singletonList("*"));
     configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-    configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
+    configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     final var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
@@ -98,7 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       @Override
       public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
+            .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS");
       }
     };
   }
