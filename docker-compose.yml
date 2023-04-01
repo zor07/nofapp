@@ -12,11 +12,11 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=db
+      - POSTGRES_DB=nf
     volumes:
       - pg_project:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
 
   minio:
     image: minio/minio:latest
