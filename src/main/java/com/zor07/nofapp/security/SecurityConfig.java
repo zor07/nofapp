@@ -31,13 +31,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final PasswordEncoder bCryptPasswordEncoder;
   private final ObjectMapper objectMapper;
 
+  private final CORSFilter corsFilter;
+
   @Autowired
   public SecurityConfig(final UserDetailsService userDetailsService,
-      final PasswordEncoder passwordEncoder,
-      final ObjectMapper objectMapper) {
+                        final PasswordEncoder passwordEncoder,
+                        final ObjectMapper objectMapper,
+                        final CORSFilter corsFilter) {
     this.userDetailsService = userDetailsService;
     this.bCryptPasswordEncoder = passwordEncoder;
     this.objectMapper = objectMapper;
+    this.corsFilter = corsFilter;
   }
 
   @Override
@@ -57,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyAuthority(UserRole.ROLE_USER.getRoleName(), UserRole.ROLE_ADMIN.getRoleName());
     http.authorizeRequests().anyRequest().authenticated();
     http.addFilter(filter);
+    http.addFilter(corsFilter);
     http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
   }
 
