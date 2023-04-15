@@ -1,5 +1,6 @@
 package com.zor07.nofapp.service.user;
 
+import com.zor07.nofapp.repository.profile.ProfileRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.spring.AbstractApplicationTest;
@@ -9,6 +10,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_ROLE;
@@ -16,6 +19,7 @@ import static com.zor07.nofapp.test.UserTestUtils.DEFAULT_USERNAME;
 import static com.zor07.nofapp.test.UserTestUtils.createRole;
 import static com.zor07.nofapp.test.UserTestUtils.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class UserServiceTest extends AbstractApplicationTest {
 
@@ -26,9 +30,13 @@ public class UserServiceTest extends AbstractApplicationTest {
     private RoleRepository roleRepository;
 
     @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
     protected UserService userService;
 
     private void clearDb() {
+        profileRepository.deleteAll();
         userRepository.deleteAll();
         roleRepository.deleteAll();
     }
@@ -41,6 +49,19 @@ public class UserServiceTest extends AbstractApplicationTest {
     @AfterClass
     void teardown() {
         clearDb();
+    }
+
+    @Test
+    void createNewUserTest() {
+        final var user = createUser();
+        userService.createNewUser(user);
+        final var savedUser = userRepository.findByUsername(DEFAULT_USERNAME);
+        final var profile = profileRepository.findAll().get(0);
+        assertThat(savedUser.getName()).isEqualTo(DEFAULT_USERNAME);
+        assertThat(profile.getUser().getId()).isEqualTo(savedUser.getId());
+        assertThat(profile.getTimerStart()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+        assertThat(profile.getAvatar()).isNull();
+        assertThat(profile.getId()).isNotNull();
     }
 
     @Test
@@ -59,8 +80,8 @@ public class UserServiceTest extends AbstractApplicationTest {
     @Test
     void saveRoleTest() {
         userService.saveRole(createRole());
-        final var user = roleRepository.findAll().get(0);
-        assertThat(user.getName()).isEqualTo(DEFAULT_ROLE);
+        final var role = roleRepository.findAll().get(0);
+        assertThat(role.getName()).isEqualTo(DEFAULT_ROLE);
     }
 
     @Test(expectedExceptions = DataIntegrityViolationException.class)

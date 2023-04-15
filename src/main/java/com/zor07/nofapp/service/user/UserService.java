@@ -13,6 +13,7 @@ public interface UserService {
     return getUser(username);
   }
 
+  User createNewUser(User user);
   User saveUser(User user);
   Role saveRole(Role role);
   void addRoleToUser(String username, String roleName);

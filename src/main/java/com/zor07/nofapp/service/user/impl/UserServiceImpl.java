@@ -1,7 +1,9 @@
 package com.zor07.nofapp.service.user.impl;
 
+import com.zor07.nofapp.entity.profile.Profile;
 import com.zor07.nofapp.entity.user.Role;
 import com.zor07.nofapp.entity.user.User;
+import com.zor07.nofapp.repository.profile.ProfileRepository;
 import com.zor07.nofapp.repository.user.RoleRepository;
 import com.zor07.nofapp.repository.user.UserRepository;
 import com.zor07.nofapp.service.user.UserService;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +27,17 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
+  private final ProfileRepository profileRepository;
 
   @Autowired
   public UserServiceImpl(UserRepository userRepository,
-      RoleRepository roleRepository,
-      PasswordEncoder passwordEncoder) {
+                         RoleRepository roleRepository,
+                         PasswordEncoder passwordEncoder,
+                         ProfileRepository profileRepository) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.passwordEncoder = passwordEncoder;
+    this.profileRepository = profileRepository;
   }
 
   @Override
@@ -45,6 +51,19 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
       authorities.add(new SimpleGrantedAuthority(role.getName()));
     });
     return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+  }
+
+  @Override
+  public User createNewUser(User user) {
+    final var savedUser = saveUser(user);
+    final var profile = new Profile(
+            null,
+            savedUser,
+            Instant.now(),
+            null
+    );
+    profileRepository.save(profile);
+    return savedUser;
   }
 
   @Override
