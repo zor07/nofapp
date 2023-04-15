@@ -1,7 +1,9 @@
 package com.zor07.nofapp.api.v1.controller;
 
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
+import com.zor07.nofapp.repository.profile.ProfileRepository;
 import com.zor07.nofapp.spring.AbstractApiTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class AuthControllerTest extends AbstractApiTest {
 
+  private static final String REGISTER_ENDPOINT = "/api/v1/auth/register";
+
   private static final String LOGIN_PAYLOAD = """
         {
           "username": "user",
@@ -29,7 +33,19 @@ public class AuthControllerTest extends AbstractApiTest {
         }
         """;
 
+  private static final String REGISTER_PAYLOAD = """
+        {
+          "name": "register_name",
+          "username": "register_username",
+          "password": "pass"
+        }
+        """;
+
+  @Autowired
+  private ProfileRepository profileRepository;
+
   private void clearDb () {
+    profileRepository.deleteAll();
     userRepository.deleteAll();
     roleRepository.deleteAll();
   }
@@ -49,6 +65,26 @@ public class AuthControllerTest extends AbstractApiTest {
   @AfterClass
   void teardown() {
     clearDb();
+  }
+
+
+  @Test
+  void registerTest() throws Exception {
+    mvc.perform(post(REGISTER_ENDPOINT)
+                    .servletPath(REGISTER_ENDPOINT)
+                    .content(REGISTER_PAYLOAD)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk())
+            .andDo(registerResult -> {
+              final var tokens = objectMapper.readValue(registerResult.getResponse().getContentAsString(), TokensDto.class);
+              final var registeredUser = userService.getUser("register_username");
+              final var profile = profileRepository.findAll().get(0);
+
+              assertThat(registeredUser).isNotNull();
+              assertThat(profile.getUser().getId()).isEqualTo(registeredUser.getId());
+              assertThat(tokens.accessToken()).isNotNull();
+              assertThat(tokens.refreshToken()).isNotNull();
+            });
   }
 
   @Test

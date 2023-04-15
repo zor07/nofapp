@@ -23,7 +23,7 @@ public class SecurityUtils {
     return Algorithm.HMAC256("secret".getBytes());
   }
 
-  private static String createAccessToken(final String username, final String issuer, final List<String> claims) {
+  public static String createAccessToken(final String username, final String issuer, final List<String> claims) {
     return JWT.create()
         .withSubject(username)
         .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofHours(1).toMillis()))
@@ -36,9 +36,9 @@ public class SecurityUtils {
     return user.getRoles().stream().anyMatch(role -> role.getName().equals(UserRole.ROLE_ADMIN.getRoleName()));
   }
 
-  public static String createRefreshToken(final User user, final String issuer) {
+  public static String createRefreshToken(final String username, final String issuer) {
     return JWT.create()
-        .withSubject(user.getUsername())
+        .withSubject(username)
         .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofDays(10).toMillis()))
         .withIssuer(issuer)
         .sign(getAlgorithm());

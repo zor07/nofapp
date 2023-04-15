@@ -47,7 +47,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
       final Authentication authentication) throws IOException {
     final var user = (User) authentication.getPrincipal();
     final var accessToken = SecurityUtils.createAccessToken(user, request.getRequestURL().toString());
-    final var refreshToken = SecurityUtils.createRefreshToken(user, request.getRequestURL().toString());
+    final var refreshToken = SecurityUtils.createRefreshToken(user.getUsername(), request.getRequestURL().toString());
     final var tokens = new TokensDto(accessToken, refreshToken);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);

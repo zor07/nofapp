@@ -3,6 +3,9 @@ package com.zor07.nofapp.api.v1.controller;
 import com.zor07.nofapp.api.v1.dto.auth.AuthenticationDto;
 import com.zor07.nofapp.api.v1.dto.auth.TokensDto;
 import com.zor07.nofapp.api.v1.dto.auth.UserInfoDto;
+import com.zor07.nofapp.api.v1.dto.auth.UserRegisterDto;
+import com.zor07.nofapp.api.v1.dto.auth.mapper.UserMapper;
+import com.zor07.nofapp.entity.user.Role;
 import com.zor07.nofapp.exception.IllegalAuthorizationHeaderException;
 import com.zor07.nofapp.security.SecurityUtils;
 import com.zor07.nofapp.service.user.UserService;
@@ -36,22 +39,47 @@ public class AuthController {
 
   private final UserService userService;
 
+  private final UserMapper userMapper;
+
   @Autowired
-  public AuthController(final UserService userService) {
+  public AuthController(final UserService userService,
+                        final UserMapper userMapper) {
     this.userService = userService;
+    this.userMapper = userMapper;
   }
 
 
   @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "Authenticates user in application", response = TokensDto.class)
   @ApiResponses(value = {
-          @ApiResponse(code = 200, message = "Successfully authenticated note"),
+          @ApiResponse(code = 200, message = "Successfully authenticated user"),
           @ApiResponse(code = 403, message = "Authentication failed with given payload")
   })
   public void  login(@RequestBody AuthenticationDto authenticationDto) {
     // handled via CustomAuthenticationFilter
   }
 
+  @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "Registers user in application", response = TokensDto.class)
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successfully registered user"),
+          @ApiResponse(code = 403, message = "Authentication failed with given payload")
+  })
+  public ResponseEntity<TokensDto> register(final HttpServletRequest request,
+                       final HttpServletResponse response,
+                       final @RequestBody UserRegisterDto userRegisterDto) {
+    final var user = userMapper.toUser(userRegisterDto);
+    final var savedUser = userService.createNewUser(user);
+    final var accessToken = SecurityUtils.createAccessToken(
+            savedUser.getUsername(),
+            request.getRequestURL().toString(),
+            savedUser.getRoles().stream().map(Role::getName).toList()
+    );
+    final var refreshToken = SecurityUtils.createRefreshToken(savedUser.getUsername(),
+            request.getRequestURL().toString());
+
+    return ResponseEntity.ok(new TokensDto(accessToken, refreshToken));
+  }
 
   @GetMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "Retrieves information about current user", response = UserInfoDto.class)

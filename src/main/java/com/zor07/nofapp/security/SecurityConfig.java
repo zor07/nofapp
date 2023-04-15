@@ -53,7 +53,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.cors();
     http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    http.authorizeRequests().antMatchers("/api/v1/auth/login/**", "/spring-security-rest/**", "/swagger-ui/**", "/api/v1/auth/token/refresh/**").permitAll();
+    http.authorizeRequests().antMatchers("/api/v1/auth/login/**",
+            "/api/v1/auth/register/**",
+            "/spring-security-rest/**",
+            "/swagger-ui/**",
+            "/api/v1/auth/token/refresh/**").permitAll();
     http.authorizeRequests().antMatchers("/api/**")
             .hasAnyAuthority(UserRole.ROLE_USER.getRoleName(), UserRole.ROLE_ADMIN.getRoleName());
     http.authorizeRequests().anyRequest().authenticated();
