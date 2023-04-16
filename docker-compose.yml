@@ -37,6 +37,7 @@ services:
       retries: 3
 
   app:
+    restart: always
     build: .
     ports:
       - "8888:8888"
