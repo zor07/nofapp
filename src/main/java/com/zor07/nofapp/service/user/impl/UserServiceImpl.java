@@ -55,7 +55,7 @@ public class UserServiceImpl  implements UserService, UserDetailsService {
 
   @Override
   public User createNewUser(User user) {
-    final var savedUser = saveUser(user);
+    final var savedUser = userRepository.save(user);
     final var profile = new Profile(
             null,
             savedUser,
