@@ -35,3 +35,15 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+
+  app:
+    build: .
+    ports:
+      - "8888:8888"
+    depends_on:
+      - pg_db
+      - minio
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://pg_db:5432/nf'
+      CONFIG_S3_ENDPOINT: 'http://minio:9000'
+      JAVA_OPTS: '-Xmx2048m'
